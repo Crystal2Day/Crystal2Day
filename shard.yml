@@ -6,10 +6,10 @@ authors:
 
 dependencies:
   sdl-crystal-bindings:
-    github: Hadeweka/SDL-Crystal-Bindings
+    github: Crystal2Day/SDL-Crystal-Bindings
     branch: main
   tiled-crystal:
-    github: Hadeweka/tiled-crystal
+    github: Crystal2Day/tiled-crystal
     branch: main
 
 license: MIT
