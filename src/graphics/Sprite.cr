@@ -12,13 +12,15 @@ module Crystal2Day
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
     property angle : Float32 = 0.0f32
-    property center : Crystal2Day::Coords?
+    property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)
     property animation_template : Crystal2Day::AnimationTemplate = Crystal2Day::AnimationTemplate.new
     property parallax : Crystal2Day::Coords = Crystal2Day.xy(1.0, 1.0)
     property z : UInt8 = 0
     property active : Bool = true
     property flip_x : Bool = false
     property flip_y : Bool = false
+    property scale_x : Float32 = 1.0
+    property scale_y : Float32 = 1.0
   end
 
   class Sprite < Crystal2Day::Drawable
@@ -28,12 +30,14 @@ module Crystal2Day
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
     property angle : Float32 = 0.0f32
-    property center : Crystal2Day::Coords?
+    property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)
     property animation : Crystal2Day::Animation = Crystal2Day::Animation.new
     property parallax : Crystal2Day::Coords = Crystal2Day.xy(1.0, 1.0)
     property active : Bool = true
     property flip_x : Bool = false
     property flip_y : Bool = false
+    property scale_x : Float32 = 1.0
+    property scale_y : Float32 = 1.0
 
     def initialize(from_texture : Crystal2Day::Texture = Crystal2Day::Texture.new, source_rect : Crystal2Day::Rect? = nil)
       super()
@@ -54,6 +58,8 @@ module Crystal2Day
       @z = sprite_template.z
       @flip_x = sprite_template.flip_x
       @flip_y = sprite_template.flip_y
+      @scale_x = sprite_template.scale_x
+      @scale_y = sprite_template.scale_y
     end
 
     def update_source_rect_by_frame(frame : UInt16)
@@ -82,15 +88,17 @@ module Crystal2Day
       return unless active
       final_source_rect = (source_rect = @source_rect) ? source_rect.data : @texture.raw_boundary_rect
       final_offset = @position + @texture.renderer.position_shift.scale(@parallax) + offset
-      final_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : (source_rect ? (source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
+      unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : (source_rect ? (source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       flip_flag = (@flip_x ? LibSDL::FlipMode::HORIZONTAL : LibSDL::FlipMode::NONE) | (@flip_y ? LibSDL::FlipMode::VERTICAL : LibSDL::FlipMode::NONE)
       # TODO: Cache flip flag
-      if center = @center
-        final_center_point = center.data
-        LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
-      else
-        LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, nil, flip_flag)
-      end
+      # TODO: Set flip flag based on scale sign and remove flip flag attributes
+      # TODO: Optimize this a bit
+      true_center_point = Crystal2Day.xy(center.x * final_source_rect.w * @scale_x, center.y * final_source_rect.h * @scale_y)
+      final_center_point = true_center_point.data
+      final_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
+      final_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
+      final_render_rect = LibSDL::FRect.new(x: final_render_x, y: final_render_y, w: unscaled_render_rect.w * @scale_x, h: unscaled_render_rect.h * @scale_y)
+      LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
     end
   end
 end

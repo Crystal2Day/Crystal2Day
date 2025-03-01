@@ -82,6 +82,11 @@ class CustomScene < CD::Scene
     ui_camera.z = 4
     ui_camera.pin
 
+    debug_grid = CD::DebugGrid.new(CD::Rect.new(x: 0, y: 0, width: WIDTH, height: HEIGHT))
+    debug_grid.z = 10
+    debug_grid.node_distance = CD.xy(50, 50)
+    debug_grid.pin
+
     default_font = CD.rm.load_font(CD::Font.default_font_path, size: 50)
     some_text = CD::Text.new("FPS: 0", default_font)
     some_text.z = 4
