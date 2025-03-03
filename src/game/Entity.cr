@@ -7,7 +7,6 @@ module Crystal2Day
   class Entity
     STATE_INITIAL_CAPACITY = 8
     HOOKS_INITIAL_CAPACITY = 16
-    CHILDREN_INITIAL_CAPACITY = 8
     HOOK_STACK_INITIAL_CAPACITY = 8
     COLLISION_STACK_ENTITIES_INITIAL_CAPACITY = 8
     COLLISION_STACK_TILES_INITIAL_CAPACITY = 32
@@ -28,14 +27,12 @@ module Crystal2Day
 
     @options = Hash(String, Int64).new
 
-    getter sprites = Array(Crystal2Day::Sprite).new
-    getter bounding_boxes = Array(Crystal2Day::CollisionShapeBox).new
-    getter map_boxes = Array(Crystal2Day::CollisionShapeBox).new
-    getter shapes = Array(Crystal2Day::CollisionShape).new
-    getter hitshapes = Array(Crystal2Day::CollisionShape).new
-    getter hurtshapes = Array(Crystal2Day::CollisionShape).new
-
-    @children = Array(Entity).new(initial_capacity: CHILDREN_INITIAL_CAPACITY)
+    getter sprites = Hash(String, Crystal2Day::Sprite).new
+    getter bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
+    getter map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
+    getter shapes = Hash(String, Crystal2Day::CollisionShape).new
+    getter hitshapes = Hash(String, Crystal2Day::CollisionShape).new
+    getter hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
     getter type_name : String = Crystal2Day::EntityType::DEFAULT_NAME
 
@@ -65,28 +62,28 @@ module Crystal2Day
         add_hook_from_template(name, template)
       end
 
-      entity_type.transfer_sprite_templates.each do |sprite_template|
-        @sprites.push Crystal2Day::Sprite.new(sprite_template, render_target)
+      entity_type.transfer_sprite_templates.each do |name, sprite_template|
+        @sprites[name] = Crystal2Day::Sprite.new(sprite_template, render_target)
       end
 
-      entity_type.transfer_bounding_boxes.each do |box|
-        @bounding_boxes.push box.dup
+      entity_type.transfer_bounding_boxes.each do |name, box|
+        @bounding_boxes[name] = box.dup
       end
 
-      entity_type.transfer_map_boxes.each do |box|
-        @map_boxes.push box.dup
+      entity_type.transfer_map_boxes.each do |name, box|
+        @map_boxes[name] = box.dup
       end
 
-      entity_type.transfer_shapes.each do |shape|
-        @shapes.push shape.dup
+      entity_type.transfer_shapes.each do |name, shape|
+        @shapes[name] = shape.dup
       end
 
-      entity_type.transfer_hitshapes.each do |hitshape|
-        @hitshapes.push hitshape.dup
+      entity_type.transfer_hitshapes.each do |name, hitshape|
+        @hitshapes[name] = hitshape.dup
       end
 
-      entity_type.transfer_hurtshapes.each do |hurtshape|
-        @hurtshapes.push hurtshape.dup
+      entity_type.transfer_hurtshapes.each do |name, hurtshape|
+        @hurtshapes[name] = hurtshape.dup
       end
 
       @type_name = entity_type.name
@@ -272,7 +269,7 @@ module Crystal2Day
     end
 
     def update_sprites
-      @sprites.each do |sprite|
+      @sprites.each_value do |sprite|
         sprite.update
       end
     end
@@ -302,40 +299,40 @@ module Crystal2Day
       @hooks[@current_hook].change_page(name)
     end
 
-    def get_sprite(index : UInt32)
-      @sprites[index]
+    def get_sprite(name : String)
+      @sprites[name]
     end
 
-    def activate_sprite(index : UInt32)
-      @sprites[index].active = true
+    def activate_sprite(name : String)
+      @sprites[name].active = true
     end
 
-    def deactivate_sprite(index : UInt32)
-      @sprites[index].active = false
+    def deactivate_sprite(name : String)
+      @sprites[name].active = false
     end
 
-    def activate_shape(index : UInt32)
-      @shapes[index].active = true
+    def activate_shape(name : String)
+      @shapes[name].active = true
     end
 
-    def deactivate_shape(index : UInt32)
-      @shapes[index].active = false
+    def deactivate_shape(name : String)
+      @shapes[name].active = false
     end
 
-    def activate_bounding_box(index : UInt32)
-      @bounding_boxes[index].active = true
+    def activate_bounding_box(name : String)
+      @bounding_boxes[name].active = true
     end
 
-    def deactivate_bounding_box(index : UInt32)
-      @bounding_boxes[index].active = false
+    def deactivate_bounding_box(name : String)
+      @bounding_boxes[name].active = false
     end
 
-    def activate_map_box(index : UInt32)
-      @map_boxes[index].active = true
+    def activate_map_box(name : String)
+      @map_boxes[name].active = true
     end
 
-    def deactivate_map_box(index : UInt32)
-      @map_boxes[index].active = false
+    def deactivate_map_box(name : String)
+      @map_boxes[name].active = false
     end
 
     def is_exactly_type?(other_type_name : String)
@@ -350,7 +347,7 @@ module Crystal2Day
     # TODO: Is there any way to enable pinning this?
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do
-        @sprites.each do |sprite|
+        @sprites.each_value do |sprite|
           sprite.draw(@position + offset)
         end
       end
@@ -388,7 +385,7 @@ module Crystal2Day
       maximum_x = -1.0 / 0.0
       maximum_y = -1.0 / 0.0
 
-      @bounding_boxes.each do |box|
+      @bounding_boxes.each_value do |box|
         box_corner_low = @position + box.position
         box_corner_high = box_corner_low + box.size.scale(box.scale)
         box_minimum_x = box_corner_low.x
@@ -431,7 +428,7 @@ module Crystal2Day
 
             tile_shape = CollisionShapeBox.new(size: Crystal2Day.xy(tile_width, tile_height))
             tile_position = Crystal2Day.xy(x * tile_width, y * tile_height)
-            @map_boxes.each do |shape_own|
+            @map_boxes.each_value do |shape_own|
               if Crystal2Day::Collider.test(shape_own, aligned_position, tile_shape, tile_position)
                 add_tile_collision_reference(tile, tile_position, tileset)
                 tile_found = true
@@ -459,8 +456,8 @@ module Crystal2Day
       
       # Step 1: Compare boxes
       collision_detected = false
-      @bounding_boxes.each do |box_own|
-        other.bounding_boxes.each do |box_other|
+      @bounding_boxes.each_value do |box_own|
+        other.bounding_boxes.each_value do |box_other|
           if Crystal2Day::Collider.test(box_own, @position, box_other, other.position)
             collision_detected = true
             break
@@ -472,8 +469,8 @@ module Crystal2Day
       
       # Step 2: Compare actual shapes
       collision_detected = false
-      @shapes.each do |shape_own|
-        other.shapes.each do |shape_other|
+      @shapes.each_value do |shape_own|
+        other.shapes.each_value do |shape_other|
           if Crystal2Day::Collider.test(shape_own, @position, shape_other, other.position)
             collision_detected = true
             add_entity_collision_reference(other)
@@ -484,6 +481,7 @@ module Crystal2Day
       end
 
       # TODO: Test all shapes if hitshapes are becoming relevant
+      # TODO: Maybe add priority of shapes and boxes?
       return collision_detected
     end
   end

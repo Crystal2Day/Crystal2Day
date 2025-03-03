@@ -28,8 +28,8 @@ CD.db.add_entity_proc("TileCollision") do |entity|
     tile_width = collision.tileset.tile_width
     tile_height = collision.tileset.tile_height
 
-    entity_width = entity.map_boxes[0].size.x
-    entity_height = entity.map_boxes[0].size.y
+    entity_width = entity.map_boxes["MapBox"].size.x
+    entity_height = entity.map_boxes["MapBox"].size.y
 
     if collision.tile.get_flag("solid")
       if collision.other_position.x + tile_width // 2 > entity.aligned_position.x && (entity.aligned_position.y - collision.other_position.y - tile_height // 2).abs < entity_width

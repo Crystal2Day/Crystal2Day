@@ -7,20 +7,20 @@
     "test": 123
   },
 
-  "map_boxes": [
-    {"size": {"x": 50, "y": 50}, "position": {"x": -25, "y": -25}}
-  ],
+  "map_boxes": {
+    "MapBox": {"size": {"x": 50, "y": 50}, "position": {"x": -25, "y": -25}}
+  },
 
-  "bounding_boxes": [
-    {"size": {"x": 50, "y": 50}, "position": {"x": -25, "y": -25}}
-  ],
+  "bounding_boxes": {
+    "Box": {"size": {"x": 50, "y": 50}, "position": {"x": -25, "y": -25}}
+  },
 
-  "shapes": [
-    {"type": "circle", "radius": 25, "position": {"x": 0, "y": 0}}
-  ],
+  "shapes": {
+    "Circle": {"type": "circle", "radius": 25, "position": {"x": 0, "y": 0}}
+  },
 
-  "sprite_templates": [
-    {
+  "sprite_templates": {
+    "Example": {
       "texture": "ExampleSprite.png",
       "source_rect": {"width": 50, "height": 50},
       "position": {"x": -25, "y": -25},
@@ -31,7 +31,7 @@
         "frame_delay": 10
       }
     }
-  ],
+  },
 
   "coroutine_templates": {
     "update": {"file": "ExampleUpdate.rb"},

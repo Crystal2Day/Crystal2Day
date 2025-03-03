@@ -52,8 +52,8 @@ CD.db.add_entity_proc("TileCollision") do |entity|
     tile_width = collision.tileset.tile_width
     tile_height = collision.tileset.tile_height
 
-    entity_width = entity.map_boxes[0].size.x
-    entity_height = entity.map_boxes[0].size.y
+    entity_width = entity.map_boxes["MapBox"].size.x
+    entity_height = entity.map_boxes["MapBox"].size.y
 
     moving_direction = entity.get_state("moving_direction").to_i32
     remaining_distance = entity.get_state("remaining_distance").to_i32

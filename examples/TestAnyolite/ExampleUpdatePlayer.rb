@@ -8,12 +8,12 @@ each_frame do
   if Crystal2Day.im.key_down?("left")
     x_input = true
     entity.velocity.x = -2
-    entity.get_sprite(0).flip_x = false
+    entity.get_sprite("Example").flip_x = false
   end
   if Crystal2Day.im.key_down?("right")
     x_input = true
     entity.velocity.x = 2
-    entity.get_sprite(0).flip_x = true
+    entity.get_sprite("Example").flip_x = true
   end
   if Crystal2Day.im.key_down?("up")
     entity.velocity.y = -2
