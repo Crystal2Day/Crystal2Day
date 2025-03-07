@@ -12,7 +12,7 @@ class CustomScene < CD::Scene
   def initialize
     Crystal2Day.custom_loading_path = "examples/TestCompound"
 
-    @fake_entity = CD::Entity.new(CD::EntityType.from_json_file("Dummy.json"))
+    @fake_entity = CD::Entity.new(CD::EntityType.from_json_file("DummyTODO.json"))
     
     @dummy = CD::Part.new(@fake_entity.get_sprite("Body"))
     head_part = CD::Part.new(@fake_entity.get_sprite("Head"))
@@ -46,7 +46,7 @@ CD.run do
   CD.main_routine
 end
 
-# TODO: Add compound loading
+# TODO: Finish compound loading
 # TODO: What to do if no compound was specified? Either don't draw anything or draw all sprites (likely the latter one)
 # TODO: Maybe allocate a default compound, if no compound was specified?
 # TODO: If a compound was spcified, only draw these, not the sprites. 

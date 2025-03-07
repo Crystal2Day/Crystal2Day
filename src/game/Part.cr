@@ -1,4 +1,22 @@
 module Crystal2Day
+  class PartConnectionTemplate
+    include JSON::Serializable
+
+    property part : Crystal2Day::PartTemplate
+    property joint : Crystal2Day::Coords
+  end
+
+  class PartTemplate
+    include JSON::Serializable
+
+    property z : UInt8 = 0
+
+    property sprite : String
+    property offset = Crystal2Day.xy
+
+    property connections = Hash(String, Crystal2Day::PartConnectionTemplate).new
+  end
+
   class PartConnection
     property part : Crystal2Day::Part
     property joint : Crystal2Day::Coords

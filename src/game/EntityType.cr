@@ -17,6 +17,7 @@ module Crystal2Day
     property overwrite_shapes : Bool = false
     property overwrite_hitshapes : Bool = false
     property overwrite_hurtshapes : Bool = false
+    property overwrite_compound : Bool = false
 
     def initialize
     end
@@ -37,6 +38,8 @@ module Crystal2Day
     @shapes = Hash(String, Crystal2Day::CollisionShape).new
     @hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     @hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
+
+    @compound : Crystal2Day::PartTemplate? = nil
 
     @based_on : EntityTypeBase = EntityTypeBase.new
     
@@ -77,6 +80,7 @@ module Crystal2Day
           pull.read_object do |state_key|
             add_default_state_from_raw_json(name: state_key, raw_json: pull.read_raw)
           end
+        when "compound" then @compound = Crystal2Day::PartTemplate.from_json(pull.read_raw)
         when "sprite_templates"
           pull.read_object do |sprite_key|
             add_sprite_template_from_raw_json(name: sprite_key, raw_json: pull.read_raw)
