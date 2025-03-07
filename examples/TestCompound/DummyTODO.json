@@ -1,0 +1,41 @@
+{
+  "name": "Dummy",
+
+  "description": "A dummy figure to demonstrate compound entities",
+
+  "sprite_templates": {
+    "Body": {
+      "texture": "DummyBody.png",
+      "source_rect": {"width": 100, "height": 200}
+    },
+    "Head": {
+      "texture": "DummyHead.png",
+      "source_rect": {"width": 100, "height": 100}
+    },
+    "Limb": {
+      "texture": "DummyLimb.png",
+      "source_rect": {"width": 50, "height": 25}
+    }
+  },
+
+  "compound": {
+    "sprite": "Body",
+    "offset": {"x": -50, "y": -100},
+    "connections": {
+      "Head": {
+        "joint": {"x": 0.5, "y": 0},
+        "part": {
+          "sprite": "Head",
+          "offset": {"x": -50, "y": -50}
+        }
+      },
+      "ArmLeft": {
+        "joint": {"x": 1, "y": 0.5},
+        "part": {
+          "sprite": "Limb",
+          "offset": {"x": -25, "y": -12}
+        }
+      }
+    }
+  }
+}

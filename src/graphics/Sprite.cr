@@ -84,20 +84,37 @@ module Crystal2Day
       @texture = texture
     end
 
+    def determine_unscaled_render_rect(offset : Coords)
+      final_offset = @position + @texture.renderer.position_shift.scale(@parallax) + offset
+      unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
+      return unscaled_render_rect
+    end
+
+    def determine_true_center
+      # TODO: Simplify this
+      final_source_rect = (source_rect = @source_rect) ? source_rect.data : @texture.raw_boundary_rect
+      true_center_point = Crystal2Day.xy(@center.x * final_source_rect.w * @scale_x, @center.y * final_source_rect.h * @scale_y)
+      return true_center_point
+    end
+
+    def determine_final_render_rect(offset : Coords)
+      unscaled_render_rect = determine_unscaled_render_rect(offset)
+      final_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
+      final_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
+      final_render_rect = LibSDL::FRect.new(x: final_render_x, y: final_render_y, w: unscaled_render_rect.w * @scale_x, h: unscaled_render_rect.h * @scale_y)
+      return final_render_rect
+    end
+
     def draw_directly(offset : Coords)
       return unless active
       final_source_rect = (source_rect = @source_rect) ? source_rect.data : @texture.raw_boundary_rect
-      final_offset = @position + @texture.renderer.position_shift.scale(@parallax) + offset
-      unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : (source_rect ? (source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       flip_flag = (@flip_x ? LibSDL::FlipMode::HORIZONTAL : LibSDL::FlipMode::NONE) | (@flip_y ? LibSDL::FlipMode::VERTICAL : LibSDL::FlipMode::NONE)
       # TODO: Cache flip flag
       # TODO: Set flip flag based on scale sign and remove flip flag attributes
       # TODO: Optimize this a bit
-      true_center_point = Crystal2Day.xy(center.x * final_source_rect.w * @scale_x, center.y * final_source_rect.h * @scale_y)
+      true_center_point = determine_true_center
       final_center_point = true_center_point.data
-      final_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
-      final_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
-      final_render_rect = LibSDL::FRect.new(x: final_render_x, y: final_render_y, w: unscaled_render_rect.w * @scale_x, h: unscaled_render_rect.h * @scale_y)
+      final_render_rect = determine_final_render_rect(offset)
       LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
     end
   end

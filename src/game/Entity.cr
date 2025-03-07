@@ -343,7 +343,6 @@ module Crystal2Day
       Crystal2Day.database.get_entity_type(@type_name).based_on?(other_type_name)
     end
 
-    # TODO: Integrate parent-child offset
     # TODO: Is there any way to enable pinning this?
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do

@@ -54,6 +54,7 @@ require "./game/EntityGroup.cr"
 require "./game/EntityType.cr"
 require "./game/GameData.cr"
 require "./game/Limiter.cr"
+require "./game/Part.cr"
 require "./game/Scene.cr"
 
 require "./input/Event.cr"
