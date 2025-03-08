@@ -6,17 +6,12 @@ WIDTH = 1600
 HEIGHT = 900
 
 class CustomScene < CD::Scene
-  property dummy : CD::Part
-  property fake_entity : CD::Entity
+  property dummy : CD::Entity
 
   def initialize
     Crystal2Day.custom_loading_path = "examples/TestCompound"
 
-    @fake_entity = CD::Entity.new(CD::EntityType.from_json_file("DummyTODO.json"))
-    
-    @dummy = CD::Part.new(@fake_entity.get_sprite("Body"))
-    head_part = CD::Part.new(@fake_entity.get_sprite("Head"))
-    @dummy.connections["Head"] = CD::PartConnection.new(head_part, joint: CD.xy(0.5, 0))
+    @dummy = CD::Entity.new(CD::EntityType.from_json_file("Dummy.json"))
 
     debug_grid = CD::DebugGrid.new(CD::Rect.new(x: 0, y: 0, width: WIDTH, height: HEIGHT))
     debug_grid.z = 10
@@ -31,11 +26,18 @@ class CustomScene < CD::Scene
   end
 
   def draw
-    @fake_entity.get_sprite("Body").scale_y += 0.0005
-    @fake_entity.get_sprite("Body").scale_x += 0.001
-    @fake_entity.get_sprite("Head").scale_x -= 0.0005
-    @fake_entity.get_sprite("Body").angle += 2.0
-    @fake_entity.get_sprite("Head").angle += 4.0
+    @dummy.compound.not_nil!.sprite.scale_y += 0.0005
+    @dummy.compound.not_nil!.sprite.scale_x += 0.001
+    @dummy.compound.not_nil!.connections["Head"].part.sprite.scale_x -= 0.0005
+    @dummy.compound.not_nil!.sprite.angle += 2.0
+    @dummy.compound.not_nil!.connections["Head"].part.sprite.angle += 4.0
+
+    @dummy.compound.not_nil!.connections["ArmRight"].part.sprite.center = CD.xy(1, 0.5)
+    @dummy.compound.not_nil!.connections["ArmLeft"].part.sprite.angle += 1.0
+    @dummy.compound.not_nil!.connections["ArmRight"].part.sprite.angle += 3.0
+
+    @dummy.compound.not_nil!.draw(offset: CD.xy(450, 450))
+
     @dummy.draw(offset: CD.xy(450, 450))
   end
 end

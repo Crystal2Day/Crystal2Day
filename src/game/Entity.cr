@@ -34,6 +34,10 @@ module Crystal2Day
     getter hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     getter hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
+    getter sprite_templates = Hash(String, Crystal2Day::SpriteTemplate).new
+
+    getter compound : Crystal2Day::Part? = nil
+
     getter type_name : String = Crystal2Day::EntityType::DEFAULT_NAME
 
     @render_target : Crystal2Day::RenderTarget
@@ -64,6 +68,13 @@ module Crystal2Day
 
       entity_type.transfer_sprite_templates.each do |name, sprite_template|
         @sprites[name] = Crystal2Day::Sprite.new(sprite_template, render_target)
+      end
+
+      # TODO: Duplicate this?
+      @sprite_templates = entity_type.transfer_sprite_templates
+
+      if entity_type_compound = entity_type.compound
+        @compound = Crystal2Day::Part.new(entity_type_compound, self, @render_target)
       end
 
       entity_type.transfer_bounding_boxes.each do |name, box|
@@ -269,6 +280,7 @@ module Crystal2Day
     end
 
     def update_sprites
+      # TODO: Update parts
       @sprites.each_value do |sprite|
         sprite.update
       end
@@ -346,8 +358,13 @@ module Crystal2Day
     # TODO: Is there any way to enable pinning this?
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do
-        @sprites.each_value do |sprite|
-          sprite.draw(@position + offset)
+        # TODO: Make this more sophisticated
+        if parts = @compound
+          parts.draw(@position + offset)
+        else
+          @sprites.each_value do |sprite|
+            sprite.draw(@position + offset)
+          end
         end
       end
     end

@@ -10,9 +10,8 @@ module Crystal2Day
     include JSON::Serializable
 
     property z : UInt8 = 0
-
+    # TODO: Add boxes and shapes
     property sprite : String
-    property offset = Crystal2Day.xy
 
     property connections = Hash(String, Crystal2Day::PartConnectionTemplate).new
   end
@@ -22,6 +21,11 @@ module Crystal2Day
     property joint : Crystal2Day::Coords
 
     def initialize(@part : Crystal2Day::Part, @joint : Crystal2Day::Coords)
+    end
+
+    def initialize(template : PartConnectionTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      @part = Crystal2Day::Part.new(template.part, entity, render_target)
+      @joint = template.joint.dup
     end
   end
   
@@ -42,6 +46,16 @@ module Crystal2Day
     def initialize(@sprite : Crystal2Day::Sprite)
     end
 
+    def initialize(template : Crystal2Day::PartTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      @z = template.z
+      @sprite = Crystal2Day::Sprite.new(entity.sprite_templates[template.sprite], render_target)
+      # TODO: Add boxes
+      template.connections.each do |name, connection_template|
+        @connections[name] = Crystal2Day::PartConnection.new(connection_template, entity, render_target)
+      end
+    end
+
+    # TODO: Respect flipped sprites
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do
         @sprite.draw(offset)

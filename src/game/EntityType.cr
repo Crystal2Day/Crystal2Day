@@ -39,7 +39,7 @@ module Crystal2Day
     @hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     @hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
-    @compound : Crystal2Day::PartTemplate? = nil
+    getter compound : Crystal2Day::PartTemplate? = nil
 
     @based_on : EntityTypeBase = EntityTypeBase.new
     
