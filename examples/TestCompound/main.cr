@@ -26,17 +26,20 @@ class CustomScene < CD::Scene
   end
 
   def draw
-    @dummy.compound.not_nil!.sprite.scale_y += 0.0005
-    @dummy.compound.not_nil!.sprite.scale_x += 0.001
-    @dummy.compound.not_nil!.connections["Head"].part.sprite.scale_x -= 0.0005
-    @dummy.compound.not_nil!.sprite.angle += 2.0
-    @dummy.compound.not_nil!.connections["Head"].part.sprite.angle += 4.0
+    @dummy.get_part().sprite.scale_y += 0.0005
+    @dummy.get_part().sprite.scale_x += 0.001
+    @dummy.get_part().sprite.angle += 2.0
 
-    @dummy.compound.not_nil!.connections["ArmRight"].part.sprite.center = CD.xy(1, 0.5)
-    @dummy.compound.not_nil!.connections["ArmLeft"].part.sprite.angle += 1.0
-    @dummy.compound.not_nil!.connections["ArmRight"].part.sprite.angle += 3.0
+    @dummy.get_part("Head").sprite.scale_x -= 0.0005
+    @dummy.get_part("Head").sprite.angle += 4.0
+    #@dummy.get_part().sprite.flip_y = true
 
-    @dummy.compound.not_nil!.draw(offset: CD.xy(450, 450))
+    @dummy.get_part("ArmRight").sprite.center = CD.xy(1, 0.5)
+    @dummy.get_part("ArmRight").sprite.angle += 3.0
+
+    @dummy.get_part("ArmLeft").sprite.angle += 1.0
+
+    @dummy.get_part().draw(offset: CD.xy(450, 450))
 
     @dummy.draw(offset: CD.xy(450, 450))
   end

@@ -100,6 +100,24 @@ module Crystal2Day
       @type_name = entity_type.name
     end
 
+    def get_part(name : String? = nil)
+      if comp = @compound
+        if name
+          if comp.connections[name]?
+            return comp.connections[name].part
+          else
+            # TODO
+            Crystal2Day.error("TODO")
+          end
+        else
+          return comp
+        end
+      else
+        # TODO
+        Crystal2Day.error("TODO")
+      end
+    end
+
     # TODO: Maybe allow args in some way?
     def call_proc(name : String)
       Crystal2Day.database.call_entity_proc(name, self)

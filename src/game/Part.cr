@@ -55,6 +55,15 @@ module Crystal2Day
       end
     end
 
+    def get_part(name : String)
+      if @connections[name]?
+        return @connections[name].part
+      else
+        # TODO
+        Crystal2Day.error("TODO")
+      end
+    end
+
     # TODO: Respect flipped sprites
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do
@@ -70,8 +79,12 @@ module Crystal2Day
           render_rect = @sprite.determine_final_render_rect(offset)
           render_rect_part = connection_sprite.determine_final_render_rect(offset)
 
-          parent_joint_x = (connection.joint.x - @sprite.center.x) * render_rect.w
-          parent_joint_y = (connection.joint.y - @sprite.center.y) * render_rect.h
+          # TODO: This does not work yet
+          flipped_connection_x = (@sprite.flip_x ? 1.0 - connection.joint.x : connection.joint.x)
+          flipped_connection_y = (@sprite.flip_y ? 1.0 - connection.joint.y : connection.joint.y)
+
+          parent_joint_x = (flipped_connection_x - @sprite.center.x) * render_rect.w
+          parent_joint_y = (flipped_connection_y - @sprite.center.y) * render_rect.h
 
           rotated_joint_x = x_rot * parent_joint_x - y_rot * parent_joint_y + render_rect.x + @sprite.center.x * render_rect.w
           rotated_joint_y = y_rot * parent_joint_x + x_rot * parent_joint_y + render_rect.y + @sprite.center.y * render_rect.h
