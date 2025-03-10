@@ -32,16 +32,16 @@ class CustomScene < CD::Scene
 
     @dummy.get_part("Head").sprite.scale_x -= 0.0005
     @dummy.get_part("Head").sprite.angle += 4.0
-    #@dummy.get_part().sprite.flip_y = true
+    @dummy.get_part().sprite.flip_y = !@dummy.get_part().sprite.flip_y if rand < 0.01
+
+    @dummy.get_part("Head").sprite.flip_y = !@dummy.get_part("Head").sprite.flip_y if rand < 0.01
 
     @dummy.get_part("ArmRight").sprite.center = CD.xy(1, 0.5)
     @dummy.get_part("ArmRight").sprite.angle += 3.0
 
     @dummy.get_part("ArmLeft").sprite.angle += 1.0
 
-    @dummy.get_part().draw(offset: CD.xy(450, 450))
-
-    @dummy.draw(offset: CD.xy(450, 450))
+    @dummy.draw(offset: CD.xy(250, 250))
   end
 end
 

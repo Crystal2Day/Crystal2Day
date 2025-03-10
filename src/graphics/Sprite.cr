@@ -99,8 +99,8 @@ module Crystal2Day
 
     def determine_final_render_rect(offset : Coords)
       unscaled_render_rect = determine_unscaled_render_rect(offset)
-      final_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
-      final_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
+      final_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w + (@flip_x ? (2.0 * @center.x - 1) * @scale_x * unscaled_render_rect.w : 0)
+      final_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h + (@flip_y ? (2.0 * @center.y - 1) * @scale_y * unscaled_render_rect.h : 0)
       final_render_rect = LibSDL::FRect.new(x: final_render_x, y: final_render_y, w: unscaled_render_rect.w * @scale_x, h: unscaled_render_rect.h * @scale_y)
       return final_render_rect
     end
