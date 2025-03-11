@@ -91,8 +91,6 @@ module Crystal2Day
           child_joint_x = connection_sprite.center.x * render_rect_part.w + connection_sprite.position.x * connection_sprite.scale_x
           child_joint_y = connection_sprite.center.y * render_rect_part.h + connection_sprite.position.y * connection_sprite.scale_y
 
-          # TODO: Rotating flipped parts doesn't work yet
-
           joint = Crystal2Day.xy(rotated_joint_x - child_joint_x, rotated_joint_y - child_joint_y)
 
           # NOTE: The position of the part is compensated here again, making it obsolete - only the joints matter

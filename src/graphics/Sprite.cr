@@ -99,8 +99,29 @@ module Crystal2Day
 
     def determine_final_render_rect(offset : Coords)
       unscaled_render_rect = determine_unscaled_render_rect(offset)
-      final_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w + (@flip_x ? (2.0 * @center.x - 1) * @scale_x * unscaled_render_rect.w : 0)
-      final_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h + (@flip_y ? (2.0 * @center.y - 1) * @scale_y * unscaled_render_rect.h : 0)
+      
+      # TODO: This is still a bit complicated, can this be simplified?
+
+      if @flip_x || @flip_y
+        cos_value = Math.cos(@angle / 180.0 * Math::PI)
+        sin_value = Math.sin(@angle / 180.0 * Math::PI)
+      else
+        cos_value = 0.0
+        sin_value = 0.0
+      end
+
+      unflipped_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
+      unflipped_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
+
+      flip_x_correction_for_x = (@flip_x ? (2.0 * @center.x - 1) * @scale_x * unscaled_render_rect.w : 0) * cos_value
+      flip_x_correction_for_y = (@flip_x ? (2.0 * @center.x - 1) * @scale_x * unscaled_render_rect.w : 0) * sin_value
+
+      flip_y_correction_for_y = (@flip_y ? (2.0 * @center.y - 1) * @scale_y * unscaled_render_rect.h : 0) * cos_value
+      flip_y_correction_for_x = (@flip_y ? (2.0 * @center.y - 1) * @scale_y * unscaled_render_rect.h : 0) * (-sin_value)
+
+      final_render_x = unflipped_render_x + flip_x_correction_for_x + flip_y_correction_for_x
+      final_render_y = unflipped_render_y + flip_y_correction_for_y + flip_x_correction_for_y
+
       final_render_rect = LibSDL::FRect.new(x: final_render_x, y: final_render_y, w: unscaled_render_rect.w * @scale_x, h: unscaled_render_rect.h * @scale_y)
       return final_render_rect
     end
