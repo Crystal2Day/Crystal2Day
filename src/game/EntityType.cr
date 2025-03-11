@@ -80,7 +80,8 @@ module Crystal2Day
           pull.read_object do |state_key|
             add_default_state_from_raw_json(name: state_key, raw_json: pull.read_raw)
           end
-        when "compound" then @compound = Crystal2Day::PartTemplate.from_json(pull.read_raw)
+        when "compound"
+          @compound = Crystal2Day::PartTemplate.from_json(pull.read_raw)
         when "sprite_templates"
           pull.read_object do |sprite_key|
             add_sprite_template_from_raw_json(name: sprite_key, raw_json: pull.read_raw)
@@ -313,6 +314,18 @@ module Crystal2Day
         end
       else
         @options
+      end
+    end
+
+    def transfer_compound
+      unless @based_on.entity_type.empty?
+        if @based_on.overwrite_compound
+          @compound
+        else
+          Crystal2Day.database.get_entity_type(@based_on.entity_type).transfer_compound
+        end
+      else
+        @compound
       end
     end
   end

@@ -33,6 +33,10 @@
     }
   },
 
+  "compound": {
+    "sprite": "Example" 
+  },
+
   "coroutine_templates": {
     "update": {"file": "ExampleUpdate.rb"},
     "post_update": {"proc": "FigurePostUpdate"},

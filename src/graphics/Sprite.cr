@@ -13,6 +13,7 @@ module Crystal2Day
     property render_rect : Crystal2Day::Rect?
     property animation_template : Crystal2Day::AnimationTemplate = Crystal2Day::AnimationTemplate.new
     property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)  # NOTE: This one is too general to be removed
+    property z : UInt8 = 0
     # NOTE: All other properties were removed for now, but maybe they can be added for singular sprites again somewhere else
   end
 
@@ -45,6 +46,7 @@ module Crystal2Day
       @source_rect = sprite_template.source_rect
       @render_rect = sprite_template.render_rect
       @center = sprite_template.center
+      @z = sprite_template.z
       @animation = Animation.new(sprite_template.animation_template)
     end
 

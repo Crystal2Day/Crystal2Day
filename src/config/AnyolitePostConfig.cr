@@ -49,13 +49,19 @@
     @[Anyolite::ExcludeInstanceMethod("delete")]
     @[Anyolite::ExcludeInstanceMethod("call_collision_hooks")]
     @[Anyolite::SpecializeInstanceMethod("set_state", [index : String, value : Crystal2Day::Parameter])]
-    @[Anyolite::ExcludeInstanceMethod("update_sprites")]
+    @[Anyolite::ExcludeInstanceMethod("update_parts")]
     @[Anyolite::ExcludeInstanceMethod("acceleration_step")]
     @[Anyolite::ExcludeInstanceMethod("update_physics_internal")]
     @[Anyolite::SpecializeInstanceMethod("check_for_collision_with", [other : Entity])]
     @[Anyolite::AddBlockArgInstanceMethod("each_tile_collision", 1, Nil)]
     @[Anyolite::AddBlockArgInstanceMethod("each_entity_collision", 1, Nil)]
     class Entity; end
+
+    @[Anyolite::SpecializeInstanceMethod("initialize", [sprite : Crystal2Day::Sprite])]
+    class Part; end
+
+    @[Anyolite::SpecializeInstanceMethod("initialize", [part : Crystal2Day::Part, joint : Crystal2Day::Coords, rigid : Bool])]
+    class PartConnection; end
 
     @[Anyolite::SpecializeInstanceMethod("initialize", [other_event : Crystal2Day::Event])]
     @[Anyolite::ExcludeInstanceMethod("data")]
@@ -93,6 +99,8 @@
       Crystal2Day::Interpreter.expose_class(Crystal2Day::SoundBoard, under: Crystal2Day)
       Crystal2Day::Interpreter.expose_class(Crystal2Day::Sprite, under: Crystal2Day)
       Crystal2Day::Interpreter.expose_class(Crystal2Day::Tile, under: Crystal2Day)
+      Crystal2Day::Interpreter.expose_class(Crystal2Day::Part, under: Crystal2Day)
+      Crystal2Day::Interpreter.expose_class(Crystal2Day::PartConnection, under: Crystal2Day)
       Crystal2Day::Interpreter.expose_class(Crystal2Day::CollisionShapePoint, under: Crystal2Day, connect_to_superclass: true)
       Crystal2Day::Interpreter.expose_class(Crystal2Day::CollisionShapeLine, under: Crystal2Day, connect_to_superclass: true)
       Crystal2Day::Interpreter.expose_class(Crystal2Day::CollisionShapeCircle, under: Crystal2Day, connect_to_superclass: true)

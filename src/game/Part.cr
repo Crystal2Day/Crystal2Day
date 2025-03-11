@@ -59,7 +59,7 @@ module Crystal2Day
     end
 
     def initialize(template : Crystal2Day::PartTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
-      @z = template.z
+      @z = template.z # NOTE: This is additional to the sprite z coordinate
 
       @sprite = Crystal2Day::Sprite.new(entity.sprite_templates[template.sprite], render_target)
 
@@ -97,7 +97,7 @@ module Crystal2Day
     end
 
     def rotate_to(angle : Number)
-      @sprite.angle = angle
+      @sprite.angle = angle.to_f32
       @connections.each_value do |connection|
         next if connection.rigid
         connection.part.rotate_to(angle)
@@ -121,7 +121,7 @@ module Crystal2Day
     end
 
     def scale_x_to(value : Number)
-      @sprite.scale_x = value
+      @sprite.scale_x = value.to_f32
       @connections.each_value do |connection|
         next if connection.rigid
         connection.part.scale_x_to(value)
@@ -129,7 +129,7 @@ module Crystal2Day
     end
 
     def scale_y_to(value : Number)
-      @sprite.scale_y = value
+      @sprite.scale_y = value.to_f32
       @connections.each_value do |connection|
         next if connection.rigid
         connection.part.scale_y_to(value)

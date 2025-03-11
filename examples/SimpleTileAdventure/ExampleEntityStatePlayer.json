@@ -31,6 +31,10 @@
     }
   },
 
+  "compound": {
+    "sprite": "Example" 
+  },
+
   "coroutine_templates": {
     "update": {"proc": "FigureMove"},
     "tile_collisions": {"proc": "TileCollision"}

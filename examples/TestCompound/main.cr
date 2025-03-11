@@ -45,8 +45,4 @@ CD.run do
   CD.main_routine
 end
 
-# TODO: Remove actual sprites from entity
-# TODO: Allocate a default compound, if no compound was specified?
 # TODO: Include shape handling (if possible)
-# TODO: Fix other examples if necessary
-# TODO: Determine sprite source rectangle from texture if no value was given

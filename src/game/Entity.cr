@@ -27,7 +27,7 @@ module Crystal2Day
 
     @options = Hash(String, Int64).new
 
-    getter sprites = Hash(String, Crystal2Day::Sprite).new
+    # TODO: Remove obsolete ones
     getter bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     getter map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     getter shapes = Hash(String, Crystal2Day::CollisionShape).new
@@ -66,15 +66,11 @@ module Crystal2Day
         add_hook_from_template(name, template)
       end
 
-      entity_type.transfer_sprite_templates.each do |name, sprite_template|
-        @sprites[name] = Crystal2Day::Sprite.new(sprite_template, render_target)
-      end
-
       # TODO: Duplicate this?
       @sprite_templates = entity_type.transfer_sprite_templates
 
-      if entity_type_compound = entity_type.compound
-        @compound = Crystal2Day::Part.new(entity_type_compound, self, @render_target)
+      if compound_template = entity_type.transfer_compound
+        @compound = Crystal2Day::Part.new(compound_template, self, @render_target)
       end
 
       entity_type.transfer_bounding_boxes.each do |name, box|
@@ -107,14 +103,14 @@ module Crystal2Day
             return comp.connections[name].part
           else
             # TODO
-            Crystal2Day.error("TODO")
+            Crystal2Day.error("Part '#{name}' was not found")
           end
         else
           return comp
         end
       else
         # TODO
-        Crystal2Day.error("TODO")
+        Crystal2Day.error("Compound was not found")
       end
     end
 
@@ -156,12 +152,12 @@ module Crystal2Day
 
     {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
       def post_update(own_ref : Anyolite::RbRef)
-        update_sprites
+        update_parts
         call_hook("post_update", own_ref)
       end
     {% else %}
       def post_update
-        update_sprites
+        update_parts
         call_hook("post_update")
       end
     {% end %}
@@ -297,10 +293,9 @@ module Crystal2Day
       end
     end
 
-    def update_sprites
-      # TODO: Update parts
-      @sprites.each_value do |sprite|
-        sprite.update
+    def update_parts
+      if part = @compound
+        part.update
       end
     end
 
@@ -329,17 +324,7 @@ module Crystal2Day
       @hooks[@current_hook].change_page(name)
     end
 
-    def get_sprite(name : String)
-      @sprites[name]
-    end
-
-    def activate_sprite(name : String)
-      @sprites[name].active = true
-    end
-
-    def deactivate_sprite(name : String)
-      @sprites[name].active = false
-    end
+    # TODO: Remove obsolete methods
 
     def activate_shape(name : String)
       @shapes[name].active = true
@@ -376,13 +361,9 @@ module Crystal2Day
     # TODO: Is there any way to enable pinning this?
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do
-        # TODO: Make this more sophisticated
-        if parts = @compound
-          parts.draw(@position + offset)
-        else
-          @sprites.each_value do |sprite|
-            sprite.draw(@position + offset)
-          end
+        # NOTE: A compound is required to draw anything
+        if part = @compound
+          part.draw(@position + offset)
         end
       end
     end

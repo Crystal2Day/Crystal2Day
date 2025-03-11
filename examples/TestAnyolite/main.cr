@@ -72,7 +72,7 @@ class CustomScene < CD::Scene
     texture_bg = CD.rm.load_texture("ExampleSky.png")
     bg = CD::Sprite.new
     bg.link_texture(texture_bg)
-    bg.position = CD.xy(-100, -100)
+    bg.base_offset = CD.xy(-100, -100)
     bg.parallax = CD.xy(0.1, 0.1)
     bg.render_rect = CD::Rect.new(width: 2000, height: 2000)
     bg.z = 1
