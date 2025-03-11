@@ -99,7 +99,7 @@ module Crystal2Day
 
     def determine_final_render_rect(offset : Coords)
       unscaled_render_rect = determine_unscaled_render_rect(offset)
-      
+
       # TODO: This is still a bit complicated, can this be simplified?
 
       if @flip_x || @flip_y
@@ -112,6 +112,8 @@ module Crystal2Day
 
       unflipped_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
       unflipped_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
+
+      # NOTE: The signs are intended here, this is analoguous to a 2D rotation matrix
 
       flip_x_correction_for_x = (@flip_x ? (2.0 * @center.x - 1) * @scale_x * unscaled_render_rect.w : 0) * cos_value
       flip_x_correction_for_y = (@flip_x ? (2.0 * @center.x - 1) * @scale_x * unscaled_render_rect.w : 0) * sin_value

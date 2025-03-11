@@ -64,6 +64,34 @@ module Crystal2Day
       end
     end
 
+    def rotate_by(angle : Number)
+      @sprite.angle += angle
+      @connections.each_value do |connection|
+        connection.part.rotate_by(angle)
+      end
+    end
+
+    def rotate_to(angle : Number)
+      @sprite.angle = angle
+      @connections.each_value do |connection|
+        connection.part.rotate_to(angle)
+      end
+    end
+
+    def scale_x_to(value : Number)
+      @sprite.scale_x = value
+      @connections.each_value do |connection|
+        connection.part.scale_x_to(value)
+      end
+    end
+
+    def scale_y_to(value : Number)
+      @sprite.scale_y = value
+      @connections.each_value do |connection|
+        connection.part.scale_y_to(value)
+      end
+    end
+
     # TODO: Respect flipped sprites
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do

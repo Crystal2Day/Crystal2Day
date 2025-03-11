@@ -13,6 +13,11 @@ class CustomScene < CD::Scene
 
     @dummy = CD::Entity.new(CD::EntityType.from_json_file("Dummy.json"))
 
+    @dummy.get_part("ArmRight").sprite.flip_x = true
+    @dummy.get_part("LegLeft").sprite.angle = 90
+    @dummy.get_part("LegRight").sprite.angle = 90
+    @dummy.get_part("LegRight").sprite.flip_y = true
+
     debug_grid = CD::DebugGrid.new(CD::Rect.new(x: 0, y: 0, width: WIDTH, height: HEIGHT))
     debug_grid.z = 10
     debug_grid.node_distance = CD.xy(50, 50)
@@ -26,22 +31,16 @@ class CustomScene < CD::Scene
   end
 
   def draw
-    #@dummy.get_part().sprite.scale_y += 0.0005
-    #@dummy.get_part().sprite.scale_x += 0.001
-    #@dummy.get_part().sprite.angle += 2
+    @dummy.get_part().rotate_by(2)
 
-    #@dummy.get_part("Head").sprite.scale_x -= 0.0005
-    @dummy.get_part("Head").sprite.angle += 4
-    @dummy.get_part().sprite.flip_x = !@dummy.get_part().sprite.flip_x if rand < 0.1
+    @dummy.get_part().scale_x_to(@dummy.get_part().sprite.scale_x * 1.001)
 
-    @dummy.get_part("Head").sprite.flip_x = !@dummy.get_part("Head").sprite.flip_x if rand < 0.1
+    @dummy.position += CD.xy(0.2, -0.2)
 
-    @dummy.get_part("ArmRight").sprite.flip_x = true
-    #@dummy.get_part("ArmRight").sprite.angle += 3.0
+    #@dummy.get_part().sprite.flip_x = !@dummy.get_part().sprite.flip_x if rand < 0.1
+    #@dummy.get_part("Head").sprite.flip_x = !@dummy.get_part("Head").sprite.flip_x if rand < 0.1
 
-    #@dummy.get_part("ArmLeft").sprite.angle += 1.0
-
-    @dummy.draw(offset: CD.xy(250, 250))
+    @dummy.draw(offset: CD.xy(450, 450))
   end
 end
 
