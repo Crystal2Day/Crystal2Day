@@ -1,17 +1,27 @@
 module Crystal2Day
-  class PartConnectionTemplate
+  struct PartConnectionTemplate
     include JSON::Serializable
 
     property part : Crystal2Day::PartTemplate
     property joint : Crystal2Day::Coords
+    property rigid : Bool = false
   end
 
-  class PartTemplate
+  struct PartTemplate
     include JSON::Serializable
 
     property z : UInt8 = 0
     # TODO: Add boxes and shapes
     property sprite : String
+
+    property angle : Float32 = 0.0f32
+    property center : Crystal2Day::Coords? = nil
+    property parallax : Crystal2Day::Coords = Crystal2Day.xy(1.0, 1.0)
+    property active : Bool = true
+    property flip_x : Bool = false
+    property flip_y : Bool = false
+    property scale_x : Float32 = 1.0
+    property scale_y : Float32 = 1.0
 
     property connections = Hash(String, Crystal2Day::PartConnectionTemplate).new
   end
@@ -19,13 +29,15 @@ module Crystal2Day
   class PartConnection
     property part : Crystal2Day::Part
     property joint : Crystal2Day::Coords
+    property rigid : Bool
 
-    def initialize(@part : Crystal2Day::Part, @joint : Crystal2Day::Coords)
+    def initialize(@part : Crystal2Day::Part, @joint : Crystal2Day::Coords, @rigid : Bool)
     end
 
     def initialize(template : PartConnectionTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       @part = Crystal2Day::Part.new(template.part, entity, render_target)
       @joint = template.joint.dup
+      @rigid = template.rigid
     end
   end
   
@@ -48,7 +60,20 @@ module Crystal2Day
 
     def initialize(template : Crystal2Day::PartTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       @z = template.z
+
       @sprite = Crystal2Day::Sprite.new(entity.sprite_templates[template.sprite], render_target)
+
+      @sprite.angle = template.angle
+      if cen = template.center
+        @sprite.center = cen
+      end
+      @sprite.parallax = template.parallax
+      @sprite.active = template.active
+      @sprite.flip_x = template.flip_x
+      @sprite.flip_y = template.flip_y
+      @sprite.scale_x = template.scale_x
+      @sprite.scale_y = template.scale_y
+
       # TODO: Add boxes
       template.connections.each do |name, connection_template|
         @connections[name] = Crystal2Day::PartConnection.new(connection_template, entity, render_target)
@@ -59,14 +84,14 @@ module Crystal2Day
       if @connections[name]?
         return @connections[name].part
       else
-        # TODO
-        Crystal2Day.error("TODO")
+        Crystal2Day.error("Part '#{name}' was not found")
       end
     end
 
     def rotate_by(angle : Number)
       @sprite.angle += angle
       @connections.each_value do |connection|
+        next if connection.rigid
         connection.part.rotate_by(angle)
       end
     end
@@ -74,13 +99,31 @@ module Crystal2Day
     def rotate_to(angle : Number)
       @sprite.angle = angle
       @connections.each_value do |connection|
+        next if connection.rigid
         connection.part.rotate_to(angle)
+      end
+    end
+
+    def scale_x_by(factor : Number)
+      @sprite.scale_x *= factor
+      @connections.each_value do |connection|
+        next if connection.rigid
+        connection.part.scale_x_by(factor)
+      end
+    end
+
+    def scale_y_by(factor : Number)
+      @sprite.scale_y *= factor
+      @connections.each_value do |connection|
+        next if connection.rigid
+        connection.part.scale_y_by(factor)
       end
     end
 
     def scale_x_to(value : Number)
       @sprite.scale_x = value
       @connections.each_value do |connection|
+        next if connection.rigid
         connection.part.scale_x_to(value)
       end
     end
@@ -88,11 +131,54 @@ module Crystal2Day
     def scale_y_to(value : Number)
       @sprite.scale_y = value
       @connections.each_value do |connection|
+        next if connection.rigid
         connection.part.scale_y_to(value)
       end
     end
 
-    # TODO: Respect flipped sprites
+    def flip_x_axis
+      @sprite.flip_x = !@sprite.flip_x
+      @connections.each_value do |connection|
+        next if connection.rigid
+        connection.part.flip_x_axis
+      end
+    end
+
+    def flip_y_axis
+      @sprite.flip_y = !@sprite.flip_y
+      @connections.each_value do |connection|
+        next if connection.rigid
+        connection.part.flip_y_axis
+      end
+    end
+
+    def flip_x_axis_to(value : Bool)
+      if @sprite.flip_x != value
+        @sprite.flip_x = value
+        @connections.each_value do |connection|
+          next if connection.rigid
+          connection.part.flip_x_axis
+        end
+      end
+    end
+
+    def flip_y_axis_to(value : Bool)
+      if @sprite.flip_y != value
+        @sprite.flip_y = value
+        @connections.each_value do |connection|
+          next if connection.rigid
+          connection.part.flip_y_axis
+        end
+      end
+    end
+
+    def update
+      @sprite.update
+      @connections.each_value do |connection|
+        connection.part.update
+      end
+    end
+
     def draw(offset : Coords = Crystal2Day.xy)
       Crystal2Day.with_z_offset(@z) do
         @sprite.draw(offset)
@@ -116,8 +202,8 @@ module Crystal2Day
           rotated_joint_x = x_rot * parent_joint_x - y_rot * parent_joint_y + render_rect.x + @sprite.center.x * render_rect.w
           rotated_joint_y = y_rot * parent_joint_x + x_rot * parent_joint_y + render_rect.y + @sprite.center.y * render_rect.h
 
-          child_joint_x = connection_sprite.center.x * render_rect_part.w + connection_sprite.position.x * connection_sprite.scale_x
-          child_joint_y = connection_sprite.center.y * render_rect_part.h + connection_sprite.position.y * connection_sprite.scale_y
+          child_joint_x = connection_sprite.center.x * render_rect_part.w + connection_sprite.base_offset.x * connection_sprite.scale_x
+          child_joint_y = connection_sprite.center.y * render_rect_part.h + connection_sprite.base_offset.y * connection_sprite.scale_y
 
           joint = Crystal2Day.xy(rotated_joint_x - child_joint_x, rotated_joint_y - child_joint_y)
 

@@ -7,13 +7,13 @@
     "Body": {
       "texture": "DummyBody.png",
       "source_rect": {"width": 100, "height": 200},
-      "position": {"x": -50, "y": -100},
+      "base_offset": {"x": -50, "y": -100},
       "center": {"x": 0.5, "y": 0.5}
     },
     "Head": {
       "texture": "DummyHead.png",
       "source_rect": {"width": 100, "height": 100},
-      "position": {"x": -50, "y": -50},
+      "base_offset": {"x": -50, "y": -50},
       "center": {"x": 0.5, "y": 1}
     },
     "Limb": {
@@ -30,7 +30,8 @@
         "joint": {"x": 0.5, "y": 0.1},
         "part": {
           "sprite": "Head"
-        }
+        },
+        "rigid": true
       },
       "ArmLeft": {
         "joint": {"x": 0.9, "y": 0.5},

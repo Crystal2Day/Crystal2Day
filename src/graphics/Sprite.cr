@@ -8,25 +8,18 @@ module Crystal2Day
     @[JSON::Field(key: "texture")]
     property texture_filename : String = ""
 
-    property position : Crystal2Day::Coords = Crystal2Day.xy
+    property base_offset : Crystal2Day::Coords = Crystal2Day.xy  # TODO: Rename to offset
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
-    property angle : Float32 = 0.0f32
-    property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)
     property animation_template : Crystal2Day::AnimationTemplate = Crystal2Day::AnimationTemplate.new
-    property parallax : Crystal2Day::Coords = Crystal2Day.xy(1.0, 1.0)
-    property z : UInt8 = 0
-    property active : Bool = true
-    property flip_x : Bool = false
-    property flip_y : Bool = false
-    property scale_x : Float32 = 1.0
-    property scale_y : Float32 = 1.0
+    property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)  # NOTE: This one is too general to be removed
+    # NOTE: All other properties were removed for now, but maybe they can be added for singular sprites again somewhere else
   end
 
   class Sprite < Crystal2Day::Drawable
     @texture : Crystal2Day::Texture
     
-    property position : Crystal2Day::Coords = Crystal2Day.xy
+    property base_offset : Crystal2Day::Coords = Crystal2Day.xy
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
     property angle : Float32 = 0.0f32
@@ -48,18 +41,11 @@ module Crystal2Day
     def initialize(sprite_template : Crystal2Day::SpriteTemplate, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       super()
       @texture = render_target.resource_manager.load_texture(sprite_template.texture_filename)
-      @position = sprite_template.position
+      @base_offset = sprite_template.base_offset
       @source_rect = sprite_template.source_rect
       @render_rect = sprite_template.render_rect
-      @angle = sprite_template.angle
       @center = sprite_template.center
       @animation = Animation.new(sprite_template.animation_template)
-      @parallax = sprite_template.parallax
-      @z = sprite_template.z
-      @flip_x = sprite_template.flip_x
-      @flip_y = sprite_template.flip_y
-      @scale_x = sprite_template.scale_x
-      @scale_y = sprite_template.scale_y
     end
 
     def update_source_rect_by_frame(frame : UInt16)
@@ -85,7 +71,7 @@ module Crystal2Day
     end
 
     def determine_unscaled_render_rect(offset : Coords)
-      final_offset = @position + @texture.renderer.position_shift.scale(@parallax) + offset
+      final_offset = @base_offset + @texture.renderer.position_shift.scale(@parallax) + offset
       unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       return unscaled_render_rect
     end

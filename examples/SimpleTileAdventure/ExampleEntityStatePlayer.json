@@ -21,7 +21,7 @@
     "Example": {
       "texture": "ExampleSprite.png",
       "source_rect": {"width": 50, "height": 50},
-      "position": {"x": -25, "y": -25},
+      "base_offset": {"x": -25, "y": -25},
       "z": 3,
       "animation_template": {
         "start_frame": 1,

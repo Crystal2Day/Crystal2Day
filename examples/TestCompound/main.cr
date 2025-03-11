@@ -32,13 +32,8 @@ class CustomScene < CD::Scene
 
   def draw
     @dummy.get_part().rotate_by(2)
-
-    @dummy.get_part().scale_x_to(@dummy.get_part().sprite.scale_x * 1.001)
-
+    @dummy.get_part().scale_x_by(1.001)
     @dummy.position += CD.xy(0.2, -0.2)
-
-    #@dummy.get_part().sprite.flip_x = !@dummy.get_part().sprite.flip_x if rand < 0.1
-    #@dummy.get_part("Head").sprite.flip_x = !@dummy.get_part("Head").sprite.flip_x if rand < 0.1
 
     @dummy.draw(offset: CD.xy(450, 450))
   end
@@ -50,9 +45,8 @@ CD.run do
   CD.main_routine
 end
 
-# TODO: Finish compound loading
-# TODO: What to do if no compound was specified? Either don't draw anything or draw all sprites (likely the latter one)
-# TODO: Maybe allocate a default compound, if no compound was specified?
-# TODO: If a compound was spcified, only draw these, not the sprites. 
-# TODO: Add compound logic (referring to others, simulating rotations)
-# TODO: Add routine to rotate or scale an entire compound (unless a connection was specified as rigid)
+# TODO: Remove actual sprites from entity
+# TODO: Allocate a default compound, if no compound was specified?
+# TODO: Include shape handling (if possible)
+# TODO: Fix other examples if necessary
+# TODO: Determine sprite source rectangle from texture if no value was given
