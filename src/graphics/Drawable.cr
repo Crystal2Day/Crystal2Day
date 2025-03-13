@@ -5,13 +5,13 @@ module Crystal2Day
   abstract class Drawable
     getter z : UInt8 = 0
     getter pinned : Bool = false
+    getter render_target : Crystal2Day::RenderTarget
+
+    def initialize(@render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+    end
 
     def draw(offset : Coords = Crystal2Day.xy)
-      if window = Crystal2Day.current_window_if_any
-        window.draw(self, offset)
-      else
-        Crystal2Day.error "Could not draw to closed or invalid window"
-      end
+      @render_target.draw(self, offset)
     end
 
     def finalize
@@ -32,22 +32,22 @@ module Crystal2Day
 
     def pin(offset : Coords = Crystal2Day.xy)
       @pinned = true
-      if window = Crystal2Day.current_window_if_any
-        window.pin(self, offset)
-      else
-        Crystal2Day.error "Could not pin to closed or invalid window"
-      end
+      @render_target.pin(self, offset)
     end
 
     def unpin(offset : Coords = Crystal2Day.xy)
       @pinned = false
-      if window = Crystal2Day.current_window_if_any
-        window.unpin(self, offset)
-      else
-        Crystal2Day.error "Could not unpin from closed or invalid window"
-      end
+      @render_target.unpin(self, offset)
     end
 
     abstract def draw_directly(offset : Coords)
+
+    def renderer_data
+      @render_target.renderer_data
+    end
+
+    def unsafe_set_renderer(new_render_target : RenderTarget)
+      @render_target = new_render_target
+    end
   end
 end

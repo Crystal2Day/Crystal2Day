@@ -24,10 +24,10 @@ module Crystal2Day
 
       @fullscreen = fullscreen
 
-      super()
-
       Crystal2Day.current_window = self if set_as_current
       Crystal2Day.register_window(self)
+      
+      super()
     end
 
     def width=(value : Int)

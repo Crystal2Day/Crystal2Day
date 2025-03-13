@@ -13,7 +13,7 @@ module Crystal2Day
       @renderer.create!(self)
       Crystal2Day.error "Could not create renderer" unless @renderer.data?
 
-      @resource_manager.renderer = @renderer
+      @resource_manager.render_target = self
     end
 
     def clear
@@ -60,6 +60,10 @@ module Crystal2Day
     def render
       @renderer.reset
       @render_queue.draw
+    end
+
+    def renderer_data
+      return @renderer.data
     end
 
     def display

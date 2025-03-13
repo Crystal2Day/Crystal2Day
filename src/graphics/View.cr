@@ -4,10 +4,9 @@
 module Crystal2Day
   class View < Crystal2Day::Drawable
     @data : LibSDL::Rect
-    @renderer : Crystal2Day::Renderer?
 
-    def initialize(rect : Crystal2Day::Rect, @renderer : Crystal2Day::Renderer = Crystal2Day.current_window.renderer)
-      super()
+    def initialize(rect : Crystal2Day::Rect, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      super(render_target)
       @data = LibSDL::Rect.new(x: rect.x, y: rect.y, w: rect.width, h: rect.height)
     end
 
@@ -45,15 +44,16 @@ module Crystal2Day
 
     def initialize
       @data = LibSDL::Rect.new
+      super(Crystal2Day.current_window)
     end
 
-    def initialize(raw_rect : LibSDL::Rect, @renderer : Crystal2Day::Renderer)
-      super()
+    def initialize(raw_rect : LibSDL::Rect, render_target : Crystal2Day::RenderTarget)
       @data = raw_rect
+      super(render_target)
     end
 
     def draw_directly(offset : Coords)
-      @renderer.not_nil!.view = self
+      @render_target.renderer.view = self
     end
 
     def raw_data_ptr

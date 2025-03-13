@@ -365,8 +365,8 @@ module Crystal2Day
 
     VERTEX_SIGNATURE = [0, 1, 2, 0, 2, 3]
 
-    def initialize(@parent_map : Map, @renderer : Crystal2Day::Renderer = Crystal2Day.current_window.renderer)
-      super()
+    def initialize(@parent_map : Map, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      super(render_target)
     end
 
     def set_as_stream!
@@ -406,8 +406,8 @@ module Crystal2Day
 
       generate_vertices(view_width, view_height)
 
-      pos_shift_x = @renderer.position_shift.x + offset.x
-      pos_shift_y = @renderer.position_shift.y + offset.y
+      pos_shift_x = @render_target.renderer.position_shift.x + offset.x
+      pos_shift_y = @render_target.renderer.position_shift.y + offset.y
 
       exact_shift_x = @drawing_rect.x + @drawing_rect.width / 2 - pos_shift_x - (view_width - 1) * (tileset.tile_width / 2) - 1
       exact_shift_y = @drawing_rect.y + @drawing_rect.height / 2 - pos_shift_y - (view_height - 1) * (tileset.tile_height / 2) - 1
@@ -454,6 +454,7 @@ module Crystal2Day
 
     def draw_directly(offset : Coords)
       reload_vertex_grid(offset)
+      # TODO: Currently there can be two renderers, maybe this should be fixed
       LibSDL.render_geometry(@parent_map.tileset.texture.renderer_data, @parent_map.tileset.texture.data, @vertices, @vertices.size, nil, 0)
     end
   end

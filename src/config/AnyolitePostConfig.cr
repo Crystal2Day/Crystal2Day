@@ -60,7 +60,7 @@
     @[Anyolite::SpecializeInstanceMethod("initialize", [sprite : Crystal2Day::Sprite])]
     class Part; end
 
-    @[Anyolite::SpecializeInstanceMethod("initialize", [part : Crystal2Day::Part, joint : Crystal2Day::Coords, rigid : Bool])]
+    @[Anyolite::SpecializeInstanceMethod("initialize", [part : Crystal2Day::Part, joint : Crystal2Day::Coords = Crystal2Day.xy, rigid : Bool = false])]
     class PartConnection; end
 
     @[Anyolite::SpecializeInstanceMethod("initialize", [other_event : Crystal2Day::Event])]

@@ -31,7 +31,7 @@ module Crystal2Day
     property joint : Crystal2Day::Coords
     property rigid : Bool
 
-    def initialize(@part : Crystal2Day::Part, @joint : Crystal2Day::Coords, @rigid : Bool)
+    def initialize(@part : Crystal2Day::Part, @joint : Crystal2Day::Coords = Crystal2Day.xy, @rigid : Bool = false)
     end
 
     def initialize(template : PartConnectionTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)

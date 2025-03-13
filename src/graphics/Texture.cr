@@ -6,19 +6,17 @@ module Crystal2Day
   class Texture < Crystal2Day::Drawable
     Crystal2DayHelper.wrap_type(Pointer(LibSDL::Texture))
 
-    getter renderer : Crystal2Day::Renderer
-
     getter width : Int32 = 0
     getter height : Int32 = 0
 
     property offset : Crystal2Day::Coords = Crystal2Day.xy
 
-    def initialize(@renderer : Crystal2Day::Renderer = Crystal2Day.current_window.renderer)
-      super()
+    def initialize(render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      super(render_target)
     end
 
-    def self.load_from_file(filename : String, renderer : Crystal2Day::Renderer = Crystal2Day.current_window.renderer)
-      texture = Crystal2Day::Texture.new(renderer)
+    def self.load_from_file(filename : String, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      texture = Crystal2Day::Texture.new(render_target)
       texture.load_from_file!(filename)
 
       return texture
@@ -32,7 +30,7 @@ module Crystal2Day
       loaded_surface = LibSDL.img_load(full_filename)
       Crystal2Day.error "Could not load image from file #{full_filename}" unless loaded_surface
 
-      @data = LibSDL.create_texture_from_surface(@renderer.data, loaded_surface)
+      @data = LibSDL.create_texture_from_surface(renderer_data, loaded_surface)
       Crystal2Day.error "Could not create texture from file #{full_filename}" unless @data
 
       @width = loaded_surface.value.w
@@ -47,7 +45,7 @@ module Crystal2Day
       text_surface = LibSDL.ttf_render_text_solid_wrapped(font.data, text, text.size, color.data, 0)
       Crystal2Day.error "Could not create texture from rendered text" unless text_surface
 
-      @data = LibSDL.create_texture_from_surface(@renderer.data, text_surface)
+      @data = LibSDL.create_texture_from_surface(renderer_data, text_surface)
       Crystal2Day.error "Could not create texture from rendered text surface" unless @data
 
       @width = text_surface.value.w
@@ -64,24 +62,16 @@ module Crystal2Day
       LibSDL::Rect.new(x: @offset.x + shifted_by.x, y: @offset.y + shifted_by.y, w: @width, h: @height)
     end
 
-    def renderer_data
-      @renderer.data
-    end
-
     def draw_directly(offset : Coords)
       render_rect = raw_boundary_rect
-      render_rect.x += @renderer.position_shift.x + offset.x
-      render_rect.y += @renderer.position_shift.y + offset.y
-      LibSDL.render_texture_rotated(@renderer.data, data, nil, pointerof(render_rect), 0.0, nil, LibSDL::FlipMode::NONE)
+      render_rect.x += @render_target.renderer.position_shift.x + offset.x
+      render_rect.y += @render_target.renderer.position_shift.y + offset.y
+      LibSDL.render_texture_rotated(renderer_data, data, nil, pointerof(render_rect), 0.0, nil, LibSDL::FlipMode::NONE)
     end
 
     def unsafe_set_size(new_width : Int32, new_height : Int32)
       @width = new_width
       @height = new_height
-    end
-
-    def unsafe_set_renderer(new_renderer : Renderer)
-      @renderer = new_renderer
     end
 
     def free

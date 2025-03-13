@@ -12,8 +12,8 @@ module Crystal2Day
     @position : Crystal2Day::Coords = Crystal2Day.xy
     @target : Crystal2Day::Entity?
     
-    def initialize(@position : Crystal2Day::Coords = Crystal2Day.xy, @renderer : Crystal2Day::Renderer = Crystal2Day.current_window.renderer)
-      super()
+    def initialize(@position : Crystal2Day::Coords = Crystal2Day.xy, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      super(render_target)
     end
 
     def position
@@ -45,7 +45,7 @@ module Crystal2Day
     end
 
     def draw_directly(offset : Coords)
-      @renderer.position_shift = (position + offset) * (-1)
+      @render_target.renderer.position_shift = (position + offset) * (-1)
     end
   end
 end

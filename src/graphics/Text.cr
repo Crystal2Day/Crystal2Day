@@ -15,8 +15,8 @@ module Crystal2Day
     property center : Crystal2Day::Coords?
 
     def initialize(@text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black)
-      super()
       @texture = Crystal2Day::Texture.new
+      super(@texture.render_target)
       update!
     end
 
@@ -46,13 +46,13 @@ module Crystal2Day
 
     def draw_directly(offset : Coords)
       final_source_rect = @texture.raw_boundary_rect
-      final_render_rect = (render_rect = @render_rect) ? (render_rect + @position + @texture.renderer.position_shift + offset).data : @texture.raw_boundary_rect(shifted_by: @position + @texture.renderer.position_shift + offset)
+      final_render_rect = (render_rect = @render_rect) ? (render_rect + @position + @render_target.renderer.position_shift + offset).data : @texture.raw_boundary_rect(shifted_by: @position + @render_target.renderer.position_shift + offset)
       flip_flag = LibSDL::FlipMode::NONE
       if center = @center
         final_center_point = center.data
-        LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
+        LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
       else
-        LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, nil, flip_flag)
+        LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, nil, flip_flag)
       end
     end
   end

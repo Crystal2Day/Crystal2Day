@@ -41,9 +41,9 @@ module Crystal2Day
     MUSICS_INITIAL_CAPACITY = 256
     FONTS_INITIAL_CAPACITY = 8
     
-    property renderer : Crystal2Day::Renderer? = nil
+    property render_target : Crystal2Day::RenderTarget? = nil
 
-    add_resource_type("texture", Texture, TEXTURES_INITIAL_CAPACITY, additional_arg: @renderer.not_nil!)
+    add_resource_type("texture", Texture, TEXTURES_INITIAL_CAPACITY, additional_arg: @render_target.not_nil!)
     add_resource_type("sound", Sound, SOUNDS_INITIAL_CAPACITY)
     add_resource_type("music", Music, MUSICS_INITIAL_CAPACITY, plural: "")
     add_resource_type("font", Font, FONTS_INITIAL_CAPACITY, additional_init_args: [", size : Number = 16", ", size"])

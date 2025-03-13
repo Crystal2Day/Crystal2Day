@@ -34,13 +34,12 @@ module Crystal2Day
     property scale_y : Float32 = 1.0
 
     def initialize(from_texture : Crystal2Day::Texture = Crystal2Day::Texture.new, source_rect : Crystal2Day::Rect? = nil)
-      super()
       @source_rect = source_rect
       @texture = from_texture
+      super(@texture.render_target)
     end
 
     def initialize(sprite_template : Crystal2Day::SpriteTemplate, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
-      super()
       @texture = render_target.resource_manager.load_texture(sprite_template.texture_filename)
       @base_offset = sprite_template.base_offset
       @source_rect = sprite_template.source_rect
@@ -48,6 +47,7 @@ module Crystal2Day
       @center = sprite_template.center
       @z = sprite_template.z
       @animation = Animation.new(sprite_template.animation_template)
+      super(render_target)
     end
 
     def update_source_rect_by_frame(frame : UInt16)
@@ -56,7 +56,8 @@ module Crystal2Day
         source_rect.x = (frame % n_tiles_x) * source_rect.width
         source_rect.y = (frame // n_tiles_x) * source_rect.height
       else
-        Crystal2Day.error "No source rect defined"
+        # TODO: This should only throw an error for a nontrivial frame 
+        # Crystal2Day.error "No source rect defined"
       end
     end
 
@@ -73,7 +74,7 @@ module Crystal2Day
     end
 
     def determine_unscaled_render_rect(offset : Coords)
-      final_offset = @base_offset + @texture.renderer.position_shift.scale(@parallax) + offset
+      final_offset = @base_offset + @render_target.renderer.position_shift.scale(@parallax) + offset
       unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       return unscaled_render_rect
     end
@@ -126,7 +127,7 @@ module Crystal2Day
       true_center_point = determine_true_center
       final_center_point = true_center_point.data
       final_render_rect = determine_final_render_rect(offset)
-      LibSDL.render_texture_rotated(@texture.renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
+      LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
     end
   end
 end

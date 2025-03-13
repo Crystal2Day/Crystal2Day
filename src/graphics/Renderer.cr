@@ -5,8 +5,8 @@ module Crystal2Day
   class Renderer
     Crystal2DayHelper.wrap_type(Pointer(LibSDL::Renderer))
 
-    @current_view : Crystal2Day::View = Crystal2Day::View.new
-    getter original_view : Crystal2Day::View = Crystal2Day::View.new
+    @current_view : Crystal2Day::View? = nil
+    getter original_view : Crystal2Day::View? = nil
     property position_shift : Crystal2Day::Coords = Crystal2Day.xy
 
     def initialize
@@ -16,24 +16,24 @@ module Crystal2Day
     def create!(from : Crystal2Day::Window)
       free
       @data = LibSDL.create_renderer(from.data, nil)
-      @original_view = get_bound_view
-      @current_view = get_bound_view
+      @original_view = get_bound_view(from)
+      @current_view = get_bound_view(from)
     end
 
     def create!(from : Crystal2Day::RenderSurface)
       free
       @data = LibSDL.create_software_renderer(from.data)
-      @original_view = get_bound_view
-      @current_view = get_bound_view
+      @original_view = get_bound_view(from)
+      @current_view = get_bound_view(from)
     end
 
-    def get_bound_view
+    def get_bound_view(from : Crystal2Day::RenderTarget)
       LibSDL.get_render_viewport(data, out rect)
-      Crystal2Day::View.new(rect, self)
+      Crystal2Day::View.new(rect, from)
     end
 
     def view
-      @current_view
+      @current_view.not_nil!
     end
 
     def view=(value : Crystal2Day::View)
@@ -42,7 +42,7 @@ module Crystal2Day
     end
 
     def reset_view
-      self.view = self.original_view
+      self.view = self.original_view.not_nil!
     end
 
     def reset_shift
