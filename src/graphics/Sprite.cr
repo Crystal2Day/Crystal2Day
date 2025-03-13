@@ -32,6 +32,7 @@ module Crystal2Day
     property flip_y : Bool = false
     property scale_x : Float32 = 1.0
     property scale_y : Float32 = 1.0
+    property blend_color : Crystal2Day::Color = Crystal2Day::Color.white
 
     def initialize(from_texture : Crystal2Day::Texture = Crystal2Day::Texture.new, source_rect : Crystal2Day::Rect? = nil)
       @source_rect = source_rect
@@ -127,6 +128,7 @@ module Crystal2Day
       true_center_point = determine_true_center
       final_center_point = true_center_point.data
       final_render_rect = determine_final_render_rect(offset)
+      LibSDL.set_texture_color_mod(@texture.data, @blend_color.r, @blend_color.g, @blend_color.b)
       LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
     end
   end
