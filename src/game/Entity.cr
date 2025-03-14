@@ -36,7 +36,7 @@ module Crystal2Day
 
     getter sprite_templates = Hash(String, Crystal2Day::SpriteTemplate).new
 
-    getter compound : Crystal2Day::Part? = nil
+    @compound : Crystal2Day::Part? = nil
 
     getter type_name : String = Crystal2Day::EntityType::DEFAULT_NAME
 
@@ -96,21 +96,11 @@ module Crystal2Day
       @type_name = entity_type.name
     end
 
-    def get_part(name : String? = nil)
-      if comp = @compound
-        if name
-          if comp.connections[name]?
-            return comp.connections[name].part
-          else
-            # TODO
-            Crystal2Day.error("Part '#{name}' was not found")
-          end
-        else
-          return comp
-        end
+    def compound
+      if c = @compound
+        return c
       else
-        # TODO
-        Crystal2Day.error("Compound was not found")
+        Crystal2Day.error("Entity has no compound")
       end
     end
 

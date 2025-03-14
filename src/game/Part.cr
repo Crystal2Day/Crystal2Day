@@ -80,12 +80,20 @@ module Crystal2Day
       end
     end
 
-    def get_part(name : String)
+    def part(name : String)
       if @connections[name]?
         return @connections[name].part
       else
         Crystal2Day.error("Part '#{name}' was not found")
       end
+    end
+
+    def part(names : Array(String) = [] of String)
+      current_part = self
+      names.each do |name|
+        current_part = current_part.part(name)
+      end
+      return current_part
     end
 
     def rotate_by(angle : Number)

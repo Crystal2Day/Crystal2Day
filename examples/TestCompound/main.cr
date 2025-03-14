@@ -13,10 +13,10 @@ class CustomScene < CD::Scene
 
     @dummy = CD::Entity.new(CD::EntityType.from_json_file("Dummy.json"))
 
-    @dummy.get_part("ArmRight").sprite.flip_x = true
-    @dummy.get_part("LegLeft").sprite.angle = 90
-    @dummy.get_part("LegRight").sprite.angle = 90
-    @dummy.get_part("LegRight").sprite.flip_y = true
+    @dummy.compound.part("ArmRight").sprite.flip_x = true
+    @dummy.compound.part("LegLeft").sprite.angle = 90
+    @dummy.compound.part("LegRight").sprite.angle = 90
+    @dummy.compound.part("LegRight").sprite.flip_y = true
 
     debug_grid = CD::DebugGrid.new(CD::Rect.new(x: 0, y: 0, width: WIDTH, height: HEIGHT))
     debug_grid.z = 10
@@ -31,8 +31,8 @@ class CustomScene < CD::Scene
   end
 
   def draw
-    @dummy.get_part().rotate_by(2)
-    @dummy.get_part().scale_x_by(1.001)
+    @dummy.compound.rotate_by(2)
+    @dummy.compound.scale_x_by(1.001)
     @dummy.position += CD.xy(0.2, -0.2)
 
     @dummy.draw(offset: CD.xy(450, 450))
