@@ -9,6 +9,8 @@ module Crystal2Day
 
     property z_offset : UInt8 = 0
 
+    property background_color : Crystal2Day::Color = Crystal2Day::Color.white
+
     def initialize
       @renderer.create!(self)
       Crystal2Day.error "Could not create renderer" unless @renderer.data?
@@ -17,7 +19,7 @@ module Crystal2Day
     end
 
     def clear
-      LibSDL.set_render_draw_color(@renderer.data, 0xFF, 0xFF, 0xFF, 0xFF)
+      LibSDL.set_render_draw_color(@renderer.data, @background_color.r, @background_color.g, @background_color.b, @background_color.a)
       LibSDL.render_clear(@renderer.data)
     end
 
