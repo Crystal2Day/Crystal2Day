@@ -46,7 +46,7 @@ module Crystal2Day
       @render_target.renderer_data
     end
 
-    def unsafe_set_renderer(new_render_target : RenderTarget)
+    def unsafe_set_render_target(new_render_target : RenderTarget)
       @render_target = new_render_target
     end
   end
