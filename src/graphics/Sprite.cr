@@ -74,8 +74,8 @@ module Crystal2Day
       @texture = texture
     end
 
-    def determine_unscaled_render_rect(offset : Coords)
-      final_offset = @base_offset + @render_target.renderer.position_shift.scale(@parallax) + offset
+    def determine_unscaled_render_rect(offset : Coords, ignore_camera_shift : Bool = false)
+      final_offset = @base_offset + (ignore_camera_shift ? Crystal2Day.xy : @render_target.renderer.position_shift.scale(@parallax)) + offset
       unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       return unscaled_render_rect
     end
@@ -87,8 +87,8 @@ module Crystal2Day
       return true_center_point
     end
 
-    def determine_final_render_rect(offset : Coords)
-      unscaled_render_rect = determine_unscaled_render_rect(offset)
+    def determine_final_render_rect(offset : Coords, ignore_camera_shift : Bool = false)
+      unscaled_render_rect = determine_unscaled_render_rect(offset, ignore_camera_shift)
 
       # TODO: This is still a bit complicated, can this be simplified?
 

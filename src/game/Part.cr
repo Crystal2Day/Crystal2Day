@@ -207,8 +207,8 @@ module Crystal2Day
         @connections.each_value do |connection|
           connection_sprite = connection.part.sprite
 
-          render_rect = @sprite.determine_final_render_rect(offset)
-          render_rect_part = connection_sprite.determine_final_render_rect(offset)
+          render_rect = @sprite.determine_final_render_rect(offset, ignore_camera_shift: true)
+          render_rect_part = connection_sprite.determine_final_render_rect(offset, ignore_camera_shift: true)
 
           flipped_connection_x = (@sprite.flip_x ? 1.0 - connection.joint.x : connection.joint.x)
           flipped_connection_y = (@sprite.flip_y ? 1.0 - connection.joint.y : connection.joint.y)
