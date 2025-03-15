@@ -180,6 +180,15 @@ module Crystal2Day
       end
     end
 
+    # TODO: Couple this to Anyolite (currently excluded)
+    def each_part(args : Array(String) = [] of String, &block : Array(String), Part -> Nil)
+      yield args, self
+      @connections.each do |name, connection|
+        new_args = args + [name]
+        connection.part.each_part(new_args, &block)
+      end
+    end
+
     def update
       @sprite.update
       @connections.each_value do |connection|

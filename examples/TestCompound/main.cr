@@ -22,6 +22,10 @@ class CustomScene < CD::Scene
     debug_grid.z = 10
     debug_grid.node_distance = CD.xy(50, 50)
     debug_grid.pin
+
+    @dummy.compound.each_part do |name, part|
+      puts name
+    end
   end
 
   def handle_event(event)
