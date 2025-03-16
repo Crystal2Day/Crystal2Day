@@ -184,6 +184,7 @@ module Crystal2Day
 
   def self.unregister_window(window : Crystal2Day::Window)
     @@windows.delete(window)
+    window.cleanup
   end
 
   def self.for_window(window : Crystal2Day::Window)
@@ -242,6 +243,11 @@ module Crystal2Day
   end
 
   def self.quit
+    @@windows.each do |window|
+      window.cleanup
+    end
+    @@windows.clear
+    @@current_window = nil
     # TODO: Close audio device if necessary
     LibSDL.mix_quit
     LibSDL.ttf_quit

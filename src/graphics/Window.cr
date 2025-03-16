@@ -67,7 +67,6 @@ module Crystal2Day
     def close
       Crystal2Day.current_window = nil if Crystal2Day.current_window_if_any == self
       Crystal2Day.unregister_window(self)
-      @renderer.free  # It's safe to do this twice, the renderer checks this for us, but TODO: Is this necessary at all?
       LibSDL.destroy_window(data)
       @data = nil
     end

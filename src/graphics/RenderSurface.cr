@@ -9,6 +9,7 @@ module Crystal2Day
 
     DEFAULT_PIXEL_FORMAT = LibSDL::PixelFormat::RGBA8888
 
+    # TODO: Maybe store references to these somewhere, since they are REQUIRED to call cleanup when not using them anymore
     def initialize(width : Int, height : Int)
       @data = LibSDL.create_surface(width, height, DEFAULT_PIXEL_FORMAT)
       

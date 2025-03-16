@@ -72,9 +72,19 @@ module Crystal2Day
       LibSDL.render_present(@renderer.data)
     end
 
-    def finalize      
+    def cleanup
       unpin_all
+      # Replace the members with dummy variables to avoid unwanted recursions
+      # Otherwise the GC might throw weird warnings
+      @render_queue = RenderQueue.new
+      @resource_manager = ResourceManager.new
       @renderer.free
+      @renderer = Renderer.new
+    end
+
+    def finalize
+      # Just for good measure
+      cleanup
     end
   end
 end
