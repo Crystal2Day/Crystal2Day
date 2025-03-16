@@ -144,6 +144,7 @@ module Crystal2Day
       @event_groups.clear
       @draw_groups.clear
       @entity_groups.clear
+      GC.collect
     end
 
     def call_inner_draw_block
