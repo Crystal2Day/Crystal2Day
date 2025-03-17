@@ -50,7 +50,7 @@ module Crystal2Day
     property filled : Bool = false
 
     def initialize(size : Crystal2Day::Coords = Crystal2Day.xy, position : Crystal2Day::Coords = Crystal2Day.xy, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
-      super(renderrender_targeter)
+      super(render_target)
       @size = size
       @position = position
     end
