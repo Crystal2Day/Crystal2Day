@@ -8,6 +8,9 @@ module Crystal2Day
     @current_view : Crystal2Day::View? = nil
     getter original_view : Crystal2Day::View? = nil
     property position_shift : Crystal2Day::Coords = Crystal2Day.xy
+    
+    getter orig_clip_rect : Crystal2Day::Rect? = nil
+    getter clip_rect : Crystal2Day::Rect? = nil
 
     def initialize
     end
@@ -15,6 +18,8 @@ module Crystal2Day
     def create!(from : Crystal2Day::Window)
       free
       @data = LibSDL.create_renderer(from.data, nil)
+      LibSDL.get_render_clip_rect(data, out orig_clip_rect_data)
+      @orig_clip_rect = Crystal2Day::Rect.new(x: orig_clip_rect_data.x, y: orig_clip_rect_data.y, width: orig_clip_rect_data.w, height: orig_clip_rect_data.h)
       LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(from)
       @current_view = get_bound_view(from)
@@ -23,6 +28,8 @@ module Crystal2Day
     def create!(from : Crystal2Day::RenderSurface)
       free
       @data = LibSDL.create_software_renderer(from.data)
+      LibSDL.get_render_clip_rect(data, out orig_clip_rect_data)
+      @orig_clip_rect = Crystal2Day::Rect.new(x: orig_clip_rect_data.x, y: orig_clip_rect_data.y, width: orig_clip_rect_data.w, height: orig_clip_rect_data.h)
       LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(from)
       @current_view = get_bound_view(from)
@@ -50,9 +57,23 @@ module Crystal2Day
       @position_shift = Crystal2Day.xy
     end
 
+    def restore_clip_rect
+      @clip_rect = @orig_clip_rect
+    end
+
     def reset
       reset_view
       reset_shift
+    end
+
+    def clip_rect=(new_rect : Crystal2Day::Rect?)
+      if valid_rect = new_rect
+        @clip_rect = new_rect
+        LibSDL.set_render_clip_rect(data, @clip_rect.int_data)
+      else
+        @clip_rect = nil
+        LibSDL.set_render_clip_rect(data, @orig_clip_rect.not_nil!.int_data)
+      end
     end
 
     def free
