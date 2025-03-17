@@ -75,7 +75,7 @@ module Crystal2Day
     end
 
     def determine_unscaled_render_rect(offset : Coords, ignore_camera_shift : Bool = false)
-      final_offset = @base_offset + (ignore_camera_shift ? Crystal2Day.xy : @render_target.renderer.position_shift.scale(@parallax)) + offset
+      final_offset = @base_offset + (ignore_camera_shift ? Crystal2Day.xy : @render_target.parallax_center + (@render_target.renderer.position_shift - @render_target.parallax_center).scale(@parallax)) + offset
       unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       return unscaled_render_rect
     end

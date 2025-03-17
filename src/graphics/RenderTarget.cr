@@ -9,7 +9,7 @@ module Crystal2Day
 
     property z_offset : UInt8 = 0
 
-    # TODO: Doesn't do anything yet
+    # NOTE: This is relevant for the camera position, NOT the camera center!
     property parallax_center : Crystal2Day::Coords = Crystal2Day.xy
 
     property background_color : Crystal2Day::Color = Crystal2Day::Color.white
