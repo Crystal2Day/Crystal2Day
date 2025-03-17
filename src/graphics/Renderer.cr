@@ -69,7 +69,7 @@ module Crystal2Day
     def clip_rect=(new_rect : Crystal2Day::Rect?)
       if valid_rect = new_rect
         @clip_rect = new_rect
-        LibSDL.set_render_clip_rect(data, @clip_rect.int_data)
+        LibSDL.set_render_clip_rect(data, @clip_rect.not_nil!.int_data)
       else
         @clip_rect = nil
         LibSDL.set_render_clip_rect(data, @orig_clip_rect.not_nil!.int_data)
