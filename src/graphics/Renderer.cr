@@ -12,10 +12,10 @@ module Crystal2Day
     def initialize
     end
 
-    # TODO: Put flags in Crystal2Day module
     def create!(from : Crystal2Day::Window)
       free
       @data = LibSDL.create_renderer(from.data, nil)
+      LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(from)
       @current_view = get_bound_view(from)
     end
@@ -23,6 +23,7 @@ module Crystal2Day
     def create!(from : Crystal2Day::RenderSurface)
       free
       @data = LibSDL.create_software_renderer(from.data)
+      LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(from)
       @current_view = get_bound_view(from)
     end

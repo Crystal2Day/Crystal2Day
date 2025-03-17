@@ -48,7 +48,18 @@ module Crystal2Day
     add_resource_type("music", Music, MUSICS_INITIAL_CAPACITY, plural: "")
     add_resource_type("font", Font, FONTS_INITIAL_CAPACITY, additional_init_args: [", size : Number = 16", ", size"])
 
+    def clear
+      @textures.clear
+      @sounds.clear
+      @music.clear
+      @fonts.clear
+    end
+
     def initialize
+    end
+
+    def finalize
+      clear
     end
   end
 end

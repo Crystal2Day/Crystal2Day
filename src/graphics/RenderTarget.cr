@@ -76,6 +76,7 @@ module Crystal2Day
       unpin_all
       # Replace the members with dummy variables to avoid unwanted recursions
       # Otherwise the GC might throw weird warnings
+      @resource_manager.clear
       @render_queue = RenderQueue.new
       @resource_manager = ResourceManager.new
       @renderer.free
