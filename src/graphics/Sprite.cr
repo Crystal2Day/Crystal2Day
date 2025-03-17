@@ -100,8 +100,8 @@ module Crystal2Day
         sin_value = 0.0
       end
 
-      unflipped_render_x = unscaled_render_rect.x - @center.x * (@scale_x - 1.0) * unscaled_render_rect.w
-      unflipped_render_y = unscaled_render_rect.y - @center.y * (@scale_y - 1.0) * unscaled_render_rect.h
+      unflipped_render_x = unscaled_render_rect.x
+      unflipped_render_y = unscaled_render_rect.y
 
       # NOTE: The signs are intended here, this is analoguous to a 2D rotation matrix
 

@@ -219,12 +219,11 @@ module Crystal2Day
           rotated_joint_x = x_rot * parent_joint_x - y_rot * parent_joint_y + render_rect.x + @sprite.center.x * render_rect.w
           rotated_joint_y = y_rot * parent_joint_x + x_rot * parent_joint_y + render_rect.y + @sprite.center.y * render_rect.h
 
-          child_joint_x = connection_sprite.center.x * render_rect_part.w + connection_sprite.base_offset.x * connection_sprite.scale_x
-          child_joint_y = connection_sprite.center.y * render_rect_part.h + connection_sprite.base_offset.y * connection_sprite.scale_y
+          child_joint_x = connection_sprite.center.x * render_rect_part.w
+          child_joint_y = connection_sprite.center.y * render_rect_part.h
 
           joint = Crystal2Day.xy(rotated_joint_x - child_joint_x, rotated_joint_y - child_joint_y)
 
-          # NOTE: The position of the part is compensated here again, making it obsolete - only the joints matter
           connection.part.draw(joint)
         end
       end

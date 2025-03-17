@@ -11,7 +11,6 @@
     },
     "Head": {
       "texture": "DummyHead.png",
-      "base_offset": {"x": -50, "y": -50},
       "center": {"x": 0.5, "y": 1}
     },
     "Limb": {
