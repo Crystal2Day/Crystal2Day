@@ -87,14 +87,18 @@ module Crystal2Day
       return true_center_point
     end
 
+    def flipped_angle
+      @angle * (@flip_x ? -1 : 1) * (@flip_y ? -1 : 1)
+    end
+
     def determine_final_render_rect(offset : Coords, ignore_camera_shift : Bool = false)
       unscaled_render_rect = determine_unscaled_render_rect(offset, ignore_camera_shift)
 
       # TODO: This is still a bit complicated, can this be simplified?
 
       if @flip_x || @flip_y
-        cos_value = Math.cos(@angle / 180.0 * Math::PI)
-        sin_value = Math.sin(@angle / 180.0 * Math::PI)
+        cos_value = Math.cos(flipped_angle / 180.0 * Math::PI)
+        sin_value = Math.sin(flipped_angle / 180.0 * Math::PI)
       else
         cos_value = 0.0
         sin_value = 0.0
@@ -129,7 +133,7 @@ module Crystal2Day
       final_center_point = true_center_point.data
       final_render_rect = determine_final_render_rect(offset)
       LibSDL.set_texture_color_mod(@texture.data, @blend_color.r, @blend_color.g, @blend_color.b)
-      LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
+      LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), flipped_angle, pointerof(final_center_point), flip_flag)
     end
   end
 end

@@ -200,8 +200,8 @@ module Crystal2Day
       Crystal2Day.with_z_offset(@z) do
         @sprite.draw(offset)
 
-        x_rot = Math.cos(@sprite.angle / 180.0 * Math::PI)
-        y_rot = Math.sin(@sprite.angle / 180.0 * Math::PI)
+        x_rot = Math.cos(@sprite.flipped_angle / 180.0 * Math::PI)
+        y_rot = Math.sin(@sprite.flipped_angle / 180.0 * Math::PI)
 
         # Recursion
         @connections.each_value do |connection|
