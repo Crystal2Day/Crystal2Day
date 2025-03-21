@@ -9,6 +9,7 @@ module Crystal2Day
     property loop_start_frame : UInt16? = nil
     property repeat_times : Int32 = -1
     property frame_delay : UInt32 = 0
+    property return_to_start_after_finishing : Bool = true
 
     @[JSON::Field(ignore: true)]
     property actual_loop_start_frame : UInt16 = 0u16
@@ -36,6 +37,7 @@ module Crystal2Day
     end
 
     def update
+      return if @finished
       first_frame = (@repeat_counter == 0 && @delay_counter == @template.frame_delay) # TODO: Maybe this can be optimized
       if @delay_counter == 0
         @delay_counter = @template.frame_delay
@@ -44,7 +46,11 @@ module Crystal2Day
           @has_changed = true
         else
           @repeat_counter += 1
-          if @template.repeat_times > 0 && @repeat_counter > @template.repeat_times
+          if @template.repeat_times >= 0 && @repeat_counter > @template.repeat_times
+            if @template.return_to_start_after_finishing
+              @current_frame = @template.actual_loop_start_frame 
+              @has_changed = true
+            end
             @finished = true
           else
             @current_frame = @template.actual_loop_start_frame
