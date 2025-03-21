@@ -42,10 +42,10 @@ module Crystal2Day
 
     def initialize(sprite_template : Crystal2Day::SpriteTemplate, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       @texture = render_target.resource_manager.load_texture(sprite_template.texture_filename)
-      @base_offset = sprite_template.base_offset
-      @source_rect = sprite_template.source_rect
-      @render_rect = sprite_template.render_rect
-      @center = sprite_template.center
+      @base_offset = sprite_template.base_offset.dup
+      @source_rect = sprite_template.source_rect.dup
+      @render_rect = sprite_template.render_rect.dup
+      @center = sprite_template.center.dup
       @z = sprite_template.z
       @animation = Animation.new(sprite_template.animation_template)
       super(render_target)
