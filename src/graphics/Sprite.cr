@@ -11,7 +11,8 @@ module Crystal2Day
     property base_offset : Crystal2Day::Coords = Crystal2Day.xy  # TODO: Rename to offset
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
-    property animation_template : Crystal2Day::AnimationTemplate = Crystal2Day::AnimationTemplate.new
+    property animation_templates : Hash(String, Crystal2Day::AnimationTemplate) = Hash(String, Crystal2Day::AnimationTemplate).new
+    property starting_animation : String? = nil
     property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)  # NOTE: This one is too general to be removed
     property z : UInt8 = 0
     # NOTE: All other properties were removed for now, but maybe they can be added for singular sprites again somewhere else
@@ -23,6 +24,7 @@ module Crystal2Day
     property base_offset : Crystal2Day::Coords = Crystal2Day.xy
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
+    property animation_templates : Hash(String, Crystal2Day::AnimationTemplate) = Hash(String, Crystal2Day::AnimationTemplate).new
     property angle : Float32 = 0.0f32
     property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)
     property animation : Crystal2Day::Animation = Crystal2Day::Animation.new
@@ -33,7 +35,7 @@ module Crystal2Day
     property scale_x : Float32 = 1.0
     property scale_y : Float32 = 1.0
     property blend_color : Crystal2Day::Color = Crystal2Day::Color.white
-
+  
     def initialize(from_texture : Crystal2Day::Texture = Crystal2Day::Texture.new, source_rect : Crystal2Day::Rect? = nil)
       @source_rect = source_rect
       @texture = from_texture
@@ -45,9 +47,15 @@ module Crystal2Day
       @base_offset = sprite_template.base_offset.dup
       @source_rect = sprite_template.source_rect.dup
       @render_rect = sprite_template.render_rect.dup
+      @animation_templates = sprite_template.animation_templates.dup
       @center = sprite_template.center.dup
       @z = sprite_template.z
-      @animation = Animation.new(sprite_template.animation_template)
+      if anim_name = sprite_template.starting_animation
+        run_animation(anim_name)
+      else
+        # Just use an empty animation
+        clear_animation
+      end
       super(render_target)
     end
 
@@ -68,6 +76,14 @@ module Crystal2Day
       if @animation.has_changed # TODO: This might likely be discarded
         update_source_rect_by_frame(@animation.current_frame)
       end
+    end
+
+    def run_animation(name : String)
+      @animation = Animation.new(@animation_templates[name])
+    end
+
+    def clear_animation
+      @animation = Animation.new
     end
 
     def link_texture(texture : Crystal2Day::Texture)
