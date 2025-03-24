@@ -15,6 +15,16 @@ module Crystal2Day
     def initialize
     end
 
+    # 0 for off, 1 for syncing with every refresh, 2 for syncinc with every second refresh, -1 for adaptive
+    def vsync=(value : Number)
+      LibSDL.set_render_vsync(data, value.to_i32)
+    end
+
+    def vsync
+      LibSDL.get_render_vsync(data, out result)
+      return result
+    end
+
     def create!(from : Crystal2Day::Window)
       free
       @data = LibSDL.create_renderer(from.data, nil)
