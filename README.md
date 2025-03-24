@@ -133,6 +133,8 @@ end
 * Entity hook system
 * Optional scripting using Anyolite
 * Entities with flexible states and multiple script pages
+* Compounds of multiple sprites connected at joints
+* Sprite animations
 * Entity collision system
 * Simple game state
 * Resource management system
