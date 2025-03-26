@@ -34,8 +34,8 @@ module Crystal2Day
       @render_queue.add_static(obj, @z_offset + obj.z, offset)
     end
 
-    def unpin(obj : Crystal2Day::Drawable, offset : Coords = Crystal2Day.xy)
-      @render_queue.delete_static(obj, @z_offset + obj.z, offset)
+    def unpin(obj : Crystal2Day::Drawable)
+      @render_queue.delete_static(obj, @z_offset + obj.z)
     end
 
     def unpin_all

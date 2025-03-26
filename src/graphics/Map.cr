@@ -308,8 +308,8 @@ module Crystal2Day
       @layers[layer_number].pin(offset)
     end
 
-    def unpin_layer(layer_number : UInt8 = 0, offset : Coords = Crystal2Day.xy)
-      @layers[layer_number].unpin(offset)
+    def unpin_layer(layer_number : UInt8 = 0)
+      @layers[layer_number].unpin
     end
 
     def number_of_layers
@@ -328,9 +328,9 @@ module Crystal2Day
       end
     end
 
-    def unpin_all_layers(offset : Coords = Crystal2Day.xy)
+    def unpin_all_layers
       0.upto(number_of_layers - 1) do |i|
-        @layers[i].unpin(offset)
+        @layers[i].unpin
       end
     end
 

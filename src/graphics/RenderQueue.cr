@@ -36,8 +36,9 @@ module Crystal2Day
       @highest_static_z = z if z > @highest_static_z
     end
 
-    def delete_static(obj : Drawable, z : UInt8, offset : Coords)
-      @static_content[z].delete({obj, offset})
+    def delete_static(obj : Drawable, z : UInt8)
+      @static_content[z].delete(@static_content[z].find{|element| element[0] == obj})
+      # TODO: Maybe even check for the proper z coordinate instead of passing it?
       # TODO: Maybe update @highest_static_z
     end
 

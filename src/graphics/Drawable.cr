@@ -35,9 +35,9 @@ module Crystal2Day
       @render_target.pin(self, offset)
     end
 
-    def unpin(offset : Coords = Crystal2Day.xy)
+    def unpin
       @pinned = false
-      @render_target.unpin(self, offset)
+      @render_target.unpin(self)
     end
 
     abstract def draw_directly(offset : Coords)
