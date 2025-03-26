@@ -148,14 +148,13 @@ Currently none
 
 #### Open design questions:
 
-* How should the examples be structured?
 * What is the best way to install additional features?
 * Should all shards be installed, but their postinstall hooks only be triggered when desired?
-* What examples should be made?
 * Could entities be bound to maps?
 * How should tilesets with overlapping segments be implemented?
 * Is the current map streaming way really okay?
 * Should scenes contain a specific batch of variables for Anyolite only?
+* How should UI elements work?
 
 ### Version 1.0.0
 
@@ -168,12 +167,10 @@ Currently none
 #### Features
 
 * [ ] Game controller support
-* [ ] Entity parent-children system with memory management
 * [ ] Custom shape designs (colors, textures)
 * [ ] Quadriliteral shapes
 * [ ] Map entity group optimization using quadtrees
 * [ ] Loading scenes and related objects from JSON files
-* [ ] Also allow symbols as Crystal hash indices
 * [ ] Particle generator
 * [ ] Hitshapes and hurtshapes
 * [ ] Bytecode loading
