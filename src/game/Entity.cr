@@ -263,6 +263,10 @@ module Crystal2Day
       @state[index]
     end
 
+    def get_initial_param
+      get_state(INITIAL_PARAM_NAME)
+    end
+
     def set_state(index : String, value)
       {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
         @state[index] = Crystal2Day::Interpreter.generate_ref(value)
