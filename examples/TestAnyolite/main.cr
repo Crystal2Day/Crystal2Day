@@ -69,14 +69,13 @@ class CustomScene < CD::Scene
     map.layers[1].z = 4
     map.pin_all_layers
 
-    texture_bg = CD.rm.load_texture("ExampleSky.png")
-    bg = CD::Sprite.new
-    bg.link_texture(texture_bg)
-    bg.base_offset = CD.xy(-100, -100)
-    bg.parallax = CD.xy(0.1, 0.1)
-    bg.render_rect = CD::Rect.new(width: 2000, height: 2000)
-    bg.z = 1
-    bg.pin
+    # TODO: Put this in a scene graph
+    bg_sprite_template = CD::SpriteTemplate.new
+    bg_sprite_template.texture_filename = "ExampleSky.png"
+    bg_sprite_template.z = 1
+    bg_sprite_template.render_rect = CD::Rect.new(width: 2000, height: 2000)
+    bg_sprite = add_sprite("Background", template: bg_sprite_template, position: CD.xy(-100, -100))
+    bg_sprite.parallax = CD.xy(0.1, 0.1)
 
     ui_camera = CD::Camera.new
     ui_camera.z = 4

@@ -10,6 +10,7 @@ module Crystal2Day
     DRAW_GROUP_INITIAL_CAPACITY = 8
     MAPS_INITIAL_CAPACITY = 8
     UIS_INITIAL_CAPACITY = 8
+    SPRITES_INITIAL_CAPACITY = 256
 
     property use_own_draw_implementation : Bool = false
 
@@ -21,6 +22,7 @@ module Crystal2Day
 
     getter maps : Hash(String, Map) = Hash(String, Map).new(initial_capacity: MAPS_INITIAL_CAPACITY)
     getter uis : Hash(String, UI) = Hash(String, UI).new(initial_capacity: UIS_INITIAL_CAPACITY)
+    getter sprites : Hash(String, Sprite) = Hash(String, Sprite).new(initial_capacity: SPRITES_INITIAL_CAPACITY)
 
     getter collision_matrix : CollisionMatrix = CollisionMatrix.new
 
@@ -69,6 +71,7 @@ module Crystal2Day
       # TODO: Maybe rearrange the order if necessary
     
       @maps.each_value {|map| map.update}
+      @sprites.each_value {|sprite| sprite.update}
 
       update
 
@@ -209,6 +212,28 @@ module Crystal2Day
       @uis[name] = new_ui
 
       return new_ui
+    end
+
+    def add_sprite(name : String, template : Crystal2Day::SpriteTemplate, position : Crystal2Day::Coords = Crystal2Day.xy)
+      if @sprites[name]?
+        Crystal2Day.warning "Already existing sprite with name '#{name}' will be unpinned and overwritten"
+        @sprites[name].unpin
+      end
+
+      new_sprite = Sprite.new(template)
+      new_sprite.pin(position)
+      @sprites[name] = new_sprite
+
+      return new_sprite
+    end
+
+    def delete_sprite(name : String)
+      if !@sprites[name]?
+        Crystal2Day.warning "No existing sprite with '#{name}' found"
+      else
+        @sprites[name].unpin
+        @sprites.delete(name)
+      end
     end
 
     def init_imgui

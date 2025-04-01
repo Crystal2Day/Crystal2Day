@@ -16,6 +16,9 @@ module Crystal2Day
     property center : Crystal2Day::Coords = Crystal2Day.xy(0.5, 0.5)  # NOTE: This one is too general to be removed
     property z : UInt8 = 0
     # NOTE: All other properties were removed for now, but maybe they can be added for singular sprites again somewhere else
+
+    def initialize
+    end
   end
 
   class Sprite < Crystal2Day::Drawable

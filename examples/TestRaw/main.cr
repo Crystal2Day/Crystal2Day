@@ -11,14 +11,12 @@ class CustomScene < CD::Scene
   def init
     Crystal2Day.custom_loading_path = "examples/TestRaw"
 
-    texture_bg = CD.rm.load_texture("ExampleSky.png")
-    bg = CD::Sprite.new
-    bg.link_texture(texture_bg)
-    bg.position = CD.xy(-100, -100)
-    bg.parallax = CD.xy(0.1, 0.1)
-    bg.render_rect = CD::Rect.new(width: 2000, height: 2000)
-    bg.z = 1
-    bg.pin
+    bg_sprite_template = CD::SpriteTemplate.new
+    bg_sprite_template.texture_filename = "ExampleSky.png"
+    bg_sprite_template.z = 1
+    bg_sprite_template.render_rect = CD::Rect.new(width: 2000, height: 2000)
+    bg_sprite = add_sprite("Background", template: bg_sprite_template, position: CD.xy(-100, -100))
+    bg_sprite.parallax = CD.xy(0.1, 0.1)
   end
 
   def update
