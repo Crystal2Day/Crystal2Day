@@ -8,7 +8,7 @@ module Crystal2Day
     @[JSON::Field(key: "texture")]
     property texture_filename : String = ""
 
-    property base_offset : Crystal2Day::Coords = Crystal2Day.xy  # TODO: Rename to offset
+    property base_offset : Crystal2Day::Coords = Crystal2Day.xy  # TODO: Should this be scaled with the render rect proportions like center or be absolute?
     property source_rect : Crystal2Day::Rect?
     property render_rect : Crystal2Day::Rect?
     property animation_templates : Hash(String, Crystal2Day::AnimationTemplate) = Hash(String, Crystal2Day::AnimationTemplate).new
@@ -91,6 +91,9 @@ module Crystal2Day
     end
 
     def determine_unscaled_render_rect(offset : Coords, ignore_camera_shift : Bool = false)
+      # TODO: This could be a more flexible variant, but this has yet to be decided (including its sign)
+      # final_source_rect = (source_rect = @source_rect) ? source_rect.data : @texture.raw_boundary_rect
+      # scaled_offset = Coords.new(@base_offset.x * final_source_rect.w, @base_offset.y * final_source_rect.h)
       final_offset = @base_offset + (ignore_camera_shift ? Crystal2Day.xy : @render_target.parallax_center + (@render_target.renderer.position_shift - @render_target.parallax_center).scale(@parallax)) + offset
       unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       return unscaled_render_rect

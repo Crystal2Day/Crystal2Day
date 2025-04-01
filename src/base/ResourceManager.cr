@@ -48,6 +48,8 @@ module Crystal2Day
     add_resource_type("music", Music, MUSICS_INITIAL_CAPACITY, plural: "")
     add_resource_type("font", Font, FONTS_INITIAL_CAPACITY, additional_init_args: [", size : Number = 16", ", size"])
 
+    # TODO: Maybe add sprite templates here
+
     def clear
       @textures.clear
       @sounds.clear
