@@ -34,6 +34,7 @@ module Crystal2Day
     getter hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     getter hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
+    # TODO: Remove this and use resource manager instead
     getter sprite_templates = Hash(String, Crystal2Day::SpriteTemplate).new
 
     @compound : Crystal2Day::Part? = nil
