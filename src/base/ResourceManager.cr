@@ -2,17 +2,22 @@
 
 module Crystal2Day
   class ResourceManager
-    macro add_resource_type(name, resource_class, initial_capacity, additional_arg = nil, additional_init_args = ["", ""], plural = "s")
+    macro add_resource_type(name, resource_class, initial_capacity, additional_arg = nil, additional_init_args = ["", ""], plural = "s", load_from_json = false)
       @{{(name + plural).id}} = Hash(String, Crystal2Day::{{resource_class}}).new(initial_capacity: {{initial_capacity}})
 
       def load_{{name.id}}(filename : String, additional_tag : String = ""{{additional_init_args[0].id}})
         unless @{{(name + plural).id}}[filename + additional_tag]?
-          {% if additional_arg %}
-            {{name.id}} = Crystal2Day::{{resource_class}}.new({{additional_arg}})
+          {% if load_from_json %}
+            # NOTE: Currently no additional_arg is needed here - change this if needed
+            {{name.id}} = Crystal2Day::{{resource_class}}.from_json_file(filename{{additional_init_args[1].id}})
           {% else %}
-            {{name.id}} = Crystal2Day::{{resource_class}}.new
+            {% if additional_arg %}
+              {{name.id}} = Crystal2Day::{{resource_class}}.new({{additional_arg}})
+            {% else %}            
+              {{name.id}} = Crystal2Day::{{resource_class}}.new
+            {% end %}
+            {{name.id}}.load_from_file!(filename{{additional_init_args[1].id}})
           {% end %}
-          {{name.id}}.load_from_file!(filename{{additional_init_args[1].id}})
           @{{(name + plural).id}}[filename + additional_tag] = {{name.id}}
         end
 
@@ -40,6 +45,7 @@ module Crystal2Day
     SOUNDS_INITIAL_CAPACITY = 256
     MUSICS_INITIAL_CAPACITY = 256
     FONTS_INITIAL_CAPACITY = 8
+    SPRITE_TEMPLATES_INITIAL_CAPACITY = 256
     
     property render_target : Crystal2Day::RenderTarget? = nil
 
@@ -47,14 +53,14 @@ module Crystal2Day
     add_resource_type("sound", Sound, SOUNDS_INITIAL_CAPACITY)
     add_resource_type("music", Music, MUSICS_INITIAL_CAPACITY, plural: "")
     add_resource_type("font", Font, FONTS_INITIAL_CAPACITY, additional_init_args: [", size : Number = 16", ", size"])
-
-    # TODO: Maybe add sprite templates here
+    add_resource_type("sprite_template", SpriteTemplate, SPRITE_TEMPLATES_INITIAL_CAPACITY, load_from_json: true)
 
     def clear
       @textures.clear
       @sounds.clear
       @music.clear
       @fonts.clear
+      @sprite_templates.clear
     end
 
     def initialize

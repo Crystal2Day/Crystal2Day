@@ -1,0 +1,5 @@
+{
+  "texture": "ExampleSky.png",
+  "z": 1,
+  "render_rect": {"width": 2000, "height": 2000}
+}
