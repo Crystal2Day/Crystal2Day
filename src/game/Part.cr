@@ -197,7 +197,7 @@ module Crystal2Day
     end
 
     def draw(offset : Coords = Crystal2Day.xy)
-      Crystal2Day.with_z_offset(@z) do
+      @sprite.render_target.with_z_offset(@z) do
         @sprite.draw(offset)
 
         x_rot = Math.cos(@sprite.flipped_angle / 180.0 * Math::PI)

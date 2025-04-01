@@ -198,27 +198,22 @@ module Crystal2Day
     @@current_window = previous_window
   end
 
-  def self.with_z_offset(z_offset : Number)
-    if win = @@current_window
-      win.with_z_offset(z_offset) do
-        yield nil
-      end
+  # TODO: Should these be deprecated?
+  def self.with_z_offset(z_offset : Number, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+    render_target.with_z_offset(z_offset) do
+      yield nil
     end
   end
 
-  def self.with_view(view : Crystal2Day::View, z_offset : Number = 0u8)
-    if win = @@current_window
-      win.with_view(view, z_offset) do
-        yield nil
-      end
+  def self.with_view(view : Crystal2Day::View, z_offset : Number = 0u8, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+    render_target.with_view(view, z_offset) do
+      yield nil
     end
   end
 
-  def self.with_pinned_view(view : Crystal2Day::View, z_offset : Number = 0u8)
-    if win = @@current_window
-      win.with_pinned_view(view, z_offset) do
-        yield nil
-      end
+  def self.with_pinned_view(view : Crystal2Day::View, z_offset : Number = 0u8, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+    render_target.with_pinned_view(view, z_offset) do
+      yield nil
     end
   end
 
@@ -234,12 +229,8 @@ module Crystal2Day
     return nil
   end
 
-  def unpin_all
-    if window = @@current_window
-      window.unpin_all
-    else
-      Crystal2Day.error "Could not unpin from closed or invalid window"
-    end
+  def unpin_all(render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+    render_target.unpin_all
   end
 
   def self.quit

@@ -354,7 +354,7 @@ module Crystal2Day
 
     # TODO: Is there any way to enable pinning this?
     def draw(offset : Coords = Crystal2Day.xy)
-      Crystal2Day.with_z_offset(@z) do
+      @render_target.with_z_offset(@z) do
         # NOTE: A compound is required to draw anything
         if part = @compound
           part.draw(@position + offset)

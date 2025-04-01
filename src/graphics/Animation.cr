@@ -14,7 +14,7 @@ module Crystal2Day
     @[JSON::Field(ignore: true)]
     property actual_loop_start_frame : UInt16 = 0u16
 
-    def initialize(@start_frame : UInt16 = 0u16, @loop_end_frame : UInt16 = 0u16, loop_start_frame : UInt16? = nil, @repeat_times : Int32 = -1, @frame_delay : UInt32 = 0)
+    def initialize(@start_frame : UInt16 = 0u16, @loop_end_frame : UInt16 = 0u16, loop_start_frame : UInt16? = nil, @repeat_times : Int32 = -1, @frame_delay : UInt32 = 0, @return_to_start_after_finishing : Bool = true)
       @actual_loop_start_frame = @loop_start_frame ? @loop_start_frame.not_nil! : @start_frame
     end
 
