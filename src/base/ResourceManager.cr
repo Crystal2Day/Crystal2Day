@@ -64,7 +64,7 @@ module Crystal2Day
     add_resource_type("sprite_template", SpriteTemplate, SPRITE_TEMPLATES_INITIAL_CAPACITY, load_from_json: true)
 
     def load_sprite_templates_from_file(filename : String)
-      Hash(String, CD::SpriteTemplate).from_json_file("SpriteTemplates.json").each do |name, value|
+      Hash(String, Crystal2Day::SpriteTemplate).from_json_file("SpriteTemplates.json").each do |name, value|
         add_sprite_template(name, value)
       end
     end
