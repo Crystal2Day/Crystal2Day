@@ -1,0 +1,21 @@
+{
+  "ExampleSky": {
+    "texture": "ExampleSky.png",
+    "z": 1,
+    "render_rect": {"width": 2000, "height": 2000}
+  },
+  "ExampleSprite": {
+    "texture": "ExampleSprite.png",
+    "source_rect": {"width": 50, "height": 50},
+    "base_offset": {"x": -25, "y": -25},
+    "z": 3,
+    "animation_templates": {
+      "Main": {
+        "start_frame": 1,
+        "loop_end_frame": 2,
+        "frame_delay": 10
+      }
+    },
+    "starting_animation": "Main"
+  }
+}

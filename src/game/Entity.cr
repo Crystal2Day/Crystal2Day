@@ -34,9 +34,6 @@ module Crystal2Day
     getter hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     getter hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
-    # TODO: Remove this and use resource manager instead
-    getter sprite_templates = Hash(String, Crystal2Day::SpriteTemplate).new
-
     @compound : Crystal2Day::Part? = nil
 
     getter type_name : String = Crystal2Day::EntityType::DEFAULT_NAME
@@ -66,9 +63,6 @@ module Crystal2Day
       entity_type.transfer_coroutine_templates.each do |name, template|
         add_hook_from_template(name, template)
       end
-
-      # TODO: Duplicate this?
-      @sprite_templates = entity_type.transfer_sprite_templates
 
       if compound_template = entity_type.transfer_compound
         @compound = Crystal2Day::Part.new(compound_template, self, @render_target)

@@ -62,7 +62,7 @@ module Crystal2Day
     def initialize(template : Crystal2Day::PartTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       @z = template.z # NOTE: This is additional to the sprite z coordinate
 
-      @sprite = Crystal2Day::Sprite.new(entity.sprite_templates[template.sprite], render_target)
+      @sprite = Crystal2Day::Sprite.new(render_target.resource_manager.load_sprite_template(template.sprite), render_target)
 
       @sprite.angle = template.angle
       if cen = template.center

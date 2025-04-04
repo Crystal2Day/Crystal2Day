@@ -58,10 +58,12 @@ class CustomScene < CD::Scene
   def init
     init_imgui if CRYSTAL2DAY_CONFIGS_IMGUI
 
-    Crystal2Day.custom_loading_path = "examples/TestAnyolite"
+    CD.custom_loading_path = "examples/TestAnyolite"
 
     tileset = CD::Tileset.new
     tileset.load_from_tiled_file!("ExampleTileset.tsx")
+
+    CD.rm.load_sprite_templates_from_file("SpriteTemplates.json")
     
     map = add_map("Map1")
     map.stream_from_file!("ExampleWorld.json", tileset)
@@ -70,7 +72,7 @@ class CustomScene < CD::Scene
     map.pin_all_layers
 
     # TODO: Put this in a backdrop
-    bg_sprite = add_sprite("Background", template: CD.rm.load_sprite_template("ExampleSky.json"), position: CD.xy(-100, -100))
+    bg_sprite = add_sprite("Background", template: CD.rm.get_sprite_template("ExampleSky"), position: CD.xy(-100, -100))
     bg_sprite.parallax = CD.xy(0.1, 0.1)
 
     ui_camera = CD::Camera.new

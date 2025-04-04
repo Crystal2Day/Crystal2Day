@@ -90,10 +90,12 @@ end
 
 class CustomScene < CD::Scene
   def init
-    Crystal2Day.custom_loading_path = "examples/SimpleTileAdventure"
+    CD.custom_loading_path = "examples/SimpleTileAdventure"
+
+    CD.rm.load_sprite_templates_from_file("SpriteTemplates.json")
 
     # Physics steps need to be called manually, as we have no true velocities in this scenario
-    Crystal2Day.number_of_physics_steps = 1
+    CD.number_of_physics_steps = 1
 
     tileset = CD::Tileset.new
     tileset.load_from_tiled_file!("ExampleTileset.tsx")

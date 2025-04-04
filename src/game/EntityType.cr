@@ -11,7 +11,6 @@ module Crystal2Day
     property overwrite_default_state : Bool = false
     property overwrite_options : Bool = false
     property overwrite_coroutine_templates : Bool = false
-    property overwrite_sprite_templates : Bool = false
     property overwrite_bounding_boxes : Bool = false
     property overwrite_map_boxes : Bool = false
     property overwrite_shapes : Bool = false
@@ -32,7 +31,6 @@ module Crystal2Day
 
     @options = Hash(String, Int64).new
 
-    @sprite_templates = Hash(String, Crystal2Day::SpriteTemplate).new
     @bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     @map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     @shapes = Hash(String, Crystal2Day::CollisionShape).new
@@ -82,10 +80,6 @@ module Crystal2Day
           end
         when "compound"
           @compound = Crystal2Day::PartTemplate.from_json(pull.read_raw)
-        when "sprite_templates"
-          pull.read_object do |sprite_key|
-            add_sprite_template_from_raw_json(name: sprite_key, raw_json: pull.read_raw)
-          end
         when "coroutine_templates"
           pull.read_object do |coroutine_key|
             # TODO: Cache loaded files, similar to textures
@@ -172,16 +166,6 @@ module Crystal2Day
       @coroutine_templates[name] = template
     end
 
-    # TODO: Decide whether to access sprites by a key or not (same for shapes)
-
-    def add_sprite_template(name : String, sprite_template : Crystal2Day::SpriteTemplate)
-      @sprite_templates[name] = sprite_template
-    end
-
-    def add_sprite_template_from_raw_json(name : String, raw_json : String)
-      @sprite_templates[name] = Crystal2Day::SpriteTemplate.from_json(raw_json)
-    end
-
     def add_collision_box(name : String,collision_box : Crystal2Day::CollisionShapeBox)
       @bounding_boxes[name] = collision_box
     end
@@ -230,18 +214,6 @@ module Crystal2Day
         end
       else
         @coroutine_templates
-      end
-    end
-
-    def transfer_sprite_templates
-      unless @based_on.entity_type.empty?
-        if @based_on.overwrite_sprite_templates
-          @sprite_templates
-        else
-          Crystal2Day.database.get_entity_type(@based_on.entity_type).transfer_sprite_templates.merge(@sprite_templates)
-        end
-      else
-        @sprite_templates
       end
     end
 

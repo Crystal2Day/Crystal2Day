@@ -9,7 +9,9 @@ class CustomScene < CD::Scene
   property dummy : CD::Entity
 
   def initialize
-    Crystal2Day.custom_loading_path = "examples/TestCompound"
+    CD.custom_loading_path = "examples/TestCompound"
+
+    CD.rm.load_sprite_templates_from_file("SpriteTemplates.json")
 
     @dummy = CD::Entity.new(CD::EntityType.from_json_file("Dummy.json"))
 

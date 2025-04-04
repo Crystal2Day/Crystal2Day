@@ -32,6 +32,14 @@ module Crystal2Day
         @{{(name + plural).id}}[tag]
       end
 
+      def get_{{name.id}}(tag : String)
+        if @{{(name + plural).id}}[tag]?
+          return @{{(name + plural).id}}[tag]
+        else
+          Crystal2Day.error("{{name.id}} with tag #{tag} was not loaded.")
+        end
+      end
+
       def unload_{{name.id}}(filename : String, additional_tag : String = "")
         @{{(name + plural).id}}[filename + additional_tag].delete if @{{(name + plural).id}}[filename + additional_tag]?
       end
@@ -54,6 +62,12 @@ module Crystal2Day
     add_resource_type("music", Music, MUSICS_INITIAL_CAPACITY, plural: "")
     add_resource_type("font", Font, FONTS_INITIAL_CAPACITY, additional_init_args: [", size : Number = 16", ", size"])
     add_resource_type("sprite_template", SpriteTemplate, SPRITE_TEMPLATES_INITIAL_CAPACITY, load_from_json: true)
+
+    def load_sprite_templates_from_file(filename : String)
+      Hash(String, CD::SpriteTemplate).from_json_file("SpriteTemplates.json").each do |name, value|
+        add_sprite_template(name, value)
+      end
+    end
 
     def clear
       @textures.clear
