@@ -3,6 +3,23 @@
 # You can add default state values and coroutines.
 
 module Crystal2Day
+  struct ConnectionUpdate
+    include JSON::Serializable
+
+    property path : Array(String)
+    property value : PartConnectionTemplate
+  end
+
+  struct CompoundUpdate
+    include JSON::Serializable
+
+    property added_connections = Array(ConnectionUpdate).new
+    property removed_connections = Array(Array(String)).new
+
+    def initialize
+    end
+  end
+
   struct EntityTypeBase
     include JSON::Serializable
     
@@ -37,7 +54,8 @@ module Crystal2Day
     @hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     @hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
-    getter compound : Crystal2Day::PartTemplate? = nil
+    @compound : Crystal2Day::PartTemplate? = nil
+    @compound_updates = CompoundUpdate.new
 
     @based_on : EntityTypeBase = EntityTypeBase.new
     
@@ -80,6 +98,8 @@ module Crystal2Day
           end
         when "compound"
           @compound = Crystal2Day::PartTemplate.from_json(pull.read_raw)
+        when "compound_updates"
+          @compound_updates = Crystal2Day::CompoundUpdate.from_json(pull.read_raw)
         when "coroutine_templates"
           pull.read_object do |coroutine_key|
             # TODO: Cache loaded files, similar to textures
@@ -292,12 +312,20 @@ module Crystal2Day
     def transfer_compound
       unless @based_on.entity_type.empty?
         if @based_on.overwrite_compound
-          @compound
+          base_compound = @compound
         else
-          Crystal2Day.database.get_entity_type(@based_on.entity_type).transfer_compound
+          base_compound = Crystal2Day.database.get_entity_type(@based_on.entity_type).transfer_compound
         end
       else
-        @compound
+        base_compound = @compound
+      end
+
+      if @compound_updates.removed_connections.empty? && @compound_updates.added_connections.empty?
+        return base_compound
+      elsif !base_compound
+        Crystal2Day.error("Could not add or remove connections to/from empty compound")
+      else
+        return PartTemplate.generate_modified(base_compound.not_nil!, @compound_updates)
       end
     end
   end

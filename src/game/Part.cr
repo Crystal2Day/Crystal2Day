@@ -5,6 +5,16 @@ module Crystal2Day
     property part : Crystal2Day::PartTemplate
     property joint : Crystal2Day::Coords
     property rigid : Bool = false
+
+    def dup
+      return_value = PartConnectionTemplate.new(part: @part.dup, joint: @joint.dup)
+      return_value.rigid = @rigid
+
+      return return_value
+    end
+
+    def initialize(@part : Crystal2Day::PartTemplate, @joint : Crystal2Day::Coords)
+    end
   end
 
   struct PartTemplate
@@ -24,6 +34,50 @@ module Crystal2Day
     property scale_y : Float32 = 1.0
 
     property connections = Hash(String, Crystal2Day::PartConnectionTemplate).new
+
+    def dup
+      return_value = PartTemplate.new(sprite: @sprite.dup)
+
+      return_value.z = @z
+      return_value.angle = @angle
+      return_value.center = @center.dup
+      return_value.parallax = @parallax.dup
+      return_value.flip_x = @flip_x
+      return_value.flip_y = @flip_y
+      return_value.scale_x = @scale_x
+      return_value.scale_y = @scale_y
+    
+      @connections.each do |name, connection|
+        return_value.connections[name] = connection.dup
+      end
+
+      return return_value
+    end
+
+    def self.generate_modified(base : PartTemplate, updates : CompoundUpdate)
+      new_copy = base.dup
+
+      updates.removed_connections.each do |connection|
+        current_part = new_copy
+        connection[0..-2].each do |path_iterator|
+          current_part = current_part.connections[path_iterator].part
+        end
+        current_part.connections.delete(connection[-1])
+      end
+
+      updates.added_connections.each do |connection|
+        current_part = new_copy
+        connection.path[0..-2].each do |path_iterator|
+          current_part = current_part.connections[path_iterator].part
+        end
+        current_part.connections[connection.path[-1]] = connection.value.dup
+      end
+
+      return new_copy
+    end
+
+    def initialize(@sprite : String)
+    end
   end
 
   class PartConnection
