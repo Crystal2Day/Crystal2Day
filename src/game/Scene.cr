@@ -11,6 +11,7 @@ module Crystal2Day
     MAPS_INITIAL_CAPACITY = 8
     UIS_INITIAL_CAPACITY = 8
     SPRITES_INITIAL_CAPACITY = 256
+    TEMP_ANIMATIONS_INITIAL_CAPACITY = 8
 
     property use_own_draw_implementation : Bool = false
 
@@ -23,6 +24,7 @@ module Crystal2Day
     getter maps : Hash(String, Map) = Hash(String, Map).new(initial_capacity: MAPS_INITIAL_CAPACITY)
     getter uis : Hash(String, UI) = Hash(String, UI).new(initial_capacity: UIS_INITIAL_CAPACITY)
     getter sprites : Hash(String, Sprite) = Hash(String, Sprite).new(initial_capacity: SPRITES_INITIAL_CAPACITY)
+    getter temp_animations : Array(Sprite) = Array(Sprite).new(initial_capacity: TEMP_ANIMATIONS_INITIAL_CAPACITY)
 
     getter collision_matrix : CollisionMatrix = CollisionMatrix.new
 
@@ -72,6 +74,11 @@ module Crystal2Day
     
       @maps.each_value {|map| map.update}
       @sprites.each_value {|sprite| sprite.update}
+
+      @temp_animations.reject! do |anim|
+        anim.update
+        anim.animation.finished
+      end
 
       update
 
@@ -147,6 +154,12 @@ module Crystal2Day
       @event_groups.clear
       @draw_groups.clear
       @entity_groups.clear
+      
+      @maps.clear
+      @uis.clear
+      @sprites.clear
+      @temp_animations.clear
+
       GC.collect
     end
 
@@ -234,6 +247,15 @@ module Crystal2Day
         @sprites[name].unpin
         @sprites.delete(name)
       end
+    end
+
+    def play_sprite_animation(sprite_template : Crystal2Day::SpriteTemplate, animation_name : String, position : Crystal2Day::Coords = Crystal2Day.xy)
+      new_animation = Sprite.new(sprite_template)
+      new_animation.pin(position)
+      new_animation.run_animation(animation_name)
+      @temp_animations.push(new_animation)
+
+      return new_animation
     end
 
     def init_imgui
