@@ -97,7 +97,7 @@ module Crystal2Day
       # TODO: This could be a more flexible variant, but this has yet to be decided (including its sign)
       # final_source_rect = (source_rect = @source_rect) ? source_rect.data : @texture.raw_boundary_rect
       # scaled_offset = Coords.new(@base_offset.x * final_source_rect.w, @base_offset.y * final_source_rect.h)
-      final_offset = @base_offset + (ignore_camera_shift ? Crystal2Day.xy : @render_target.parallax_center + (@render_target.renderer.position_shift - @render_target.parallax_center).scale(@parallax)) + offset
+      final_offset = Crystal2Day.xy(@base_offset.x * @scale_x, @base_offset.y * @scale_y) + (ignore_camera_shift ? Crystal2Day.xy : @render_target.parallax_center + (@render_target.renderer.position_shift - @render_target.parallax_center).scale(@parallax)) + offset
       unscaled_render_rect = (render_rect = @render_rect) ? (render_rect + final_offset).data : ((available_source_rect = @source_rect) ? (available_source_rect.unshifted + final_offset).data : @texture.raw_boundary_rect(shifted_by: final_offset))
       return unscaled_render_rect
     end
