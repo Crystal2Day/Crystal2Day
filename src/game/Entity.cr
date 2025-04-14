@@ -99,6 +99,14 @@ module Crystal2Day
       end
     end
 
+    def has_compound?
+      if @compound
+        return true
+      else
+        return false
+      end
+    end
+
     # TODO: Maybe allow args in some way?
     def call_proc(name : String)
       Crystal2Day.database.call_entity_proc(name, self)
