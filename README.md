@@ -144,7 +144,9 @@ end
 
 #### Urgent todo list
 
-Currently none
+* [ ] Add more font rendering options
+* [ ] Add way to preload other resources (textures, sounds, ...)
+* [ ] Add way to preload all files in a specific directory recursively
 
 #### Open design questions:
 
