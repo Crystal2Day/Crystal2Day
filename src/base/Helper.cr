@@ -23,14 +23,26 @@ module Crystal2DayHelper
       !!@data
     end
   end
+
+  PRELOADED_JSON_FILES = {} of String => String
+
+  # NOTE: This is still an early feature, so it might change completely in the future
+  macro preload_json_file(filename)
+    Crystal2DayHelper::PRELOADED_JSON_FILES[{{filename}}] = {{read_file(filename)}}
+  end
 end
 
 class Object
   def Object.from_json_file(filename : String)
     full_filename = Crystal2Day.convert_to_absolute_path(filename)
     result = uninitialized self
-    File.open(full_filename, "r") do |f|
-      result = self.from_json(f)
+    if Crystal2DayHelper::PRELOADED_JSON_FILES[filename]?
+      puts "Loading #{filename} from memory..."
+      result = self.from_json(Crystal2DayHelper::PRELOADED_JSON_FILES[filename])
+    else
+      File.open(full_filename, "r") do |f|
+        result = self.from_json(f)
+      end
     end
     return result
   end
