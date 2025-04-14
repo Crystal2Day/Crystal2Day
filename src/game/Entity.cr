@@ -34,7 +34,7 @@ module Crystal2Day
     getter hitshapes = Hash(String, Crystal2Day::CollisionShape).new
     getter hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
-    property compound : Crystal2Day::Part? = nil
+    setter compound : Crystal2Day::Part? = nil
 
     getter type_name : String = Crystal2Day::EntityType::DEFAULT_NAME
 
