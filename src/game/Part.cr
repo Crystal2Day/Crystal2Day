@@ -99,7 +99,7 @@ module Crystal2Day
     property z : UInt8 = 0
 
     # We only want one sprite which serves as the reference for transformations
-    getter sprite : Crystal2Day::Sprite
+    property sprite : Crystal2Day::Sprite
 
     getter bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     getter map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
