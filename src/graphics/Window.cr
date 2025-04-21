@@ -52,11 +52,11 @@ module Crystal2Day
     end
 
     def enable_fullscreen_stretching
-      LibSDL.set_render_logical_presentation(data, WINDOW_WIDTH, WINDOW_HEIGHT, LibSDL::RendererLogicalPresentation::STRETCH)
+      LibSDL.set_render_logical_presentation(renderer_data, WINDOW_WIDTH, WINDOW_HEIGHT, LibSDL::RendererLogicalPresentation::STRETCH)
     end
 
     def disable_fullscreen_stretching
-      LibSDL.set_render_logical_presentation(data, WINDOW_WIDTH, WINDOW_HEIGHT, LibSDL::RendererLogicalPresentation::DISABLED)
+      LibSDL.set_render_logical_presentation(renderer_data, WINDOW_WIDTH, WINDOW_HEIGHT, LibSDL::RendererLogicalPresentation::DISABLED)
     end
 
     def open?
