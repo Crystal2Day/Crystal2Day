@@ -55,5 +55,22 @@ module Crystal2Day
     def self.middle_button_down?
       LibSDLMacro.button_mask(LibSDL.get_mouse_state(nil, nil).to_i).to_u32 == BUTTON_MIDDLE
     end
+
+    def self.set_relative_mode(window : Crystal2Day::Window = Crystal2Day.current_window)
+      LibSDL.set_window_relative_mouse_mode(window.data, LibSDL::CBool.new(1))
+    end
+
+    def self.reset_relative_mode(window : Crystal2Day::Window = Crystal2Day.current_window)
+      LibSDL.set_window_relative_mouse_mode(window.data, LibSDL::CBool.new(0))
+    end
+
+    def self.set_window_rect(rect : Crystal2Day::Rect, window : Crystal2Day::Window = Crystal2Day.current_window)
+      rect_data = rect.int_data
+      LibSDL.set_window_mouse_rect(window.data, pointerof(rect_data))
+    end
+
+    def self.reset_window_rect(window : Crystal2Day::Window = Crystal2Day.current_window)
+      LibSDL.set_window_mouse_rect(window.data, nil)
+    end
   end
 end

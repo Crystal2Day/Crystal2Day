@@ -49,7 +49,15 @@ module Crystal2Day
       @fullscreen = value
       window_flags = @fullscreen ? LibSDL::WindowFlags::FULLSCREEN : LibSDL::WindowFlags::None
       LibSDL.set_window_fullscreen(data, window_flags)
-    end 
+    end
+
+    def enable_fullscreen_stretching
+      LibSDL.set_render_logical_presentation(data, WINDOW_WIDTH, WINDOW_HEIGHT, LibSDL::RendererLogicalPresentation::STRETCH)
+    end
+
+    def disable_fullscreen_stretching
+      LibSDL.set_render_logical_presentation(data, WINDOW_WIDTH, WINDOW_HEIGHT, LibSDL::RendererLogicalPresentation::DISABLED)
+    end
 
     def open?
       data?
