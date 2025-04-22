@@ -37,7 +37,6 @@ class Object
     full_filename = Crystal2Day.convert_to_absolute_path(filename)
     result = uninitialized self
     if Crystal2DayHelper::PRELOADED_JSON_FILES[filename]?
-      puts "Loading #{filename} from memory..."
       result = self.from_json(Crystal2DayHelper::PRELOADED_JSON_FILES[filename])
     else
       File.open(full_filename, "r") do |f|
