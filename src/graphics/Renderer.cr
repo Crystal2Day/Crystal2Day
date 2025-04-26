@@ -12,6 +12,8 @@ module Crystal2Day
     getter orig_clip_rect : Crystal2Day::Rect? = nil
     getter clip_rect : Crystal2Day::Rect? = nil
 
+    getter text_engine : Crystal2Day::TextEngine? = nil
+
     def initialize
     end
 
@@ -23,6 +25,7 @@ module Crystal2Day
       LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(window)
       @current_view = get_bound_view(window)
+      @text_engine = Crystal2Day::TextEngine.new(self)
     end
 
     # 0 for off, 1 for syncing with every refresh, 2 for syncinc with every second refresh, -1 for adaptive
@@ -43,6 +46,7 @@ module Crystal2Day
       LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(from)
       @current_view = get_bound_view(from)
+      @text_engine = Crystal2Day::TextEngine.new(self)
     end
 
     def create!(from : Crystal2Day::RenderSurface)
@@ -53,6 +57,7 @@ module Crystal2Day
       LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
       @original_view = get_bound_view(from)
       @current_view = get_bound_view(from)
+      @text_engine = Crystal2Day::TextEngine.new(self)
     end
 
     def get_bound_view(from : Crystal2Day::RenderTarget)
@@ -99,6 +104,11 @@ module Crystal2Day
     end
 
     def free
+      if @text_engine
+        @text_engine.not_nil!.free
+        @text_engine = nil
+      end
+
       if @data
         LibSDL.destroy_renderer(data)
         @data = nil

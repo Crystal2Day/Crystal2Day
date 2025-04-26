@@ -1,40 +1,37 @@
 # A wrapper around a font texture.
 # Use it to draw texts.
 
-# TODO: Rework this using the new SDL3 routines and add more options
-
 module Crystal2Day
   class Text < Crystal2Day::Drawable
-    @texture : Crystal2Day::Texture
+    Crystal2DayHelper.wrap_type(Pointer(LibSDL::TTFText))
 
-    getter text : String
     getter font : Crystal2Day::Font
     getter color : Crystal2Day::Color
 
-    property position : Crystal2Day::Coords = Crystal2Day.xy
-    property render_rect : Crystal2Day::Rect?
-    property angle : Float32 = 0.0f32
-    property center : Crystal2Day::Coords?
+    # TODO: Rendering rotated texts currently doesn't work, maybe reenable it somehow?
+    # TODO: Add more text options 
 
-    def initialize(@text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black)
-      @texture = Crystal2Day::Texture.new
-      super(@texture.render_target)
-      update!
+    property position : Crystal2Day::Coords
+
+    def initialize(text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black, @position : Crystal2Day::Coords = Crystal2Day.xy, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      super(render_target)
+      @data = LibSDL.ttf_create_text(render_target.renderer.text_engine.not_nil!.data, @font.data, text, text.bytesize)
+      render_target.renderer.text_engine.not_nil!.register_text(self)
+      self.color = color
     end
 
     def text=(new_value : String)
-      @text = new_value
-      update!
+      LibSDL.ttf_set_text_string(data, new_value, new_value.bytesize)
     end
 
     def font=(new_value : Crystal2Day::Font)
+      LibSDL.ttf_set_text_font(data, new_value.data)
       @font = new_value
-      update!
     end
 
     def color=(new_value : Crystal2Day::Color)
+      LibSDL.ttf_set_text_color(data, new_value.r, new_value.g, new_value.b, new_value.a)
       @color = new_value
-      update!
     end
 
     def size
@@ -42,20 +39,20 @@ module Crystal2Day
       Crystal2Day::Rect.new(@positon.x, @position.y, w, h)
     end
 
-    def update!
-      @texture.load_text_from_font!(@text, @font, color: @color)
+    def draw_directly(offset : Coords)
+      final_position = @position + @render_target.renderer.position_shift + offset
+      LibSDL.ttf_draw_renderer_text(data, final_position.x, final_position.y)
     end
 
-    def draw_directly(offset : Coords)
-      final_source_rect = @texture.raw_boundary_rect
-      final_render_rect = (render_rect = @render_rect) ? (render_rect + @position + @render_target.renderer.position_shift + offset).data : @texture.raw_boundary_rect(shifted_by: @position + @render_target.renderer.position_shift + offset)
-      flip_flag = LibSDL::FlipMode::NONE
-      if center = @center
-        final_center_point = center.data
-        LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, pointerof(final_center_point), flip_flag)
-      else
-        LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), @angle, nil, flip_flag)
+    def free
+      if @data
+        LibSDL.ttf_destroy_text(data)
+        @data = nil
       end
+    end
+
+    def finalize
+      free
     end
   end
 end

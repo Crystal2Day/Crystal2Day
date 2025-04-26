@@ -39,21 +39,6 @@ module Crystal2Day
       LibSDL.destroy_surface(loaded_surface)
     end
 
-    def load_text_from_font!(text : String, font : Crystal2Day::Font, color : Crystal2Day::Color = Crystal2Day::Color.black)
-      free
-
-      text_surface = LibSDL.ttf_render_text_solid_wrapped(font.data, text, text.size, color.data, 0)
-      Crystal2Day.error "Could not create texture from rendered text" unless text_surface
-
-      @data = LibSDL.create_texture_from_surface(renderer_data, text_surface)
-      Crystal2Day.error "Could not create texture from rendered text surface" unless @data
-
-      @width = text_surface.value.w
-      @height = text_surface.value.h
-
-      LibSDL.destroy_surface(text_surface)
-    end
-
     def raw_boundary_rect(shifted_by : Crystal2Day::Coords = Crystal2Day.xy)
       LibSDL::FRect.new(x: @offset.x + shifted_by.x, y: @offset.y + shifted_by.y, w: @width, h: @height)
     end
