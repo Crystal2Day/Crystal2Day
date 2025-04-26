@@ -1,6 +1,8 @@
 # A wrapper around a font texture.
 # Use it to draw texts.
 
+# TODO: Rework this using the new SDL3 routines and add more options
+
 module Crystal2Day
   class Text < Crystal2Day::Drawable
     @texture : Crystal2Day::Texture

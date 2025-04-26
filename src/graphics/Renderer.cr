@@ -15,6 +15,16 @@ module Crystal2Day
     def initialize
     end
 
+    def unsafe_create!(renderer : LibSDL::Renderer*, window : Crystal2Day::Window)
+      free
+      @data = renderer
+      LibSDL.get_render_clip_rect(data, out orig_clip_rect_data)
+      @orig_clip_rect = Crystal2Day::Rect.new(x: orig_clip_rect_data.x, y: orig_clip_rect_data.y, width: orig_clip_rect_data.w, height: orig_clip_rect_data.h)
+      LibSDL.set_render_draw_blend_mode(data, LibSDL::BlendMode::BLEND)
+      @original_view = get_bound_view(window)
+      @current_view = get_bound_view(window)
+    end
+
     # 0 for off, 1 for syncing with every refresh, 2 for syncinc with every second refresh, -1 for adaptive
     def vsync=(value : Number)
       LibSDL.set_render_vsync(data, value.to_i32)

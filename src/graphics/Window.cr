@@ -5,16 +5,20 @@ module Crystal2Day
   class Window < RenderTarget
     Crystal2DayHelper.wrap_type(Pointer(LibSDL::Window))
 
-    getter width : UInt32
-    getter height : UInt32
-    getter title : String
-    getter fullscreen : Bool
+    getter width : UInt32 = 0
+    getter height : UInt32 = 0
+    getter title : String = ""
+    getter fullscreen : Bool = false
 
     def initialize(title : String, w : Int, h : Int, x : Int = LibSDL::WINDOWPOS_UNDEFINED, y : Int = LibSDL::WINDOWPOS_UNDEFINED, fullscreen : Bool = false, set_as_current : Bool = true)
       window_flags = fullscreen ? LibSDL::WindowFlags::FULLSCREEN : LibSDL::WindowFlags::None
-      @data = LibSDL.create_window(title, w, h, window_flags)
-      
-      Crystal2Day.error "Could not create window with title \"#{title}\"" unless @data
+    
+      unless LibSDL.create_window_and_renderer(title, w, h, window_flags, out new_window_data, out new_renderer_data)
+        Crystal2Day.error "Could not create window with title \"#{title}\"" 
+      end
+
+      @data = new_window_data
+      @renderer.unsafe_create!(new_renderer_data, self)
 
       LibSDL.set_window_position(@data.not_nil!, x, y)
 
@@ -27,7 +31,7 @@ module Crystal2Day
       Crystal2Day.current_window = self if set_as_current
       Crystal2Day.register_window(self)
       
-      super()
+      super(use_custom_renderer: true)
     end
 
     def width=(value : Int)

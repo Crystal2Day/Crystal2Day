@@ -14,9 +14,11 @@ module Crystal2Day
 
     property background_color : Crystal2Day::Color = Crystal2Day::Color.white
 
-    def initialize
-      @renderer.create!(self)
-      Crystal2Day.error "Could not create renderer" unless @renderer.data?
+    def initialize(use_custom_renderer : Bool = false)
+      unless use_custom_renderer
+        @renderer.create!(self)
+        Crystal2Day.error "Could not create renderer" unless @renderer.data?
+      end
 
       @resource_manager.render_target = self
     end
