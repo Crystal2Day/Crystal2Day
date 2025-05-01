@@ -45,7 +45,7 @@ module Crystal2Day
       super(@texture.render_target)
     end
 
-    def initialize(sprite_template : Crystal2Day::SpriteTemplate, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+    def initialize(sprite_template : Crystal2Day::SpriteTemplate, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window, starting_animation : String? = nil)
       @texture = render_target.resource_manager.load_texture(sprite_template.texture_filename)
       @base_offset = sprite_template.base_offset.dup
       @source_rect = sprite_template.source_rect.dup
@@ -53,7 +53,9 @@ module Crystal2Day
       @animation_templates = sprite_template.animation_templates.dup
       @center = sprite_template.center.dup
       @z = sprite_template.z
-      if anim_name = sprite_template.starting_animation
+      if override_anim_name = starting_animation
+        run_animation(override_anim_name)
+      elsif anim_name = sprite_template.starting_animation
         run_animation(anim_name)
       else
         # Just use an empty animation

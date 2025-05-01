@@ -3,7 +3,7 @@ module Crystal2Day
     include JSON::Serializable
 
     property part : Crystal2Day::PartTemplate
-    property joint : Crystal2Day::Coords
+    property joint : Crystal2Day::Coords = Crystal2Day.xy
     property rigid : Bool = false
 
     def dup
@@ -32,6 +32,7 @@ module Crystal2Day
     property flip_y : Bool = false
     property scale_x : Float32 = 1.0
     property scale_y : Float32 = 1.0
+    property starting_animation : String? = nil
 
     property connections = Hash(String, Crystal2Day::PartConnectionTemplate).new
 
@@ -46,6 +47,7 @@ module Crystal2Day
       return_value.flip_y = @flip_y
       return_value.scale_x = @scale_x
       return_value.scale_y = @scale_y
+      return_value.starting_animation = @starting_animation.dup
     
       @connections.each do |name, connection|
         return_value.connections[name] = connection.dup
@@ -116,7 +118,7 @@ module Crystal2Day
     def initialize(template : Crystal2Day::PartTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       @z = template.z # NOTE: This is additional to the sprite z coordinate
 
-      @sprite = Crystal2Day::Sprite.new(render_target.resource_manager.load_sprite_template(template.sprite), render_target)
+      @sprite = Crystal2Day::Sprite.new(render_target.resource_manager.load_sprite_template(template.sprite), render_target, template.starting_animation)
 
       @sprite.angle = template.angle
       if cen = template.center
