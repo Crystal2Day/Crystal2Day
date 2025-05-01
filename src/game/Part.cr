@@ -33,6 +33,7 @@ module Crystal2Day
     property scale_x : Float32 = 1.0
     property scale_y : Float32 = 1.0
     property starting_animation : String? = nil
+    property reset_base_offset : Bool = false
 
     property connections = Hash(String, Crystal2Day::PartConnectionTemplate).new
 
@@ -48,6 +49,7 @@ module Crystal2Day
       return_value.scale_x = @scale_x
       return_value.scale_y = @scale_y
       return_value.starting_animation = @starting_animation.dup
+      return_value.reset_base_offset = @reset_base_offset
     
       @connections.each do |name, connection|
         return_value.connections[name] = connection.dup
@@ -119,6 +121,7 @@ module Crystal2Day
       @z = template.z # NOTE: This is additional to the sprite z coordinate
 
       @sprite = Crystal2Day::Sprite.new(render_target.resource_manager.load_sprite_template(template.sprite), render_target, template.starting_animation)
+      @sprite.base_offset = Crystal2Day.xy if template.reset_base_offset
 
       @sprite.angle = template.angle
       if cen = template.center
