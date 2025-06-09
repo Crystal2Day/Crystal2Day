@@ -116,7 +116,7 @@ module Crystal2Day
     def initialize(@sprite : Crystal2Day::Sprite)
     end
 
-    # TODO: Remove entity from constructor and use resource manager for sprite templates instead
+    # TODO: Remove entity from constructor?
     def initialize(template : Crystal2Day::PartTemplate, entity : Crystal2Day::Entity, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       @z = template.z # NOTE: This is additional to the sprite z coordinate
 

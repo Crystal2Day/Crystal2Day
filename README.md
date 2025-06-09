@@ -144,9 +144,7 @@ end
 
 #### Urgent todo list
 
-* [ ] Add more font rendering options
-* [ ] Add way to preload other resources (textures, sounds, ...)
-* [ ] Add way to preload all files in a specific directory recursively
+Currently nothing
 
 #### Open design questions:
 
@@ -157,6 +155,7 @@ end
 * Is the current map streaming way really okay?
 * Should scenes contain a specific batch of variables for Anyolite only?
 * How should UI elements work?
+* How should parts and shapes be connected?
 
 ### Version 1.0.0
 
@@ -176,8 +175,10 @@ end
 * [ ] Particle generator
 * [ ] Hitshapes and hurtshapes
 * [ ] Bytecode loading
-* [ ] Adding static JSON resources at compiletime
 * [ ] Data serializing
 * [ ] Data obfuscation
 * [ ] Animation phase shift patterns
 * [ ] Various optimizations
+* [ ] Free default font
+* [ ] More font rendering options
+* [ ] (Recursive) resource preloading

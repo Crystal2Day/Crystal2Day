@@ -71,7 +71,6 @@ class CustomScene < CD::Scene
     map.layers[1].z = 4
     map.pin_all_layers
 
-    # TODO: Put this in a backdrop
     bg_sprite = add_sprite("Background", template: CD.rm.get_sprite_template("ExampleSky"), position: CD.xy(-100, -100))
     bg_sprite.parallax = CD.xy(0.1, 0.1)
 

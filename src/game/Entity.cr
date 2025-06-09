@@ -27,7 +27,6 @@ module Crystal2Day
 
     @options = Hash(String, Int64).new
 
-    # TODO: Remove obsolete ones
     getter bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     getter map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
     getter shapes = Hash(String, Crystal2Day::CollisionShape).new
