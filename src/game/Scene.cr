@@ -33,6 +33,7 @@ module Crystal2Day
     property pause_auto_update : Bool = false
     property pause_auto_draw : Bool = false
     property pause_auto_draw_ui : Bool = false
+    property pause_auto_draw_queue : Bool = false
     property pause_auto_handle_event : Bool = false
     
     def handle_event(event)
@@ -148,7 +149,9 @@ module Crystal2Day
       elsif win = Crystal2Day.current_window_if_any
         win.clear
         call_inner_draw_block
-        win.render
+        unless @pause_auto_draw_queue
+          win.render
+        end
         render_imgui
         win.display
       end
