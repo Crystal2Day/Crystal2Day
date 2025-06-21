@@ -30,6 +30,11 @@ module Crystal2Day
 
     getter using_imgui : Bool = false
 
+    property pause_auto_update : Bool = false
+    property pause_auto_draw : Bool = false
+    property pause_auto_draw_ui : Bool = false
+    property pause_auto_handle_event : Bool = false
+    
     def handle_event(event)
     end
 
@@ -65,28 +70,33 @@ module Crystal2Day
 
         handle_event(event.not_nil!)
 
-        @event_groups.each {|member| member.handle_event(event.not_nil!)}
+        unless @pause_auto_handle_event
+          @event_groups.each {|member| member.handle_event(event.not_nil!)}
+        end
       end
     end
 
     def main_update
-      # TODO: Maybe rearrange the order if necessary
-    
-      @maps.each_value {|map| map.update}
-      @sprites.each_value {|sprite| sprite.update}
+      unless @pause_auto_update
+        # TODO: Maybe rearrange the order if necessary
+        @maps.each_value {|map| map.update}
+        @sprites.each_value {|sprite| sprite.update}
 
-      @temp_animations.reject! do |anim|
-        anim.update
-        anim.animation.finished
+        @temp_animations.reject! do |anim|
+          anim.update
+          anim.animation.finished
+        end
       end
 
       update
 
-      @update_groups.each {|member| member.update}
+      unless @pause_auto_update
+        @update_groups.each {|member| member.update}
 
-      update_physics
+        update_physics
 
-      @update_groups.each {|member| member.post_update}
+        @update_groups.each {|member| member.post_update}
+      end
 
       post_update
     end
@@ -165,8 +175,12 @@ module Crystal2Day
 
     def call_inner_draw_block
       draw
-      @draw_groups.each {|member| member.draw}
-      @uis.each_value {|member| member.draw}
+      unless @pause_auto_draw
+        @draw_groups.each {|member| member.draw}
+      end
+      unless @pause_auto_draw_ui
+        @uis.each_value {|member| member.draw}
+      end
       imgui_frame if @using_imgui
       imgui_draw if @using_imgui
     end
