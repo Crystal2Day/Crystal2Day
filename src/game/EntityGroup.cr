@@ -7,6 +7,12 @@ module Crystal2Day
     BASE_INITIAL_CAPACITY = 128u32
 
     getter members : Array(Crystal2Day::Entity)
+
+    property skip_physics : Bool = false
+    property skip_updates : Bool = false
+    property skip_draws : Bool = false
+    property skip_events : Bool = false
+    property skip_collisions : Bool = false
     
     {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
       @refs : Array(Anyolite::RbRef) = [] of Anyolite::RbRef
@@ -67,6 +73,8 @@ module Crystal2Day
     end
 
     def update
+      return if @skip_updates
+
       0.upto(@members.size - 1) do |index|
         {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
           @members[index].update(@refs[index])
@@ -77,6 +85,8 @@ module Crystal2Day
     end
 
     def handle_event(event : Crystal2Day::Event)
+      return if @skip_events
+
       Crystal2Day.last_event = event
       0.upto(@members.size - 1) do |index|
         {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
@@ -89,6 +99,8 @@ module Crystal2Day
     end
 
     def update_physics(time_step : Float32)
+      return if @skip_physics
+
       0.upto(@members.size - 1) do |index|
         {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
           @members[index].update_physics(@refs[index], time_step)
@@ -121,6 +133,8 @@ module Crystal2Day
     end
 
     def check_for_collision_with(other : EntityGroup | Map)
+      return if @skip_collisions
+
       if other.is_a?(EntityGroup)
         if other == self
           0.upto(@members.size - 1) do |index_1|
@@ -173,6 +187,8 @@ module Crystal2Day
     end
 
     def draw(offset : Coords = Crystal2Day.xy)
+      return if @skip_draws
+
       @members.each do |entity|
         entity.draw(offset)
       end
