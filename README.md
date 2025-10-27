@@ -148,7 +148,6 @@ end
 #### Urgent todo list
 
 * [ ] Require specific SDL versions
-* [ ] Complete redesign of audio tracks to accomodate for SDL_mixer 3.0+
 
 #### Open design questions:
 

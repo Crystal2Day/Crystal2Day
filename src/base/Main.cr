@@ -3,8 +3,6 @@
 # You will most likely need this for running your game.
 
 module Crystal2Day
-  MAX_VOLUME = LibSDL::MIX_MAX_VOLUME
-
   class_property scene : Crystal2Day::Scene | Nil
   class_property next_scene : Crystal2Day::Scene | Bool | Nil
   class_property limiter : Crystal2Day::Limiter = Crystal2Day::Limiter.new
@@ -143,16 +141,22 @@ module Crystal2Day
     if LibSDL.init(LibSDL::InitFlags::VIDEO | LibSDL::InitFlags::AUDIO) == 0
       Crystal2Day.error "Could not initialize SDL"
     end
+
+    if LibSDL.mix_init() == 0
+      Crystal2Day.error "Could not initialize SDL_mixer"
+    end
     
     if LibSDL.ttf_init == 0
       Crystal2Day.error "Could not initialize SDL_ttf"
     end
 
-    spec = LibSDL::AudioSpec.new(freq: LibSDL::MIX_DEFAULT_FREQUENCY, format: LibSDL::MIX_DEFAULT_FORMAT, channels: LibSDL::MIX_DEFAULT_CHANNELS)
+    new_mixer = LibSDL.mix_create_mixer_device(LibSDL::AUDIO_DEVICE_DEFAULT_PLAYBACK, nil)
 
-    if LibSDL.mix_open_audio(0, pointerof(spec)) == 0
-      Crystal2Day.error "Could not initialize SDL_mixer"
+    unless new_mixer
+      Crystal2Day.error "Could not initialize SDL_mixer device"
     end
+
+    Crystal2Day.sound_board.create_channels(new_mixer)
 
     @@debug = true if debug
   end
