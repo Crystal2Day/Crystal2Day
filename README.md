@@ -145,7 +145,13 @@ end
 #### Urgent todo list
 
 * [ ] Add simple way to install SDL libraries
-* [ ] Fix uses SDL versions
+* [ ] Require specific SDL versions
+
+### Version 0.2.0
+
+#### Breaking changes
+
+* [ ] Complete redesign of audio tracks to accomodate for SDL_mixer 3.0+
 
 #### Open design questions:
 
