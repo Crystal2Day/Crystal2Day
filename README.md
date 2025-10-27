@@ -73,6 +73,7 @@ Currently, this shard can simply be used by adding it into your `shard.yml`,
 as long as all dependencies are installed correctly.
 
 Make sure to have SDL 3 and its libraries installed, or linking will fail.
+On Windows x64 you can do this using `rake install_sdl_libraries`.
 
 If you want to add features like Anyolite or ImGui,
 you can install them using `rake add_feature_XXX`, where `XXX` is one of the
