@@ -54,6 +54,12 @@ Note that its syntax may change (frequently) until version 1.0.0.
 * Crystal (obviously)
 * SDL 3 (media library)
 
+IMPORTANT NOTE: This version of Crystal2Day still uses the SDL2 API for the SDL_mixer library.
+This will change as soon as the library actually gets a SDL3 release.
+
+Please use the following branch as a workaround:
+https://github.com/libsdl-org/SDL_mixer/tree/e999eff5b33604e96e5ebb2bc4a89e457d1719b1
+
 ## Optional
 
 * Git (for installing additional features)
@@ -144,13 +150,7 @@ end
 
 #### Urgent todo list
 
-* [ ] Add simple way to install SDL libraries
 * [ ] Require specific SDL versions
-
-### Version 0.2.0
-
-#### Breaking changes
-
 * [ ] Complete redesign of audio tracks to accomodate for SDL_mixer 3.0+
 
 #### Open design questions:

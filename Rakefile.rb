@@ -6,6 +6,11 @@ module Utils
       system("g++ -std=c++14 -I \"lib/imgui/cimgui/imgui/backends\" -I \"temp/SDL/include\" -I \"lib/imgui/cimgui/imgui\" -c \"#{source}\" -o \"#{target}.o\"")
     end
   end
+
+  def self.windows_download_and_extract(source, target)
+    system("powershell -Command \"(New-Object Net.WebClient).DownloadFile('#{source}', '#{target}.zip')\"")
+    system("powershell -Command \"Expand-Archive -Force '#{target}.zip' '#{target}'\"")
+  end
 end
 
 task :add_feature_anyolite do
@@ -50,5 +55,38 @@ task :add_feature_imgui do
 end
 
 task :install_sdl_libraries do
-  # TODO
+  sdl_version = "3.3.2"
+  sdl_image_version = "3.2.4"
+  sdl_ttf_version = "3.2.2"
+  # TODO: Use SDL_mixer version 3.0+ once available
+
+  if ENV["OS"] == "Windows_NT"
+    # TODO: Autodetect if this is ARM64 or not
+    architecture = "x64"
+
+    Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL/releases/download/preview-#{sdl_version}/SDL3-devel-#{sdl_version}-VC.zip", "temp/SDL-devel")
+    Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL_image/releases/download/release-#{sdl_image_version}/SDL3_image-devel-#{sdl_image_version}-VC.zip", "temp/SDL_image-devel")
+    Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL_ttf/releases/download/release-#{sdl_ttf_version}/SDL3_ttf-devel-#{sdl_ttf_version}-VC.zip", "temp/SDL_ttf-devel")
+
+    FileUtils.cp("temp/SDL-devel/SDL3-#{sdl_version}/lib/#{architecture}/SDL3.lib", "./SDL3.lib")
+    FileUtils.cp("temp/SDL-devel/SDL3-#{sdl_version}/lib/#{architecture}/SDL3.dll", "./SDL3.dll")
+
+    FileUtils.cp("temp/SDL_image-devel/SDL3_image-#{sdl_image_version}/lib/#{architecture}/SDL3_image.lib", "./SDL3_image.lib")
+    FileUtils.cp("temp/SDL_image-devel/SDL3_image-#{sdl_image_version}/lib/#{architecture}/SDL3_image.dll", "./SDL3_image.dll")
+
+    FileUtils.cp("temp/SDL_ttf-devel/SDL3_ttf-#{sdl_ttf_version}/lib/#{architecture}/SDL3_ttf.lib", "./SDL3_ttf.lib")
+    FileUtils.cp("temp/SDL_ttf-devel/SDL3_ttf-#{sdl_ttf_version}/lib/#{architecture}/SDL3_ttf.dll", "./SDL3_ttf.dll")
+
+    # TODO: Remove this once SDL_mixer 3.0+ is released
+    FileUtils.cp("./deprecated/SDL3_mixer.lib", "./SDL3_mixer.lib")
+    FileUtils.cp("./deprecated/SDL3_mixer.dll", "./SDL3_mixer.dll")
+
+    if File.exist?("./SDL3.dll") && File.exist?("./SDL3.lib") && File.exist?("./SDL3_image.dll") && File.exist?("./SDL3_image.lib") && File.exist?("./SDL3_ttf.dll") && File.exist?("./SDL3_ttf.lib") && File.exist?("./SDL3_mixer.dll") && File.exist?("./SDL3_mixer.lib")
+      puts "SDL libraries were successfully installed."
+    else
+      raise "Could not install SDL libraries."
+    end
+  else
+    raise "Installing SDL on Linux via this function is currently not supported."
+  end
 end
