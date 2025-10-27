@@ -144,7 +144,8 @@ end
 
 #### Urgent todo list
 
-Currently nothing
+* [ ] Add simple way to install SDL libraries
+* [ ] Fix uses SDL versions
 
 #### Open design questions:
 

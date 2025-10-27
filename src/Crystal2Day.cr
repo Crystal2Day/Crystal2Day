@@ -4,7 +4,7 @@
 require "json"
 
 require "sdl-crystal-bindings/sdl3-crystal-bindings"
-require "sdl-crystal-bindings/sdl3-mixer-bindings"
+require "sdl-crystal-bindings/sdl3-mixer-bindings-old"
 require "sdl-crystal-bindings/sdl3-image-bindings"
 require "sdl-crystal-bindings/sdl3-ttf-bindings"
 
