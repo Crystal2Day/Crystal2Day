@@ -1,72 +1,88 @@
 module Crystal2Day
   class SoundBoard
-    @channels = Array(Sound?).new(size: 8) {nil}
+    # TODO: Store a pointer to the mixer for more flexibility
 
-    def play_sound(filename : String, channel : Int = 0, volume : Float = 1.0, pitch : Float = 1.0)
-      check_channel(channel)
-      sound = Crystal2Day.rm.load_sound(filename, channel.to_s) # Cache equal sounds separately for each channel
-      sound.channel = channel.to_i32
-      sound.volume = SoundBoard.convert_float_volume(volume)
-      sound.pitch = pitch.to_f32
+    @sound_channels : Array(Pointer(LibSDL::MixTrack)) = [] of Pointer(LibSDL::MixTrack)
+    @music_channels : Array(Pointer(LibSDL::MixTrack)) = [] of Pointer(LibSDL::MixTrack)
 
-      @channels[channel] = sound
-      sound.play
+    def create_channels(mixer : Pointer(LibSDL::MixMixer), num_sound_channels : UInt8 = 8u8, num_music_channels : UInt8 = 1u8)
+      0.upto(num_sound_channels - 1) do |i|
+        @sound_channels.push(LibSDL.mix_create_track(mixer))
+      end
+      
+      0.upto(num_music_channels - 1) do |i|
+        @music_channels.push(LibSDL.mix_create_track(mixer))
+      end
     end
 
-    def pause_sound(channel : Int = 0)
-      check_channel(channel)
-      @channels[channel].not_nil!.pause if @channels[channel]?
+    def free
+      if @sound_channels.size > 0
+        @sound_channels.clear
+      end
+
+      if @music_channels.size > 0
+        @music_channels.clear
+      end
+    end
+
+    def finalize
+      free
+    end
+
+    def play_sound(filename : String, channel : Int = 0, volume : Float = 1.0, pitch : Float = 1.0, number_of_loops : Int = 0)
+      sound = Crystal2Day.rm.load_sound(filename)
+
+      LibSDL.mix_set_track_audio(@sound_channels[channel], sound.data)
+
+      LibSDL.mix_set_track_gain(@sound_channels[channel], volume)
+      LibSDL.mix_set_track_frequency_ratio(@sound_channels[channel], pitch)
+
+      properties = LibSDL.create_properties
+      LibSDL.set_number_property(properties, LibSDL::MIX_PROP_PLAY_LOOPS_NUMBER, number_of_loops)
+
+      LibSDL.mix_play_track(@sound_channels[channel], properties)
+
+      LibSDL.destroy_properties(properties)
+    end
+
+    def pause_sound(channel : Int = 0, fadeout_frames : Int = 0)
+      LibSDL.mix_stop_track(@sound_channels[channel], fadeout_frames)
     end
 
     def sound_playing?(channel : Int = 0)
-      check_channel(channel)
-      if @channels[channel]?
-        @channels[channel].not_nil!.playing?
-      else
-        false
-      end
+      return (LibSDL.mix_track_playing(@sound_channels[channel]) != 0)
     end
 
-    def check_channel(channel : Int)
-      if channel > 7 || channel < -1
-        Crystal2Day.error "Sound channel #{channel} is invalid. Use channels 0 to 7 instead (or -1 for all channels)."
-      end
-    end
-
-    def self.convert_float_volume(volume : Float)
-      return (volume * Crystal2Day::MAX_VOLUME).to_i.clamp(0, Crystal2Day::MAX_VOLUME)
-    end
-
-    def play_music(filename : String, volume : Float = 1.0)
+    def play_music(filename : String, channel : Int = 0, volume : Float = 1.0, pitch : Float = 1.0, number_of_loops : Int = -1)
       music = Crystal2Day.rm.load_music(filename)
-      music.volume = SoundBoard.convert_float_volume(volume)
-      music.play
+
+      LibSDL.mix_set_track_audio(@music_channels[channel], music.data)
+      
+      LibSDL.mix_set_track_gain(@music_channels[channel], volume)
+      LibSDL.mix_set_track_frequency_ratio(@music_channels[channel], pitch)
+
+      properties = LibSDL.create_properties
+      LibSDL.set_number_property(properties, LibSDL::MIX_PROP_PLAY_LOOPS_NUMBER, number_of_loops)
+
+      LibSDL.mix_play_track(@music_channels[channel], properties)
+
+      LibSDL.destroy_properties(properties)
     end
 
-    def pause_music
-      if Crystal2Day::Music.current_music
-        Crystal2Day::Music.current_music.not_nil!.pause
-      end
+    def pause_music(channel : Int = 0, fadeout_frames : Int = 0)
+      LibSDL.mix_stop_track(@music_channels[channel], fadeout_frames)
     end
 
-    def resume_music
-      if Crystal2Day::Music.current_music
-        Crystal2Day::Music.current_music.not_nil!.resume
-      end
+    def resume_music(channel : Int = 0)
+      LibSDL.mix_resume_track(@music_channels[channel])
     end
 
-    def stop_music
-      if Crystal2Day::Music.current_music
-        Crystal2Day::Music.current_music.not_nil!.stop
-      end
+    def rewind_music(channel : Int = 0)
+      LibSDL.mix_set_track_playback_position(@music_channels[channel], 0)
     end
-  end
 
-  def music_playing?
-    if Crystal2Day::Music.current_music
-      Crystal2Day::Music.current_music.not_nil!.playing?
-    else
-      false
+    def music_playing?(channel : Int = 0)
+      return (LibSDL.mix_track_playing(@music_channels[channel]) != 0)
     end
   end
 end
