@@ -32,7 +32,8 @@ module Crystal2Day
 
       full_filename = Crystal2Day.convert_to_absolute_path(filename)
 
-      @data = LibSDL.mix_load_audio(nil, full_filename, LibSDL::CTRUE)
+      # Load music compressed
+      @data = LibSDL.mix_load_audio(nil, full_filename, LibSDL::CFALSE)
       Crystal2Day.error "Could not load music from file #{full_filename}" unless @data
     end
   end
