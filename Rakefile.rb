@@ -78,8 +78,8 @@ task :install_sdl_libraries do
     FileUtils.cp("temp/SDL_ttf-devel/SDL3_ttf-#{sdl_ttf_version}/lib/#{architecture}/SDL3_ttf.dll", "./SDL3_ttf.dll")
 
     # TODO: Remove this once SDL_mixer 3.0+ is released
-    FileUtils.cp("./deprecated/SDL3_mixer.lib", "./SDL3_mixer.lib")
-    FileUtils.cp("./deprecated/SDL3_mixer.dll", "./SDL3_mixer.dll")
+    FileUtils.cp("./deprecated/SDL3_mixer.lib_", "./SDL3_mixer.lib")
+    FileUtils.cp("./deprecated/SDL3_mixer.dll_", "./SDL3_mixer.dll")
 
     if File.exist?("./SDL3.dll") && File.exist?("./SDL3.lib") && File.exist?("./SDL3_image.dll") && File.exist?("./SDL3_image.lib") && File.exist?("./SDL3_ttf.dll") && File.exist?("./SDL3_ttf.lib") && File.exist?("./SDL3_mixer.dll") && File.exist?("./SDL3_mixer.lib")
       puts "SDL libraries were successfully installed."
