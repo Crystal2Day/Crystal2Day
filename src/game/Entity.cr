@@ -50,6 +50,8 @@ module Crystal2Day
     property velocity : Crystal2Day::Coords = Crystal2Day.xy
     property acceleration : Crystal2Day::Coords = Crystal2Day.xy
 
+    property previous_position : Crystal2Day::Coords = Crystal2Day.xy
+
     property terminal_speed : Float32 = 100.0 # TODO: Implement this as an option
 
     def initialize(@render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
@@ -304,6 +306,8 @@ module Crystal2Day
     end
 
     def update_physics_internal
+      @previous_position.x = @position.x
+      @previous_position.y = @position.y
       # TODO: Maybe add other integration schemes like Leapfrog or Runge-Kutta
       @position += @velocity * @current_time_step
     end
@@ -440,7 +444,7 @@ module Crystal2Day
             tile_shape = CollisionShapeBox.new(size: Crystal2Day.xy(tile_width, tile_height))
             tile_position = Crystal2Day.xy(x * tile_width, y * tile_height)
             @map_boxes.each_value do |shape_own|
-              if Crystal2Day::Collider.test(shape_own, aligned_position, tile_shape, tile_position)
+              if Crystal2Day::Collider.test(shape_own, position, tile_shape, tile_position)
                 add_tile_collision_reference(tile, tile_position, tileset)
                 tile_found = true
               end
