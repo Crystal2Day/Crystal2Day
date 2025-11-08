@@ -23,6 +23,6 @@
 
   "coroutine_templates": {
     "update": {"proc": "FigureMove"},
-    "tile_collisions": {"proc": "TileCollision"}
+    "collisions_alignment_tile": {"proc": "TileCollision"}
   }
 }

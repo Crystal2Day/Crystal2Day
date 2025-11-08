@@ -6,6 +6,11 @@ module Crystal2Day
     @elements : Array(EntityGroup | Map) = Array(EntityGroup | Map).new(initial_capacity: ELEMENTS_INITIAL_CAPACITY)
     @matrix : Hash(Tuple(Int32, Int32), Bool) = Hash(Tuple(Int32, Int32), Bool).new(initial_capacity: MATRIX_INITIAL_CAPACITY)
 
+    @hook_base_name : String
+
+    def initialize(@hook_base_name : String)
+    end
+
     def add(obj : EntityGroup | Map)
       @elements.push obj
     end
@@ -41,7 +46,7 @@ module Crystal2Day
     def call_hooks
       @elements.each do |element|
         if element.is_a?(EntityGroup)
-          element.as(EntityGroup).call_collision_hooks
+          element.as(EntityGroup).call_collision_hooks(@hook_base_name)
         end
       end
     end

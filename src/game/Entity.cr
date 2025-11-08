@@ -189,19 +189,19 @@ module Crystal2Day
     {% end %}
 
     {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
-      def call_collision_hooks(own_ref : Anyolite::RbRef)
-        call_hook("tile_collisions", own_ref)
+      def call_collision_hooks(base_name : String, own_ref : Anyolite::RbRef)
+        call_hook(base_name + "_tile", own_ref)
         @collision_stack_tiles.clear
 
-        call_hook("entity_collisions", own_ref)
+        call_hook(base_name + "_entity", own_ref)
         @collision_stack_entities.clear
       end
     {% else %}
-      def call_collision_hooks
-        call_hook("tile_collisions")
+      def call_collision_hooks(base_name : String)
+        call_hook(base_name + "_tile", own_ref)
         @collision_stack_tiles.clear
 
-        call_hook("entity_collisions")
+        call_hook(base_name + "_entity", own_ref)
         @collision_stack_entities.clear
       end
     {% end %}
@@ -444,11 +444,76 @@ module Crystal2Day
             tile_shape = CollisionShapeBox.new(size: Crystal2Day.xy(tile_width, tile_height))
             tile_position = Crystal2Day.xy(x * tile_width, y * tile_height)
             @map_boxes.each_value do |shape_own|
-              if Crystal2Day::Collider.test(shape_own, position, tile_shape, tile_position)
+              if Crystal2Day::Collider.test(shape_own, aligned_position, tile_shape, tile_position)
                 add_tile_collision_reference(tile, tile_position, tileset)
                 tile_found = true
               end
             end
+          end
+        end
+      end
+    end
+
+    def align_on_rectangular_map
+      alignment_x = @position.x
+      alignment_y = @position.y
+
+      align_x = false
+      align_y = false
+      
+      each_tile_collision do |collision|
+        tile_width = collision.tileset.tile_width
+        tile_height = collision.tileset.tile_height
+
+        entity_width = @map_boxes["MapBox"].size.x
+        entity_height = @map_boxes["MapBox"].size.y
+
+        # TODO: Add slopes
+        # TODO: Add platforms that can be passed through (by only considering y-up-alignment, for example)
+        # TOOD: Maybe incorporate aligned_position again?
+        # TODO: Fix widths and heights
+
+        if collision.tile.get_flag("solid")
+          potential_alignment_y = collision.other_position.y - tile_height // 2
+          if @velocity.y > 0 && @position.y > potential_alignment_y && (@position.x - collision.other_position.x - tile_width // 2).abs < entity_width
+            if potential_alignment_y < alignment_y && potential_alignment_y >= @previous_position.y
+              @position.y = potential_alignment_y
+              @velocity.y = 0
+            end
+          end
+
+          potential_alignment_y = collision.other_position.y + 3 * tile_height // 2
+          if @velocity.y < 0 && @position.y < potential_alignment_y && (@position.x - collision.other_position.x - tile_width // 2).abs < entity_width
+            if potential_alignment_y > alignment_y && potential_alignment_y <= @previous_position.y
+              align_y = true
+              alignment_y = potential_alignment_y
+            end
+          end
+
+          if align_y
+            @position.y = alignment_y
+            @velocity.y = 0
+          end
+
+          potential_alignment_x = collision.other_position.x - tile_width // 2
+          if @velocity.x > 0 && @position.x > potential_alignment_x && (@position.y - collision.other_position.y - tile_height // 2).abs < entity_height
+            if potential_alignment_x < alignment_x && potential_alignment_x >= @previous_position.x
+              align_x = true
+              alignment_x = potential_alignment_x
+            end
+          end
+
+          potential_alignment_x = collision.other_position.x + 3 * tile_width // 2
+          if @velocity.x < 0 && @position.x < potential_alignment_x && (@position.y - collision.other_position.y - tile_height // 2).abs < entity_height
+            if potential_alignment_x > alignment_x && potential_alignment_x <= @previous_position.x
+              align_x = true
+              alignment_x = potential_alignment_x
+            end
+          end
+
+          if align_x
+            @position.x = alignment_x
+            @velocity.x = 0
           end
         end
       end

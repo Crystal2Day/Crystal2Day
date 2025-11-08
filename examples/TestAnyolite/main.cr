@@ -24,66 +24,12 @@ CD.db.add_entity_proc("PlaySound") do |entity|
 end
 
 CD.db.add_entity_proc("TileCollision") do |entity|
-  alignment_x = entity.position.x
-  alignment_y = entity.position.y
+  entity.align_on_rectangular_map
+end
 
-  align_x = false
-  align_y = false
-  
+CD.db.add_entity_proc("TileCollisionFinal") do |entity|
   entity.each_tile_collision do |collision|
-    tile_width = collision.tileset.tile_width
-    tile_height = collision.tileset.tile_height
-
-    entity_width = entity.map_boxes["MapBox"].size.x
-    entity_height = entity.map_boxes["MapBox"].size.y
-
-    # TODO: Add slopes
-    # TODO: Add platforms that can be passed through (by only considering y-up-alignment, for example)
-    # TODO: Maybe add second collision step for tiles still touched after resolving these collisions
-
-    if collision.tile.get_flag("solid")
-      potential_alignment_y = collision.other_position.y - tile_height // 2
-      if entity.velocity.y > 0 && entity.position.y > potential_alignment_y && (entity.position.x - collision.other_position.x - tile_width // 2).abs < entity_height
-        if potential_alignment_y < alignment_y && potential_alignment_y >= entity.previous_position.y
-          entity.position.y = potential_alignment_y
-          entity.velocity.y = 0
-        end
-      end
-
-      potential_alignment_y = collision.other_position.y + 3 * tile_height // 2
-      if entity.velocity.y < 0 && entity.position.y < potential_alignment_y && (entity.position.x - collision.other_position.x - tile_width // 2).abs < entity_height
-        if potential_alignment_y > alignment_y && potential_alignment_y <= entity.previous_position.y
-          align_y = true
-          alignment_y = potential_alignment_y
-        end
-      end
-
-      if align_y
-        entity.position.y = alignment_y
-        entity.velocity.y = 0
-      end
-
-      potential_alignment_x = collision.other_position.x - tile_width // 2
-      if entity.velocity.x > 0 && entity.position.x > potential_alignment_x && (entity.position.y - collision.other_position.y - tile_height // 2).abs < entity_width
-        if potential_alignment_x < alignment_x && potential_alignment_x >= entity.previous_position.x
-          align_x = true
-          alignment_x = potential_alignment_x
-        end
-      end
-
-      potential_alignment_x = collision.other_position.x + 3 * tile_width // 2
-      if entity.velocity.x < 0 && entity.position.x < potential_alignment_x && (entity.position.y - collision.other_position.y - tile_height // 2).abs < entity_width
-        if potential_alignment_x > alignment_x && potential_alignment_x <= entity.previous_position.x
-          align_x = true
-          alignment_x = potential_alignment_x
-        end
-      end
-
-      if align_x
-        entity.position.x = alignment_x
-        entity.velocity.x = 0
-      end
-    end
+    # Insert stuff here
   end
 end
 
@@ -151,12 +97,13 @@ class CustomScene < CD::Scene
     CD.im.set_key_table_entry("right", [CD::Keyboard::RIGHT, CD::Keyboard::D])
     CD.im.set_key_table_entry("fast_mode", [CD::Keyboard::L])
 
-    self.collision_matrix.link(entity_groups["FigureGroup"])
-    self.collision_matrix.link(entity_groups["FigureGroup"], maps["Map1"])
-    self.collision_matrix.link(entity_groups["PlayerGroup"], entity_groups["FigureGroup"])
-    self.collision_matrix.link(entity_groups["PlayerGroup"], maps["Map1"])
-    
-    Crystal2Day.grid_alignment = 1
+    self.collision_matrix_alignment.link(entity_groups["FigureGroup"], maps["Map1"])
+    self.collision_matrix_alignment.link(entity_groups["PlayerGroup"], maps["Map1"])
+
+    self.collision_matrix_final.link(entity_groups["FigureGroup"], maps["Map1"])
+    self.collision_matrix_final.link(entity_groups["PlayerGroup"], maps["Map1"])
+    self.collision_matrix_final.link(entity_groups["FigureGroup"])
+    self.collision_matrix_final.link(entity_groups["PlayerGroup"], entity_groups["FigureGroup"])
   end
 
   def update

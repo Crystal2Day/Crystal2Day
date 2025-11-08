@@ -22,8 +22,9 @@
     },
     "post_update": {"proc": "FigurePostUpdate"},
     "handle_event": {"code": "each_frame do; entity.call_proc(\"FigureHandleEvent\"); end"},
-    "entity_collisions": {"file": "ExampleCollisionEntity.rb"},
-    "tile_collisions": {"proc": "TileCollision"},
+    "collisions_final_entity": {"file": "ExampleCollisionEntity.rb"},
+    "collisions_alignment_tile": {"proc": "TileCollision"},
+    "collisions_final_tile": {"proc": "TileCollisionFinal"},
     "mid_hook": {"file": "ExampleMidHook.rb"}
   }
 }

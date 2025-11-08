@@ -159,12 +159,12 @@ module Crystal2Day
       end
     end
 
-    def call_collision_hooks
+    def call_collision_hooks(base_name : String)
       0.upto(@members.size - 1) do |index|
         {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
-          @members[index].call_collision_hooks(@refs[index])
+          @members[index].call_collision_hooks(base_name, @refs[index])
         {% else %}
-          @members[index].call_collision_hooks
+          @members[index].call_collision_hooks(base_name)
         {% end %}
       end
     end

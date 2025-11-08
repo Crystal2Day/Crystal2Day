@@ -26,7 +26,8 @@ module Crystal2Day
     getter sprites : Hash(String, Sprite) = Hash(String, Sprite).new(initial_capacity: SPRITES_INITIAL_CAPACITY)
     getter temp_animations : Array(Sprite) = Array(Sprite).new(initial_capacity: TEMP_ANIMATIONS_INITIAL_CAPACITY)
 
-    getter collision_matrix : CollisionMatrix = CollisionMatrix.new
+    getter collision_matrix_alignment : CollisionMatrix = CollisionMatrix.new("collisions_alignment")
+    getter collision_matrix_final : CollisionMatrix = CollisionMatrix.new("collisions_final")
 
     getter using_imgui : Bool = false
 
@@ -122,13 +123,15 @@ module Crystal2Day
         dynamic_number_of_physics_steps = {Crystal2Day.max_number_of_physics_step_splits, get_max_speed.round.to_i}.min
         dynamic_number_of_physics_steps.times do |i|
           physics_step(Crystal2Day.physics_time_step / dynamic_number_of_physics_steps)
-          collision_step
+          collision_step_alignment
         end
+        collision_step_final
       else
         Crystal2Day.number_of_physics_steps.times do |i|
           physics_step(Crystal2Day.physics_time_step / Crystal2Day.number_of_physics_steps)
-          collision_step
+          collision_step_alignment
         end
+        collision_step_final
       end
 
       @physics_groups.each {|member| member.reset_acceleration}
@@ -138,9 +141,14 @@ module Crystal2Day
       @physics_groups.each {|member| member.update_physics(time_step)}
     end
 
-    def collision_step
-      @collision_matrix.determine_collisions
-      @collision_matrix.call_hooks
+    def collision_step_alignment
+      @collision_matrix_alignment.determine_collisions
+      @collision_matrix_alignment.call_hooks  # TODO: Call only specific hooks, restrict types maybe
+    end
+
+    def collision_step_final
+      @collision_matrix_final.determine_collisions
+      @collision_matrix_final.call_hooks
     end
 
     def main_draw

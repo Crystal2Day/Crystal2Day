@@ -26,7 +26,7 @@
   "coroutine_templates": {
     "update": {"file": "ExampleUpdate.rb"},
     "post_update": {"proc": "FigurePostUpdate"},
-    "entity_collisions": {"file": "ExampleCollisionEntity.rb"},
-    "tile_collisions": {"proc": "TileCollision"}
+    "collisions_final_entity": {"file": "ExampleCollisionEntity.rb"},
+    "collisions_alignment_tile": {"proc": "TileCollision"}
   }
 }

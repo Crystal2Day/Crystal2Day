@@ -135,7 +135,7 @@ class CustomScene < CD::Scene
     CD.im.set_key_table_entry("right", [CD::Keyboard::RIGHT, CD::Keyboard::D])
     CD.im.set_key_table_entry("debug_pass_through", [CD::Keyboard::LCTRL, CD::Keyboard::RCTRL]) if CD.debug?
 
-    self.collision_matrix.link(entity_groups["PlayerGroup"], maps["Map1"])
+    self.collision_matrix_alignment.link(entity_groups["PlayerGroup"], maps["Map1"])
   end
 
   def update

@@ -8,6 +8,6 @@ each_frame do
       entity.set_state("sound_channel", initial_param)
       entity.call_proc("PlaySound")
     end
-    collision.entity.velocity.y = -1
+    collision.entity.velocity.y = -2
   end
 end
