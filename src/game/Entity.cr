@@ -475,7 +475,7 @@ module Crystal2Day
 
         if collision.tile.get_flag("solid")
           potential_alignment_y = collision.other_position.y - tile_height // 2
-          if @velocity.y > 0 && @position.y > potential_alignment_y && collision.tile_overlap_on_x_axis(self)
+          if @velocity.y > 0 && @position.y > potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
             if potential_alignment_y < alignment_y && potential_alignment_y >= @previous_position.y
               @position.y = potential_alignment_y
               @velocity.y = 0
@@ -483,7 +483,7 @@ module Crystal2Day
           end
 
           potential_alignment_y = collision.other_position.y + 3 * tile_height // 2
-          if @velocity.y < 0 && @position.y < potential_alignment_y && collision.tile_overlap_on_x_axis(self)
+          if @velocity.y < 0 && @position.y < potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
             if potential_alignment_y > alignment_y && potential_alignment_y <= @previous_position.y
               align_y = true
               alignment_y = potential_alignment_y
@@ -496,7 +496,7 @@ module Crystal2Day
           end
 
           potential_alignment_x = collision.other_position.x - tile_width // 2
-          if @velocity.x > 0 && @position.x > potential_alignment_x && collision.tile_overlap_on_y_axis(self)
+          if @velocity.x > 0 && @position.x > potential_alignment_x && collision.tile_overlap_on_y_axis?(self)
             if potential_alignment_x < alignment_x && potential_alignment_x >= @previous_position.x
               align_x = true
               alignment_x = potential_alignment_x
@@ -504,7 +504,7 @@ module Crystal2Day
           end
 
           potential_alignment_x = collision.other_position.x + 3 * tile_width // 2
-          if @velocity.x < 0 && @position.x < potential_alignment_x && collision.tile_overlap_on_y_axis(self)
+          if @velocity.x < 0 && @position.x < potential_alignment_x && collision.tile_overlap_on_y_axis?(self)
             if potential_alignment_x > alignment_x && potential_alignment_x <= @previous_position.x
               align_x = true
               alignment_x = potential_alignment_x

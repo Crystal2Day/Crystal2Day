@@ -65,12 +65,14 @@ module Crystal2Day
     # However, a direct box collision will give a positive collision result, so you can use the methods presented here to avoid that.
     # If however the X right to E is removed and E moves a pixel to the right, it will correctly interact with T again.
 
-    def tile_overlap_on_x_axis(entity : Crystal2Day::Entity)
+    def tile_overlap_on_x_axis?(entity : Crystal2Day::Entity)
       (entity.position.x - @other_position.x - tileset.tile_width // 2).abs < entity.map_boxes["MapBox"].size.x
     end
 
-    def tile_overlap_on_y_axis(entity : Crystal2Day::Entity)
+    def tile_overlap_on_y_axis?(entity : Crystal2Day::Entity)
       (entity.position.y - @other_position.y - tileset.tile_height // 2).abs < entity.map_boxes["MapBox"].size.y
     end
+
+    # TODO: Add checks for positioning
   end
 end
