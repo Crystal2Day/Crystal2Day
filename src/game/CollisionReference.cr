@@ -53,5 +53,24 @@ module Crystal2Day
     def inspect
       "Kind: #{@kind}, with: #{other_object}"
     end
+
+    # TODO: Test these
+
+    # These functions test whether a given entity and a tile overlap if projected onto a given axis.
+    # Note that this excludes point-like overlap. This might seem odd, but these functions actually have a use.
+    # Imagine a scenario with the following tiles:
+    # EXXX
+    # XTXX
+    # If E is the entity, X a solid tile and T a tile to be checked for interaction, you likely don't want E to interact with T.
+    # However, a direct box collision will give a positive collision result, so you can use the methods presented here to avoid that.
+    # If however the X right to E is removed and E moves a pixel to the right, it will correctly interact with T again.
+
+    def tile_overlap_on_x_axis(entity : Crystal2Day::Entity)
+      (entity.position.x - @other_position.x - tileset.tile_width // 2).abs < entity.map_boxes["MapBox"].size.x
+    end
+
+    def tile_overlap_on_y_axis(entity : Crystal2Day::Entity)
+      (entity.position.y - @other_position.y - tileset.tile_height // 2).abs < entity.map_boxes["MapBox"].size.y
+    end
   end
 end

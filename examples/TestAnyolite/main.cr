@@ -29,7 +29,9 @@ end
 
 CD.db.add_entity_proc("TileCollisionFinal") do |entity|
   entity.each_tile_collision do |collision|
-    # Insert stuff here
+    if collision.tile.get_flag("harmful") && collision.tile_overlap_on_x_axis(entity)
+      puts "Ow #{rand}"
+    end
   end
 end
 
