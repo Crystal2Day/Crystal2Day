@@ -467,13 +467,14 @@ module Crystal2Day
         shape_size = collision.shape_own.as(CollisionShapeBox).size
 
         # TODO: Add platforms that can be passed through (by only considering y-up-alignment, for example)
+        # TODO: Fix issue when climbing a higher wall
 
         if collision.tile.get_flag("solid")
           potential_alignment_y = collision.other_position.y - shape_size.y - shape_offset.y
           if @velocity.y > 0 && @position.y > potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
             if potential_alignment_y < alignment_y && potential_alignment_y >= @previous_position.y
-              @position.y = potential_alignment_y
-              @velocity.y = 0
+              align_y = true
+              alignment_y = potential_alignment_y
             end
           end
 
