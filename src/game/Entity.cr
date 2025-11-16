@@ -380,12 +380,12 @@ module Crystal2Day
       end
     end
 
-    def add_entity_collision_reference(other_entity : Entity)
-      @collision_stack_entities.push CollisionReference.new(CollisionReference::Kind::ENTITY, other_entity, other_entity.position)
+    def add_entity_collision_reference(other_entity : Entity, shape_own : CollisionShape, shape_other : CollisionShape)
+      @collision_stack_entities.push CollisionReference.new(CollisionReference::Kind::ENTITY, other_entity, shape_own, shape_other, other_entity.position)
     end
 
-    def add_tile_collision_reference(tile : Tile, position : Coords, tileset : Tileset)
-      @collision_stack_tiles.push CollisionReference.new(CollisionReference::Kind::TILE, tile, position, tileset)
+    def add_tile_collision_reference(tile : Tile, position : Coords, shape_own : CollisionShape, shape_other : CollisionShape, tileset : Tileset)
+      @collision_stack_tiles.push CollisionReference.new(CollisionReference::Kind::TILE, tile, shape_own, shape_other, position, tileset)
     end
 
     def check_for_collision_with(map : Map)
@@ -444,8 +444,9 @@ module Crystal2Day
             tile_shape = CollisionShapeBox.new(size: Crystal2Day.xy(tile_width, tile_height))
             tile_position = Crystal2Day.xy(x * tile_width, y * tile_height)
             @map_boxes.each_value do |shape_own|
+              # TODO: Add both shapes to collision reference  
               if Crystal2Day::Collider.test(shape_own, aligned_position, tile_shape, tile_position)
-                add_tile_collision_reference(tile, tile_position, tileset)
+                add_tile_collision_reference(tile, tile_position, shape_own, tile_shape, tileset)
                 tile_found = true
               end
             end
@@ -553,8 +554,8 @@ module Crystal2Day
         other.shapes.each_value do |shape_other|
           if Crystal2Day::Collider.test(shape_own, @position, shape_other, other.position)
             collision_detected = true
-            add_entity_collision_reference(other)
-            other.add_entity_collision_reference(self)
+            add_entity_collision_reference(other, shape_own, shape_other)
+            other.add_entity_collision_reference(self, shape_other, shape_own)
             break
           end
         end

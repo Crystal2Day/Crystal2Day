@@ -9,12 +9,17 @@ module Crystal2Day
     property kind : Kind = Kind::EMPTY
     property other_object : Entity | Tile | Nil = nil
     property other_position : Coords = Crystal2Day.xy
+    property shape_own : CollisionShape = CollisionShapePoint.new
+    property shape_other : CollisionShape = CollisionShapePoint.new
+
     @tileset : Tileset? = nil
 
-    def initialize(kind : Kind, other_object : Entity | Tile | Nil = nil, other_position : Coords = Crystal2Day.xy, tileset : Tileset? = nil)
+    def initialize(kind : Kind, other_object : Entity | Tile | Nil, shape_own : CollisionShape, shape_other : CollisionShape, other_position : Coords = Crystal2Day.xy, tileset : Tileset? = nil)
       @kind = kind
       @other_object = other_object
       @other_position = other_position
+      @shape_own = shape_own
+      @shape_other = shape_other
       @tileset = tileset
     end
 
@@ -66,11 +71,11 @@ module Crystal2Day
     # If however the X right to E is removed and E moves a pixel to the right, it will correctly interact with T again.
 
     def tile_overlap_on_x_axis?(entity : Crystal2Day::Entity)
-      (entity.position.x - @other_position.x - tileset.tile_width // 2).abs < entity.map_boxes["MapBox"].size.x
+      (entity.position.x + @shape_own.position.x - @other_position.x).abs < @shape_own.as(CollisionShapeBox).size.x // 2 + @shape_other.as(CollisionShapeBox).size.x // 2
     end
 
     def tile_overlap_on_y_axis?(entity : Crystal2Day::Entity)
-      (entity.position.y - @other_position.y - tileset.tile_height // 2).abs < entity.map_boxes["MapBox"].size.y
+      (entity.position.y + @shape_own.position.y - @other_position.y).abs < @shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2
     end
 
     # TODO: Add checks for positioning
