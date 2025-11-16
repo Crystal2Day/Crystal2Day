@@ -463,19 +463,13 @@ module Crystal2Day
       align_y = false
       
       each_tile_collision do |collision|
-        tile_width = collision.tileset.tile_width
-        tile_height = collision.tileset.tile_height
+        shape_offset = collision.shape_own.position
+        shape_size = collision.shape_own.as(CollisionShapeBox).size
 
-        entity_width = @map_boxes["MapBox"].size.x
-        entity_height = @map_boxes["MapBox"].size.y
-
-        # TODO: Add slopes
         # TODO: Add platforms that can be passed through (by only considering y-up-alignment, for example)
-        # TOOD: Maybe incorporate aligned_position again?
-        # TODO: Fix widths and heights, they're likely still wrong (especially for the alignment positions)
 
         if collision.tile.get_flag("solid")
-          potential_alignment_y = collision.other_position.y - tile_height // 2
+          potential_alignment_y = collision.other_position.y - shape_size.y - shape_offset.y
           if @velocity.y > 0 && @position.y > potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
             if potential_alignment_y < alignment_y && potential_alignment_y >= @previous_position.y
               @position.y = potential_alignment_y
@@ -483,7 +477,7 @@ module Crystal2Day
             end
           end
 
-          potential_alignment_y = collision.other_position.y + 3 * tile_height // 2
+          potential_alignment_y = collision.other_position.y + collision.tileset.tile_height + shape_size.y + shape_offset.y
           if @velocity.y < 0 && @position.y < potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
             if potential_alignment_y > alignment_y && potential_alignment_y <= @previous_position.y
               align_y = true
@@ -496,7 +490,7 @@ module Crystal2Day
             @velocity.y = 0
           end
 
-          potential_alignment_x = collision.other_position.x - tile_width // 2
+          potential_alignment_x = collision.other_position.x - shape_size.x - shape_offset.x
           if @velocity.x > 0 && @position.x > potential_alignment_x && collision.tile_overlap_on_y_axis?(self)
             if potential_alignment_x < alignment_x && potential_alignment_x >= @previous_position.x
               align_x = true
@@ -504,7 +498,7 @@ module Crystal2Day
             end
           end
 
-          potential_alignment_x = collision.other_position.x + 3 * tile_width // 2
+          potential_alignment_x = collision.other_position.x + collision.tileset.tile_width + shape_size.x + shape_offset.x
           if @velocity.x < 0 && @position.x < potential_alignment_x && collision.tile_overlap_on_y_axis?(self)
             if potential_alignment_x > alignment_x && potential_alignment_x <= @previous_position.x
               align_x = true
