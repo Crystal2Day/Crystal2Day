@@ -23,7 +23,29 @@ CD.db.add_entity_proc("PlaySound") do |entity|
   end
 end
 
-CD.db.add_entity_proc("TileCollision") do |entity|
+CD.db.add_entity_proc("TileCollisionInitial") do |entity|
+  entity.each_tile_collision do |collision|
+    next unless collision.tile.get_flag("solid")
+
+    if collision.touching_without_edges_at_the_left?(entity)
+      entity.velocity.x = 0 if entity.velocity.x < 0
+    end
+    
+    if collision.touching_without_edges_at_the_right?(entity)
+      entity.velocity.x = 0 if entity.velocity.x > 0
+    end
+
+    if collision.touching_without_edges_at_the_top?(entity)
+      entity.velocity.y = 0 if entity.velocity.y < 0
+    end
+
+    if collision.touching_without_edges_at_the_bottom?(entity)
+      entity.velocity.y = 0 if entity.velocity.y > 0
+    end
+  end
+end
+
+CD.db.add_entity_proc("TileCollisionAlignment") do |entity|
   entity.align_on_rectangular_map
 end
 
@@ -99,6 +121,9 @@ class CustomScene < CD::Scene
     CD.im.set_key_table_entry("left", [CD::Keyboard::LEFT, CD::Keyboard::A])
     CD.im.set_key_table_entry("right", [CD::Keyboard::RIGHT, CD::Keyboard::D])
     CD.im.set_key_table_entry("fast_mode", [CD::Keyboard::L])
+
+    self.collision_matrix_initial.link(entity_groups["FigureGroup"], maps["Map1"])
+    self.collision_matrix_initial.link(entity_groups["PlayerGroup"], maps["Map1"])
 
     self.collision_matrix_alignment.link(entity_groups["FigureGroup"], maps["Map1"])
     self.collision_matrix_alignment.link(entity_groups["PlayerGroup"], maps["Map1"])

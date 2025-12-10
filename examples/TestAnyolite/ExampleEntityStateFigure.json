@@ -27,6 +27,7 @@
     "update": {"file": "ExampleUpdate.rb"},
     "post_update": {"proc": "FigurePostUpdate"},
     "collisions_final_entity": {"file": "ExampleCollisionEntity.rb"},
-    "collisions_alignment_tile": {"proc": "TileCollision"}
+    "collisions_initial_tile": {"proc": "TileCollisionInitial"},
+    "collisions_alignment_tile": {"proc": "TileCollisionAlignment"}
   }
 }

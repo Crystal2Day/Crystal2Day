@@ -78,6 +78,8 @@ module Crystal2Day
       (entity.position.y + @shape_own.position.y - @other_position.y).abs < @shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2
     end
 
+    # TODO: They probably don't work for small tiles, test them and rather use lines for the collision
+
     def touching_at_the_left?(entity : Crystal2Day::Entity)
       point_x = @shape_own.position.x
 
@@ -131,6 +133,24 @@ module Crystal2Day
     def overlapping_at_the_right?(entity : Crystal2Day::Entity)
       
     end
+
+    def touching_without_edges_at_the_left?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_y_axis?(entity) && touching_at_the_left?(entity)
+    end
+
+    def touching_without_edges_at_the_right?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_y_axis?(entity) && touching_at_the_right?(entity)
+    end
+
+    def touching_without_edges_at_the_top?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_x_axis?(entity) && touching_at_the_top?(entity)
+    end
+
+    def touching_without_edges_at_the_bottom?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_x_axis?(entity) && touching_at_the_bottom?(entity)
+    end
+
+    
 
     # TODO: Add checks for positioning
   end
