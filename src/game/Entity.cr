@@ -515,6 +515,28 @@ module Crystal2Day
       end
     end
 
+    def reset_blocked_motion
+      each_tile_collision do |collision|
+        next unless collision.tile.get_flag("solid")
+
+        if collision.tile_touching_without_edges_at_the_left?(self)
+          @velocity.x = 0 if @velocity.x < 0
+        end
+        
+        if collision.tile_touching_without_edges_at_the_right?(self)
+          @velocity.x = 0 if @velocity.x > 0
+        end
+
+        if collision.tile_touching_without_edges_at_the_top?(self)
+          @velocity.y = 0 if @velocity.y < 0
+        end
+
+        if collision.tile_touching_without_edges_at_the_bottom?(self)
+          @velocity.y = 0 if @velocity.y > 0
+        end
+      end
+    end
+
     def aligned_position
       if Crystal2Day.grid_alignment == 0
         @position

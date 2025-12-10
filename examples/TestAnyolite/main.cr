@@ -24,25 +24,7 @@ CD.db.add_entity_proc("PlaySound") do |entity|
 end
 
 CD.db.add_entity_proc("TileCollisionInitial") do |entity|
-  entity.each_tile_collision do |collision|
-    next unless collision.tile.get_flag("solid")
-
-    if collision.tile_touching_without_edges_at_the_left?(entity)
-      entity.velocity.x = 0 if entity.velocity.x < 0
-    end
-    
-    if collision.tile_touching_without_edges_at_the_right?(entity)
-      entity.velocity.x = 0 if entity.velocity.x > 0
-    end
-
-    if collision.tile_touching_without_edges_at_the_top?(entity)
-      entity.velocity.y = 0 if entity.velocity.y < 0
-    end
-
-    if collision.tile_touching_without_edges_at_the_bottom?(entity)
-      entity.velocity.y = 0 if entity.velocity.y > 0
-    end
-  end
+  entity.reset_blocked_motion
 end
 
 CD.db.add_entity_proc("TileCollisionAlignment") do |entity|
