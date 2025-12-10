@@ -78,79 +78,67 @@ module Crystal2Day
       (entity.position.y + @shape_own.position.y - @other_position.y).abs < @shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2
     end
 
-    # TODO: They probably don't work for small tiles, test them and rather use lines for the collision
-
-    def touching_at_the_left?(entity : Crystal2Day::Entity)
-      point_x = @shape_own.position.x
-
-      point_y_upper = @shape_own.position.y + @shape_own.as(CollisionShapeBox).size.y
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x, point_y_upper)), entity.position, @shape_other, @other_position)
-
-      point_y_lower = @shape_own.position.y
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x, point_y_lower)), entity.position, @shape_other, @other_position)
-
-      return false
+    def tile_touching_at_the_left?(entity : Crystal2Day::Entity)
+      line_start = @shape_own.position
+      line = CollisionShapeLine.new(line_start, Crystal2Day.xy(0, @shape_own.as(CollisionShapeBox).size.y))
+      
+      return Collider.test(line, entity.position, @shape_other, @other_position)
     end
 
-    def touching_at_the_right?(entity : Crystal2Day::Entity)
-      point_x = @shape_own.position.x + @shape_own.as(CollisionShapeBox).size.x
-
-      point_y_upper = @shape_own.position.y + @shape_own.as(CollisionShapeBox).size.y
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x, point_y_upper)), entity.position, @shape_other, @other_position)
-
-      point_y_lower = @shape_own.position.y
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x, point_y_lower)), entity.position, @shape_other, @other_position)
-
-      return false
+    def tile_touching_at_the_right?(entity : Crystal2Day::Entity)
+      line_start = @shape_own.position + Crystal2Day.xy(@shape_own.as(CollisionShapeBox).size.x, 0)
+      line = CollisionShapeLine.new(line_start, Crystal2Day.xy(0, @shape_own.as(CollisionShapeBox).size.y))
+      
+      return Collider.test(line, entity.position, @shape_other, @other_position)
     end
 
-    def touching_at_the_top?(entity : Crystal2Day::Entity)
-      point_y = @shape_own.position.y
-
-      point_x_right = @shape_own.position.x + @shape_own.as(CollisionShapeBox).size.x
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x_right, point_y)), entity.position, @shape_other, @other_position)
-
-      point_x_left = @shape_own.position.x
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x_left, point_y)), entity.position, @shape_other, @other_position)
-
-      return false
+    def tile_touching_at_the_top?(entity : Crystal2Day::Entity)
+      line_start = @shape_own.position
+      line = CollisionShapeLine.new(line_start, Crystal2Day.xy(@shape_own.as(CollisionShapeBox).size.x, 0))
+      
+      return Collider.test(line, entity.position, @shape_other, @other_position)
     end
 
-    def touching_at_the_bottom?(entity : Crystal2Day::Entity)
-      point_y = @shape_own.position.y + @shape_own.as(CollisionShapeBox).size.y
-
-      point_x_right = @shape_own.position.x + @shape_own.as(CollisionShapeBox).size.x
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x_right, point_y)), entity.position, @shape_other, @other_position)
-
-      point_x_left = @shape_own.position.x
-      return true if Collider.test(CollisionShapePoint.new(Crystal2Day.xy(point_x_left, point_y)), entity.position, @shape_other, @other_position)
-
-      return false
+    def tile_touching_at_the_bottom?(entity : Crystal2Day::Entity)
+      line_start = @shape_own.position + Crystal2Day.xy(0, @shape_own.as(CollisionShapeBox).size.y)
+      line = CollisionShapeLine.new(line_start, Crystal2Day.xy(@shape_own.as(CollisionShapeBox).size.x, 0))
+      
+      return Collider.test(line, entity.position, @shape_other, @other_position)
     end
 
     # TODO: Implement these
 
-    def overlapping_at_the_right?(entity : Crystal2Day::Entity)
+    def tile_overlapping_at_the_left?(entity : Crystal2Day::Entity)
       
     end
 
-    def touching_without_edges_at_the_left?(entity : Crystal2Day::Entity)
-      return tile_overlap_on_y_axis?(entity) && touching_at_the_left?(entity)
+    def tile_overlapping_at_the_right?(entity : Crystal2Day::Entity)
+      
     end
 
-    def touching_without_edges_at_the_right?(entity : Crystal2Day::Entity)
-      return tile_overlap_on_y_axis?(entity) && touching_at_the_right?(entity)
+    def tile_overlapping_at_the_top?(entity : Crystal2Day::Entity)
+      
     end
 
-    def touching_without_edges_at_the_top?(entity : Crystal2Day::Entity)
-      return tile_overlap_on_x_axis?(entity) && touching_at_the_top?(entity)
+    def tile_overlapping_at_the_bottom?(entity : Crystal2Day::Entity)
+      
     end
 
-    def touching_without_edges_at_the_bottom?(entity : Crystal2Day::Entity)
-      return tile_overlap_on_x_axis?(entity) && touching_at_the_bottom?(entity)
+    def tile_touching_without_edges_at_the_left?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_y_axis?(entity) && tile_touching_at_the_left?(entity)
     end
 
-    
+    def tile_touching_without_edges_at_the_right?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_y_axis?(entity) && tile_touching_at_the_right?(entity)
+    end
+
+    def tile_touching_without_edges_at_the_top?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_x_axis?(entity) && tile_touching_at_the_top?(entity)
+    end
+
+    def tile_touching_without_edges_at_the_bottom?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_x_axis?(entity) && tile_touching_at_the_bottom?(entity)
+    end
 
     # TODO: Add checks for positioning
   end

@@ -27,19 +27,19 @@ CD.db.add_entity_proc("TileCollisionInitial") do |entity|
   entity.each_tile_collision do |collision|
     next unless collision.tile.get_flag("solid")
 
-    if collision.touching_without_edges_at_the_left?(entity)
+    if collision.tile_touching_without_edges_at_the_left?(entity)
       entity.velocity.x = 0 if entity.velocity.x < 0
     end
     
-    if collision.touching_without_edges_at_the_right?(entity)
+    if collision.tile_touching_without_edges_at_the_right?(entity)
       entity.velocity.x = 0 if entity.velocity.x > 0
     end
 
-    if collision.touching_without_edges_at_the_top?(entity)
+    if collision.tile_touching_without_edges_at_the_top?(entity)
       entity.velocity.y = 0 if entity.velocity.y < 0
     end
 
-    if collision.touching_without_edges_at_the_bottom?(entity)
+    if collision.tile_touching_without_edges_at_the_bottom?(entity)
       entity.velocity.y = 0 if entity.velocity.y > 0
     end
   end
@@ -52,8 +52,8 @@ end
 CD.db.add_entity_proc("TileCollisionFinal") do |entity|
   entity.each_tile_collision do |collision|
     if collision.tile.get_flag("harmful") && collision.tile_overlap_on_y_axis?(entity)
-      puts "LEFT" if collision.touching_at_the_left?(entity)
-      puts "RIGHT" if collision.touching_at_the_right?(entity)
+      puts "LEFT" if collision.tile_touching_at_the_left?(entity)
+      puts "RIGHT" if collision.tile_touching_at_the_right?(entity)
     end
   end
 end
