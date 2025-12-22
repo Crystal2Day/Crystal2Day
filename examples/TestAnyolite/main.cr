@@ -33,9 +33,12 @@ end
 
 CD.db.add_entity_proc("TileCollisionFinal") do |entity|
   entity.each_tile_collision do |collision|
-    if collision.tile.get_flag("harmful") && collision.tile_overlap_on_y_axis?(entity)
-      puts "LEFT" if collision.tile_touching_at_the_left?(entity)
-      puts "RIGHT" if collision.tile_touching_at_the_right?(entity)
+    if collision.tile.get_flag("harmful")
+      puts "CENTER" if collision.entity_center_inside_tile?(entity)
+      puts "LEFT" if collision.tile_overlapping_without_edges_at_the_left?(entity)
+      puts "RIGHT" if collision.tile_overlapping_without_edges_at_the_right?(entity)
+      puts "TOP" if collision.tile_overlapping_without_edges_at_the_top?(entity)
+      puts "BOTTOM" if collision.tile_overlapping_without_edges_at_the_bottom?(entity)
     end
   end
 end

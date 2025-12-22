@@ -106,22 +106,29 @@ module Crystal2Day
       return Collider.test(line, entity.position, @shape_other, @other_position)
     end
 
-    # TODO: Implement these
+    def entity_center_inside_tile?(entity : Crystal2Day::Entity)
+      entity_center_point = CollisionShapePoint.new(@shape_own.position + @shape_own.as(CollisionShapeBox).size * 0.5)
+      return true if Collider.test(entity_center_point, entity.position, @shape_other, @other_position)
+    end
 
     def tile_overlapping_at_the_left?(entity : Crystal2Day::Entity)
-      
+      distance = entity.position.x + @shape_own.position.x - @other_position.x
+      return (distance > 0) && (distance < (@shape_own.as(CollisionShapeBox).size.x // 2 + @shape_other.as(CollisionShapeBox).size.x // 2))
     end
 
     def tile_overlapping_at_the_right?(entity : Crystal2Day::Entity)
-      
+      distance = entity.position.x + @shape_own.position.x - @other_position.x
+      return (distance < 0) && (distance > -(@shape_own.as(CollisionShapeBox).size.x // 2 + @shape_other.as(CollisionShapeBox).size.x // 2))
     end
 
     def tile_overlapping_at_the_top?(entity : Crystal2Day::Entity)
-      
+      distance = entity.position.y + @shape_own.position.y - @other_position.y
+      return (distance > 0) && (distance < (@shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2))
     end
 
     def tile_overlapping_at_the_bottom?(entity : Crystal2Day::Entity)
-      
+      distance = entity.position.y + @shape_own.position.y - @other_position.y
+      return (distance < 0) && (distance > -(@shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2))
     end
 
     def tile_touching_without_edges_at_the_left?(entity : Crystal2Day::Entity)
@@ -140,6 +147,22 @@ module Crystal2Day
       return tile_overlap_on_x_axis?(entity) && tile_touching_at_the_bottom?(entity)
     end
 
-    # TODO: Add checks for positioning
+    def tile_overlapping_without_edges_at_the_left?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_y_axis?(entity) && tile_overlapping_at_the_left?(entity)
+    end
+
+    def tile_overlapping_without_edges_at_the_right?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_y_axis?(entity) && tile_overlapping_at_the_right?(entity)
+    end
+
+    def tile_overlapping_without_edges_at_the_top?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_x_axis?(entity) && tile_overlapping_at_the_top?(entity)
+    end
+
+    def tile_overlapping_without_edges_at_the_bottom?(entity : Crystal2Day::Entity)
+      return tile_overlap_on_x_axis?(entity) && tile_overlapping_at_the_bottom?(entity)
+    end
+
+    # TODO: Add more checks for positioning?
   end
 end
