@@ -388,7 +388,9 @@ module Crystal2Day
       @collision_stack_tiles.push CollisionReference.new(CollisionReference::Kind::TILE, tile, shape_own, shape_other, position, tileset)
     end
 
-    def check_for_collision_with(map : Map)
+    # TODO: Add routine that checks collisions between actual shapes and the map, maybe using a special flag?
+
+    def check_for_collision_with(map : Map, use_precise_shapes : Bool = false)
       return if !@bounding_boxes
 
       tileset = map.tileset
@@ -400,7 +402,7 @@ module Crystal2Day
       maximum_x = -1.0 / 0.0
       maximum_y = -1.0 / 0.0
 
-      @bounding_boxes.each_value do |box|
+      (use_precise_shapes ? @bounding_boxes : @map_boxes).each_value do |box|
         box_corner_low = @position + box.position
         box_corner_high = box_corner_low + box.size.scale(box.scale)
         box_minimum_x = box_corner_low.x
@@ -443,8 +445,7 @@ module Crystal2Day
 
             tile_shape = CollisionShapeBox.new(size: Crystal2Day.xy(tile_width, tile_height))
             tile_position = Crystal2Day.xy(x * tile_width, y * tile_height)
-            @map_boxes.each_value do |shape_own|
-              # TODO: Add both shapes to collision reference  
+            (use_precise_shapes ? @shapes : @map_boxes).each_value do |shape_own|
               if Crystal2Day::Collider.test(shape_own, aligned_position, tile_shape, tile_position)
                 add_tile_collision_reference(tile, tile_position, shape_own, tile_shape, tileset)
                 tile_found = true
@@ -545,7 +546,7 @@ module Crystal2Day
       end
     end
 
-    def check_for_collision_with(other : Entity)
+    def check_for_collision_with(other : Entity, use_precise_shapes : Bool = false)
       # Avoid collisions with yourself
       # TODO: Maybe add an option to turn this off
       return false if self == other

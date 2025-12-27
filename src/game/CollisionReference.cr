@@ -61,6 +61,8 @@ module Crystal2Day
 
     # TODO: Test these
 
+    # TODO: Add a safeguard to prevent these from being called if @shape_own isn't a box
+
     # These functions test whether a given entity and a tile overlap if projected onto a given axis.
     # Note that this excludes point-like overlap. This might seem odd, but these functions actually have a use.
     # Imagine a scenario with the following tiles:

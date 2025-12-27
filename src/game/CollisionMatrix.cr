@@ -8,6 +8,9 @@ module Crystal2Day
 
     @hook_base_name : String
 
+    # TODO: Implement
+    property use_precise_shapes_for_entity_map_checks : Bool = false
+
     def initialize(@hook_base_name : String)
     end
 
@@ -37,7 +40,7 @@ module Crystal2Day
       0.upto(@elements.size - 1) do |index_1|
         index_1.upto(@elements.size - 1) do |index_2|
           if get_entry(index_1, index_2)
-            @elements[index_1].check_for_collision_with(@elements[index_2])
+            @elements[index_1].check_for_collision_with(@elements[index_2], @use_precise_shapes_for_entity_map_checks)
           end
         end
       end

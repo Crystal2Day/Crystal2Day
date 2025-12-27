@@ -132,7 +132,7 @@ module Crystal2Day
       end
     end
 
-    def check_for_collision_with(other : EntityGroup | Map)
+    def check_for_collision_with(other : EntityGroup | Map, use_precise_shapes : Bool = false)
       return if @skip_collisions
 
       if other.is_a?(EntityGroup)
@@ -142,19 +142,19 @@ module Crystal2Day
               entity_1 = @members[index_1]
               entity_2 = @members[index_2]
 
-              entity_1.check_for_collision_with(entity_2)
+              entity_1.check_for_collision_with(entity_2, use_precise_shapes)
             end
           end
         else
           @members.each do |entity_1|
             other.as(EntityGroup).members.each do |entity_2|
-              entity_1.check_for_collision_with(entity_2)
+              entity_1.check_for_collision_with(entity_2, use_precise_shapes)
             end
           end
         end
       else
         @members.each do |entity|
-          entity.check_for_collision_with(other.as(Map))
+          entity.check_for_collision_with(other.as(Map), use_precise_shapes)
         end
       end
     end

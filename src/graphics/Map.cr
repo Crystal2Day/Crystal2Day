@@ -338,12 +338,12 @@ module Crystal2Day
       @layers.each{|layer| layer.update}
     end
 
-    def check_for_collision_with(other : EntityGroup | Map)
+    def check_for_collision_with(other : EntityGroup | Map, use_precise_shapes : Bool = false)
       if other.is_a?(Map)
         Crystal2Day.error "Map-Map collisions are not implemented."
       else
         # No need to implement this twice
-        other.check_for_collision_with(self)
+        other.check_for_collision_with(self, use_precise_shapes)
       end
     end
   end

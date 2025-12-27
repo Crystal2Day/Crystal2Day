@@ -52,7 +52,7 @@
     @[Anyolite::ExcludeInstanceMethod("update_parts")]
     @[Anyolite::ExcludeInstanceMethod("acceleration_step")]
     @[Anyolite::ExcludeInstanceMethod("update_physics_internal")]
-    @[Anyolite::SpecializeInstanceMethod("check_for_collision_with", [other : Entity])]
+    @[Anyolite::SpecializeInstanceMethod("check_for_collision_with", [other : Entity, use_precise_shapes : Bool = false])]
     @[Anyolite::AddBlockArgInstanceMethod("each_tile_collision", 1, Nil)]
     @[Anyolite::AddBlockArgInstanceMethod("each_entity_collision", 1, Nil)]
     class Entity; end
