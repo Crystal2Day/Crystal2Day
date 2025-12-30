@@ -49,6 +49,7 @@
     @[Anyolite::ExcludeInstanceMethod("delete")]
     @[Anyolite::ExcludeInstanceMethod("call_collision_hooks")]
     @[Anyolite::SpecializeInstanceMethod("set_state", [index : String, value : Crystal2Day::Parameter])]
+    @[Anyolite::SpecializeInstanceMethod("get_state_with_default", [index : String, value : Crystal2Day::Parameter])]
     @[Anyolite::ExcludeInstanceMethod("update_parts")]
     @[Anyolite::ExcludeInstanceMethod("acceleration_step")]
     @[Anyolite::ExcludeInstanceMethod("update_physics_internal")]

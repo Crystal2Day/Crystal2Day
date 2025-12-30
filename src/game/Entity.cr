@@ -267,6 +267,15 @@ module Crystal2Day
       @state[index]
     end
 
+    def get_state_with_default(index : String, value)
+      if @state[index]?
+        return get_state(index)
+      else
+        set_state(index, value)
+        return get_state(index)
+      end
+    end
+
     def get_initial_param
       get_state(INITIAL_PARAM_NAME)
     end
