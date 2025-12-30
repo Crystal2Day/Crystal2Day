@@ -72,12 +72,24 @@ module Crystal2Day
     # However, a direct box collision will give a positive collision result, so you can use the methods presented here to avoid that.
     # If however the X right to E is removed and E moves a pixel to the right, it will correctly interact with T again.
 
+    # TODO: Something doesn't work with these yet
+
     def tile_overlap_on_x_axis?(entity : Crystal2Day::Entity)
-      (entity.position.x + @shape_own.position.x - @other_position.x).abs < @shape_own.as(CollisionShapeBox).size.x // 2 + @shape_other.as(CollisionShapeBox).size.x // 2
+      entity_shape_x = entity.position.x + @shape_own.position.x
+
+      entity_size_x = @shape_own.as(CollisionShapeBox).size.x
+      tile_size_x = @shape_other.as(CollisionShapeBox).size.x
+
+      return (entity_shape_x + entity_size_x * 0.5 - @other_position.x - tile_size_x * 0.5).abs < (entity_size_x + tile_size_x) * 0.5
     end
 
     def tile_overlap_on_y_axis?(entity : Crystal2Day::Entity)
-      (entity.position.y + @shape_own.position.y - @other_position.y).abs < @shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2
+      entity_shape_y = entity.position.y + @shape_own.position.y
+
+      entity_size_y = @shape_own.as(CollisionShapeBox).size.y
+      tile_size_y = @shape_other.as(CollisionShapeBox).size.y
+      
+      return (entity_shape_y + entity_size_y * 0.5 - @other_position.y - tile_size_y * 0.5).abs < (entity_size_y + tile_size_y) * 0.5
     end
 
     def tile_touching_at_the_left?(entity : Crystal2Day::Entity)
@@ -114,23 +126,39 @@ module Crystal2Day
     end
 
     def tile_overlapping_at_the_left?(entity : Crystal2Day::Entity)
-      distance = entity.position.x + @shape_own.position.x - @other_position.x
-      return (distance > 0) && (distance < (@shape_own.as(CollisionShapeBox).size.x // 2 + @shape_other.as(CollisionShapeBox).size.x // 2))
+      entity_shape_x = entity.position.x + @shape_own.position.x
+
+      entity_size_x = @shape_own.as(CollisionShapeBox).size.x
+      tile_size_x = @shape_other.as(CollisionShapeBox).size.x
+
+      return (entity_shape_x > @other_position.x) && (entity_shape_x < @other_position.x + tile_size_x)
     end
 
     def tile_overlapping_at_the_right?(entity : Crystal2Day::Entity)
-      distance = entity.position.x + @shape_own.position.x - @other_position.x
-      return (distance < 0) && (distance > -(@shape_own.as(CollisionShapeBox).size.x // 2 + @shape_other.as(CollisionShapeBox).size.x // 2))
+      entity_shape_x = entity.position.x + @shape_own.position.x
+
+      entity_size_x = @shape_own.as(CollisionShapeBox).size.x
+      tile_size_x = @shape_other.as(CollisionShapeBox).size.x
+
+      return (entity_shape_x + entity_size_x > @other_position.x) && (entity_shape_x + entity_size_x < @other_position.x + tile_size_x)
     end
 
     def tile_overlapping_at_the_top?(entity : Crystal2Day::Entity)
-      distance = entity.position.y + @shape_own.position.y - @other_position.y
-      return (distance > 0) && (distance < (@shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2))
+      entity_shape_y = entity.position.y + @shape_own.position.y
+
+      entity_size_y = @shape_own.as(CollisionShapeBox).size.y
+      tile_size_y = @shape_other.as(CollisionShapeBox).size.y
+
+      return (entity_shape_y > @other_position.y) && (entity_shape_y < @other_position.y + tile_size_y)
     end
 
     def tile_overlapping_at_the_bottom?(entity : Crystal2Day::Entity)
-      distance = entity.position.y + @shape_own.position.y - @other_position.y
-      return (distance < 0) && (distance > -(@shape_own.as(CollisionShapeBox).size.y // 2 + @shape_other.as(CollisionShapeBox).size.y // 2))
+      entity_shape_y = entity.position.y + @shape_own.position.y
+
+      entity_size_y = @shape_own.as(CollisionShapeBox).size.y
+      tile_size_y = @shape_other.as(CollisionShapeBox).size.y
+
+      return (entity_shape_y + entity_size_y > @other_position.y) && (entity_shape_y + entity_size_y < @other_position.y + tile_size_y)
     end
 
     def tile_touching_without_edges_at_the_left?(entity : Crystal2Day::Entity)

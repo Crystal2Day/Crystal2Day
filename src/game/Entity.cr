@@ -468,19 +468,20 @@ module Crystal2Day
         shape_size = collision.shape_own.as(CollisionShapeBox).size
 
         # TODO: Add platforms that can be passed through (by only considering y-up-alignment, for example)
-        # TODO: Fix issue when climbing a higher wall
 
         if collision.tile.get_flag("solid")
+          # Collision at the bottom
           potential_alignment_y = collision.other_position.y - shape_size.y - shape_offset.y
-          if @velocity.y > 0 && @position.y > potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
+          if @velocity.y > 0 && collision.tile_overlapping_without_edges_at_the_bottom?(self)
             if potential_alignment_y < alignment_y && potential_alignment_y >= @previous_position.y
               align_y = true
               alignment_y = potential_alignment_y
             end
           end
 
-          potential_alignment_y = collision.other_position.y + collision.tileset.tile_height + shape_size.y + shape_offset.y
-          if @velocity.y < 0 && @position.y < potential_alignment_y && collision.tile_overlap_on_x_axis?(self)
+          # Collision at the top
+          potential_alignment_y = collision.other_position.y + collision.tileset.tile_height - shape_offset.y
+          if @velocity.y < 0 && collision.tile_overlapping_without_edges_at_the_top?(self)
             if potential_alignment_y > alignment_y && potential_alignment_y <= @previous_position.y
               align_y = true
               alignment_y = potential_alignment_y
@@ -492,16 +493,18 @@ module Crystal2Day
             @velocity.y = 0
           end
 
+          # Collision at the right
           potential_alignment_x = collision.other_position.x - shape_size.x - shape_offset.x
-          if @velocity.x > 0 && @position.x > potential_alignment_x && collision.tile_overlap_on_y_axis?(self)
+          if @velocity.x > 0 && collision.tile_overlapping_without_edges_at_the_right?(self)
             if potential_alignment_x < alignment_x && potential_alignment_x >= @previous_position.x
               align_x = true
               alignment_x = potential_alignment_x
             end
           end
 
-          potential_alignment_x = collision.other_position.x + collision.tileset.tile_width + shape_size.x + shape_offset.x
-          if @velocity.x < 0 && @position.x < potential_alignment_x && collision.tile_overlap_on_y_axis?(self)
+          # Collision at the left
+          potential_alignment_x = collision.other_position.x + collision.tileset.tile_width - shape_offset.x
+          if @velocity.x < 0 && collision.tile_overlapping_without_edges_at_the_left?(self)
             if potential_alignment_x > alignment_x && potential_alignment_x <= @previous_position.x
               align_x = true
               alignment_x = potential_alignment_x
