@@ -401,7 +401,10 @@ module Crystal2Day
     def reload_vertex_grid(offset : Coords)
       tileset = @parent_map.tileset
 
-      view_width = (drawing_rect.width / tileset.tile_width).ceil.to_u32 + 1
+      tile_width = tileset.tile_width
+      tile_height = tileset.tile_height
+
+      view_width = (drawing_rect.width / tile_width).ceil.to_u32 + 1
       view_height = (drawing_rect.height / tileset.tile_height).ceil.to_u32 + 1
 
       generate_vertices(view_width, view_height)
@@ -409,16 +412,19 @@ module Crystal2Day
       pos_shift_x = @render_target.renderer.position_shift.x + offset.x
       pos_shift_y = @render_target.renderer.position_shift.y + offset.y
 
-      exact_shift_x = @drawing_rect.x + @drawing_rect.width / 2 - pos_shift_x - (view_width - 1) * (tileset.tile_width / 2) - 1
-      exact_shift_y = @drawing_rect.y + @drawing_rect.height / 2 - pos_shift_y - (view_height - 1) * (tileset.tile_height / 2) - 1
+      rect_shift_dx = @drawing_rect.x - pos_shift_x
+      rect_shift_dy = @drawing_rect.y - pos_shift_y
 
-      n_tiles_x = tileset.texture.width // tileset.tile_width
-      n_tiles_y = tileset.texture.height // tileset.tile_height
+      exact_shift_x = rect_shift_dx + @drawing_rect.width / 2 - (view_width - 1) * (tile_width / 2) - 1
+      exact_shift_y = rect_shift_dy + @drawing_rect.height / 2 - (view_height - 1) * (tile_height / 2) - 1
+
+      n_tiles_x = tileset.texture.width // tile_width
+      n_tiles_y = tileset.texture.height // tile_height
 
       0.upto(view_width - 1) do |x|
         0.upto(view_height - 1) do |y|
-          exact_actual_x = x.to_f32 + exact_shift_x / tileset.tile_width
-          exact_actual_y = y.to_f32 + exact_shift_y / tileset.tile_height
+          exact_actual_x = x.to_f32 + exact_shift_x / tile_width
+          exact_actual_y = y.to_f32 + exact_shift_y / tile_height
 
           # NOTE: The rounding here is to prevent floating point errors for now
           # This should work, but maybe there's a better solution
@@ -434,14 +440,14 @@ module Crystal2Day
             dx = (c == 1 || c == 2 || c == 4) ? 1 : 0
             dy = (c == 2 || c == 4 || c == 5) ? 1 : 0
 
-            vx = ((actual_x + dx) * tileset.tile_width).to_f32 - @drawing_rect.x + pos_shift_x
-            vy = ((actual_y + dy) * tileset.tile_height).to_f32 - @drawing_rect.y + pos_shift_y
+            vx = ((actual_x + dx) * tile_width).to_f32 - rect_shift_dx
+            vy = ((actual_y + dy) * tile_height).to_f32 - rect_shift_dy
 
             vtx = (tx + dx) / n_tiles_x
             vty = (ty + dy) / n_tiles_y
 
             vertex_no = (x * view_height + y) * 6 + c
-            new_vertex = LibSDL::Vertex.new(position: Crystal2Day::Coords.new(vx, vy).data, tex_coord: Crystal2Day::Coords.new(vtx, vty).data, color: Crystal2Day::Color.white.to_float_color)
+            new_vertex = LibSDL::Vertex.new(position: LibSDL::FPoint.new(x: vx, y: vy), tex_coord: LibSDL::FPoint.new(x: vtx, y: vty), color: LibSDL::FColor.new(r: 1.0, g: 1.0, b: 1.0, a: 1.0))
             @vertices[vertex_no] = new_vertex
           end
         end
