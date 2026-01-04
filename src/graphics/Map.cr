@@ -192,6 +192,8 @@ module Crystal2Day
         @tiles.push Array(TileID).new(initial_capacity: @width)
         0.upto(@width - 1) do |tx|
           parsed_tile = parsed_layer.data.not_nil!.content[ty * @width + tx]
+          # Defined tiles start with 1, so we need to reduce them to zero
+          # TODO: Include gid of parsed tileset
           @tiles[ty].push TileID.new(parsed_tile == 0 ? @background_tile : parsed_tile - 1)
         end
       end

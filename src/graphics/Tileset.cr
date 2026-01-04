@@ -144,7 +144,8 @@ module Crystal2Day
             if prop.name == "no_collision"
               @tiles[tile_id].no_collision = true
             elsif prop.type == "bool"
-              @tiles[tile_id].set_flag(prop.name, prop.value != "0")
+              puts "Setting flag #{prop.name} for tile ID #{tile_id} to #{prop.value != "0"} as #{prop.value.inspect}"
+              @tiles[tile_id].set_flag(prop.name, (prop.value != "0" && prop.value != "false"))
             else
               # Currently unsupported, might receive support in the future
             end
