@@ -157,6 +157,7 @@ end
 * Should scenes contain a specific batch of variables for Anyolite only?
 * How should UI elements work?
 * How should parts and shapes be connected?
+* How much support should there be for Tiled?
 
 ### Version 1.0.0
 
