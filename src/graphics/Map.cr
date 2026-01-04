@@ -244,7 +244,8 @@ module Crystal2Day
       if given_tileset
         @tileset = given_tileset
       else
-        @tileset.load_from_tiled_file!(Crystal2Day.convert_to_absolute_path(parsed_map.tileset_file))
+        # TODO: Currently only works with the first tileset
+        @tileset.load_from_tiled_file!(Crystal2Day.convert_to_absolute_path(parsed_map.array_tileset[0].source))
       end
 
       parsed_map.array_layer.each do |parsed_layer|
