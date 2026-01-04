@@ -120,42 +120,45 @@ module Crystal2Day
     def load_from_tiled_file!(filename : String, given_texture : Texture? = nil)
       full_filename = Crystal2Day.convert_to_absolute_path(filename)
 
-      parsed_tileset = Tiled.parse_tileset(full_filename)
+      parsed_tileset = Tiled.parse_tileset_from_file(full_filename)
 
-      @tile_width = parsed_tileset.tile_width
-      @tile_height = parsed_tileset.tile_height
+      @tile_width = parsed_tileset.tilewidth
+      @tile_height = parsed_tileset.tileheight
 
       if given_texture
         @texture = given_texture
       else
-        @texture = Crystal2Day.rm.load_texture(Crystal2Day.convert_to_absolute_path(parsed_tileset.image_file))
+        @texture = Crystal2Day.rm.load_texture(Crystal2Day.convert_to_absolute_path(parsed_tileset.image.not_nil!.source.not_nil!))
       end
 
-      parsed_tileset.tile_count.times do |tile_id|
-        new_tile = Tile.new
-        
-        new_tile.name = "T_#{tile_id}"
+      parsed_tileset.tilecount.times do |tile_id|
+        add_tile(Tile.new)
+        @animations.push(Array(TileAnimationFrame).new)
+      end
 
-        parsed_tileset.tile_properties[tile_id].properties.each do |name, prop|
-          if name == "no_collision"
-            new_tile.no_collision = true
-          elsif prop.is_a?(Bool)
-            new_tile.set_flag(name, prop)
-          else
-            # Currently unsupported, might receive support in the future
+      parsed_tileset.array_tile.each do |parsed_tile|
+        tile_id = parsed_tile.id
+
+        if properties = parsed_tile.properties
+          properties.array_property.each do |prop|
+            if prop.name == "no_collision"
+              @tiles[tile_id].no_collision = true
+            elsif prop.type == "bool"
+              @tiles[tile_id].set_flag(prop.name, prop.value != "0")
+            else
+              # Currently unsupported, might receive support in the future
+            end
           end
         end
 
-        @animations.push(Array(TileAnimationFrame).new)
-
         total_duration = 0u32
-        parsed_tileset.tile_animations[tile_id].each do |tile_anim|
-          total_duration += tile_anim.duration
-          frame = TileAnimationFrame.new(tile_anim.tile_id.as(TileID), tile_anim.duration, total_duration)
-          @animations[tile_id].push(frame)
+        if anim = parsed_tile.animation
+          anim.array_frame.each do |tile_anim|
+            total_duration += tile_anim.duration
+            frame = TileAnimationFrame.new(tile_anim.tileid.as(TileID), tile_anim.duration, total_duration)
+            @animations[tile_id].push(frame)
+          end
         end
-        
-        add_tile(new_tile)
       end
     end
   end

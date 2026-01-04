@@ -78,7 +78,7 @@ module Crystal2Day
       end
     end
 
-    def load_from_tiled_layer!(parsed_layer : Tiled::ParsedLayer)
+    def load_from_tiled_layer!(parsed_layer : Tiled::Layer)
       # TODO: Error as this should not be implemented
     end
 
@@ -99,14 +99,14 @@ module Crystal2Day
         combo_info.get_from_parsed_json!(parsed_stream)
         
         map_names = parsed_stream["maps"].as_a.map {|name| name.as_s}
-        parsed_maps = map_names.map {|map_name| Tiled.parse_map(Crystal2Day.convert_to_absolute_path(map_name))}
+        parsed_maps = map_names.map {|map_name| Tiled.parse_map_from_file(Crystal2Day.convert_to_absolute_path(map_name))}
 
         @combo_info = combo_info
         @map_list = Array(MapContent).new(initial_capacity: combo_info.number_of_maps)
 
         0.upto(map_names.size - 1) do |i|
           map_content = MapContent.new
-          map_content.load_from_tiled_layer!(parsed_maps[i].layers[layer_id])
+          map_content.load_from_tiled_layer!(parsed_maps[i].array_layer[layer_id])
           @map_list.push map_content
         end
       end
@@ -182,7 +182,7 @@ module Crystal2Day
       end
     end
 
-    def load_from_tiled_layer!(parsed_layer : Tiled::ParsedLayer)
+    def load_from_tiled_layer!(parsed_layer : Tiled::Layer)
       @width = parsed_layer.width
       @height = parsed_layer.height
 
@@ -191,7 +191,7 @@ module Crystal2Day
       0.upto(@height - 1) do |ty|
         @tiles.push Array(TileID).new(initial_capacity: @width)
         0.upto(@width - 1) do |tx|
-          parsed_tile = parsed_layer.content[ty * @width + tx]
+          parsed_tile = parsed_layer.data.not_nil!.content[ty * @width + tx]
           @tiles[ty].push TileID.new(parsed_tile == 0 ? @background_tile : parsed_tile - 1)
         end
       end
@@ -238,7 +238,7 @@ module Crystal2Day
 
       full_filename = Crystal2Day.convert_to_absolute_path(filename)
 
-      parsed_map = Tiled.parse_map(full_filename)
+      parsed_map = Tiled.parse_map_from_file(full_filename)
 
       # TODO: This might cause issues, test this at some point
       if given_tileset
@@ -247,7 +247,7 @@ module Crystal2Day
         @tileset.load_from_tiled_file!(Crystal2Day.convert_to_absolute_path(parsed_map.tileset_file))
       end
 
-      parsed_map.layers.each do |parsed_layer|
+      parsed_map.array_layer.each do |parsed_layer|
         new_layer = MapLayer.new(self)
         new_layer.content.load_from_tiled_layer!(parsed_layer)
         add_layer(new_layer)
@@ -268,7 +268,7 @@ module Crystal2Day
         combo_info.get_from_parsed_json!(parsed_stream)
         
         map_names = parsed_stream["maps"].as_a.map {|name| name.as_s}
-        parsed_maps = map_names.map {|map_name| Tiled.parse_map(Crystal2Day.convert_to_absolute_path(map_name))}
+        parsed_maps = map_names.map {|map_name| Tiled.parse_map_from_file(Crystal2Day.convert_to_absolute_path(map_name))}
 
         number_of_layers.times do |layer_id|
           new_layer = MapLayer.new(self)
@@ -279,7 +279,7 @@ module Crystal2Day
 
           0.upto(map_names.size - 1) do |i|
             map_content = MapContent.new
-            map_content.load_from_tiled_layer!(parsed_maps[i].layers[layer_id])
+            map_content.load_from_tiled_layer!(parsed_maps[i].array_layer[layer_id])
             new_layer.content.as(MapCombo).map_list.push map_content
           end
 
