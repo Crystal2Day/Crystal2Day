@@ -141,7 +141,7 @@ end
 
 #### Urgent todo list
 
-* [ ] Require specific SDL versions
+Currently none
 
 #### Open design questions:
 
