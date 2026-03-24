@@ -54,10 +54,6 @@ Note that its syntax may change (frequently) until version 1.0.0.
 * Crystal (obviously)
 * SDL 3 (media library)
 
-IMPORTANT NOTE: This version of Crystal2Day uses a development version of the SDL_mixer 3.0+
-library. Currently there are no official releases, so it's recommended to download development
-builds instead.
-
 ## Optional
 
 * Git (for installing additional features)

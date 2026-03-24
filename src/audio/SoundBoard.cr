@@ -38,11 +38,11 @@ module Crystal2Day
     end
 
     def volume
-      LibSDL.mix_get_master_gain(data)
+      LibSDL.mix_get_mixer_gain(data)
     end
 
     def volume=(value : Number)
-      LibSDL.mix_set_master_gain(data, value)
+      LibSDL.mix_set_mixer_gain(data, value)
     end
 
     def play_sound(filename : String, channel : Int = 0, volume : Float = 1.0, pitch : Float = 1.0, number_of_loops : Int = 0)
