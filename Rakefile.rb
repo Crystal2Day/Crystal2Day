@@ -55,9 +55,9 @@ task :add_feature_imgui do
 end
 
 task :install_sdl_libraries do
-  sdl_version = "3.4.0"
-  sdl_image_version = "3.4.0"
-  sdl_mixer_version = "3.2.0"
+  sdl_version = "3.4.14"
+  sdl_image_version = "3.4.4"
+  sdl_mixer_version = "3.2.4"
   sdl_ttf_version = "3.2.2"
 
   if ENV["OS"] == "Windows_NT"

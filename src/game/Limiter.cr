@@ -24,7 +24,7 @@ module Crystal2Day
 
     @current_draw_fps : Float64 = 0.0
 
-    @timer : Time::Span? = nil
+    @timer : Time::Instant? = nil
 
     def reload
       @render_interval = (@max / @renders_per_second).to_u32
@@ -65,7 +65,7 @@ module Crystal2Day
     end
 
     def tick
-      @timer = Time.monotonic unless @timer
+      @timer = Time.instant unless @timer
 
       is_update_frame = (@counter % @tick_interval == 0)
 			is_draw_frame = (@counter % @render_interval == 0)
@@ -94,11 +94,11 @@ module Crystal2Day
 			end
 
 			if scheduled_frame
-				while (Time.monotonic - @timer.not_nil!).total_seconds < (@temp_counter + 1) / @max.to_f
+				while (Time.instant - @timer.not_nil!).total_seconds < (@temp_counter + 1) / @max.to_f
 				end
-        @current_draw_fps = 1.0 / (Time.monotonic - @timer.not_nil!).total_seconds if @track_fps
+        @current_draw_fps = 1.0 / (Time.instant - @timer.not_nil!).total_seconds if @track_fps
 				@temp_counter = 0
-				@timer = Time.monotonic
+				@timer = Time.instant
 			else
 				@temp_counter += 1
 			end
