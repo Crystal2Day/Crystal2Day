@@ -1,58 +1,73 @@
-# A wrapper around a font texture.
-# Use it to draw texts.
+# A collection of text fragments forming a whole text.
+# This allows for better control over texts.
 
 module Crystal2Day
-  class Text < Crystal2Day::Drawable
-    Crystal2DayHelper.wrap_type(Pointer(LibSDL::TTFText))
+  class Text
+    FRAGMENTS_INITIAL_CAPACITY = 16
 
     getter font : Crystal2Day::Font
     getter color : Crystal2Day::Color
-
-    # TODO: Rendering rotated texts currently doesn't work, maybe reenable it somehow?
-    # TODO: Add more text options 
+    getter text : String
 
     property position : Crystal2Day::Coords
 
-    def initialize(text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black, @position : Crystal2Day::Coords = Crystal2Day.xy, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
-      super(render_target)
-      @data = LibSDL.ttf_create_text(render_target.renderer.text_engine.not_nil!.data, @font.data, text, text.bytesize)
-      render_target.renderer.text_engine.not_nil!.register_text(self)
-      self.color = color
+    property z : UInt8 = 0
+
+    @render_target : Crystal2Day::RenderTarget
+
+    @fragments : Array(Crystal2Day::TextFragment) = Array(Crystal2Day::TextFragment).new(initial_capacity: FRAGMENTS_INITIAL_CAPACITY)
+
+    def initialize(@text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black, @position : Crystal2Day::Coords = Crystal2Day.xy, @render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
+      update
     end
 
-    def text=(new_value : String)
-      LibSDL.ttf_set_text_string(data, new_value, new_value.bytesize)
-    end
+    # TODO: Extend this to include pictures and formatting options in some way
+    # TODO: Only update when actually necessary instead of each time an attribute changes
+    def update
+      @fragments.each do |fragment|
+        fragment.free
+      end
+      @fragments.clear
 
-    def font=(new_value : Crystal2Day::Font)
-      LibSDL.ttf_set_text_font(data, new_value.data)
-      @font = new_value
-    end
+      accumulated_offset = Crystal2Day.xy
 
-    def color=(new_value : Crystal2Day::Color)
-      LibSDL.ttf_set_text_color(data, new_value.r, new_value.g, new_value.b, new_value.a)
-      @color = new_value
-    end
-
-    def size
-      LibSDL.ttf_size_utf8(@font.data, @text, out w, out h)
-      Crystal2Day::Rect.new(@positon.x, @position.y, w, h)
-    end
-
-    def draw_directly(offset : Coords)
-      final_position = @position + @render_target.renderer.position_shift + offset
-      LibSDL.ttf_draw_renderer_text(data, final_position.x, final_position.y)
-    end
-
-    def free
-      if @data
-        LibSDL.ttf_destroy_text(data)
-        @data = nil
+      # TODO: Currently this only splits after newlines, but this needs other features as well
+      @text.split("\n").each do |subtext|
+        new_fragment = TextFragment.new(subtext, @font, @color, accumulated_offset, @render_target)
+        @fragments.push(new_fragment)
+        accumulated_offset += Crystal2Day.xy(0, new_fragment.size.height)
       end
     end
 
+    def text=(new_value : String)
+      @text = new_value
+      update
+    end
+
+    def font=(new_value : Crystal2Day::Font)
+      @font = new_value
+      update
+    end
+
+    def color=(new_value : Crystal2Day::Color)
+      @color = new_value
+      update
+    end
+
+    # TODO: Maybe recycle text elements?
     def finalize
-      free
+      @fragments.each do |fragment|
+        fragment.free
+      end
+      @fragments.clear
+    end
+
+    def draw(offset : Coords = Crystal2Day.xy)
+      @render_target.with_z_offset(@z) do
+        @fragments.each do |fragment|
+          fragment.draw(@position + offset)
+        end
+      end
     end
   end
 end

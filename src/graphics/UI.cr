@@ -17,7 +17,6 @@ module Crystal2Day
       @texts.each_value do |text|
         text.draw(offset)
       end
-      # TODO: Maybe extend this to include pictures in some way?
     end
 
     def update_text(name : String, new_text : String)
