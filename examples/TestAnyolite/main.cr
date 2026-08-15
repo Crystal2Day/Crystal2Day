@@ -120,7 +120,7 @@ class CustomScene < CD::Scene
   end
 
   def update
-    @uis["FPS"].update_text("Tracker", "FPS: #{CD.get_fps.round.to_i}\nThis even works multilined!")
+    @uis["FPS"].update_text("Tracker", "FPS: #{CD.get_fps.round.to_i}\nThis e$(sprite:ExampleSprite)ven works multilined!")
   end
 
   def draw
