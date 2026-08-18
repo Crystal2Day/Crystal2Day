@@ -84,6 +84,7 @@ module Crystal2Day
         # TODO: Maybe rearrange the order if necessary
         @maps.each_value {|map| map.update}
         @sprites.each_value {|sprite| sprite.update}
+        @uis.each_value {|member| member.update}
 
         @temp_animations.reject! do |anim|
           anim.update

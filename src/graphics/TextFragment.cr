@@ -13,9 +13,13 @@ module Crystal2Day
 
     property position : Crystal2Day::Coords
 
+    # Keep a reference of the text engine so it isn't deleted before this structure
+    @text_engine : Crystal2Day::TextEngine
+
     def initialize(text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black, @position : Crystal2Day::Coords = Crystal2Day.xy, render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
       super(render_target)
-      @data = LibSDL.ttf_create_text(render_target.renderer.text_engine.not_nil!.data, @font.data, text, text.bytesize)
+      @text_engine = render_target.renderer.text_engine.not_nil!
+      @data = LibSDL.ttf_create_text(@text_engine.data, @font.data, text, text.bytesize)
       self.color = color
     end
 

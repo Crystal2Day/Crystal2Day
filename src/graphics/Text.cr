@@ -16,21 +16,29 @@ module Crystal2Day
 
     @render_target : Crystal2Day::RenderTarget
 
-    @fragments : Array(Crystal2Day::TextFragment) = Array(Crystal2Day::TextFragment).new(initial_capacity: FRAGMENTS_INITIAL_CAPACITY)
-    @sprites : Array(Crystal2Day::Sprite) = Array(Crystal2Day::Sprite).new(initial_capacity: SPRITES_INITIAL_CAPACITY)
+    getter needs_rebuild : Bool = false
+
+    getter fragments : Array(Crystal2Day::TextFragment) = Array(Crystal2Day::TextFragment).new(initial_capacity: FRAGMENTS_INITIAL_CAPACITY)
+    getter sprites : Array(Crystal2Day::Sprite) = Array(Crystal2Day::Sprite).new(initial_capacity: SPRITES_INITIAL_CAPACITY)
 
     def initialize(@text : String, @font : Crystal2Day::Font, @color : Crystal2Day::Color = Crystal2Day::Color.black, @position : Crystal2Day::Coords = Crystal2Day.xy, @render_target : Crystal2Day::RenderTarget = Crystal2Day.current_window)
-      update
+      # Important: This doesn't immediately rebuild in case you create the text earlier and then pass it somewhere else.
+      # The UI class will account for this, but if you don't use it around this Text class, you need to call rebuild at the beginning once manually.
+      # Otherwise it won't happen before the next update routine, which might desync things. 
+      @needs_rebuild = true
     end
 
-    # TODO: Extend this to include pictures and formatting options in some way
-    # TODO: Only update when actually necessary instead of each time an attribute changes
     def update
-      @fragments.each do |fragment|
-        fragment.free
+      rebuild if @needs_rebuild
+
+      @sprites.each do |sprite|
+        sprite.update
       end
-      @fragments.clear
-      @sprites.clear
+    end
+
+    # TODO: Extend this to include other options (like formatting) in some way
+    def rebuild
+      reset
 
       accumulated_offset = Crystal2Day.xy
 
@@ -44,7 +52,6 @@ module Crystal2Day
             command = subtext_2[2..-2]
             if command.starts_with?("sprite:")
               # TODO: Add starting animation
-              # TODO: Cache sprite for animations if possible
               sprite = Sprite.new(Crystal2Day.rm.get_sprite_template(command[7..-1]), render_target: @render_target)
               sprite.update
               sprite.z = @z
@@ -69,30 +76,35 @@ module Crystal2Day
         accumulated_offset.y += max_height
         accumulated_offset.x = 0
       end
+
+      @needs_rebuild = false
     end
 
     def text=(new_value : String)
       @text = new_value
-      update
+      @needs_rebuild = true
     end
 
     def font=(new_value : Crystal2Day::Font)
       @font = new_value
-      update
+      @needs_rebuild = true
     end
 
     def color=(new_value : Crystal2Day::Color)
       @color = new_value
-      update
+      @needs_rebuild = true
     end
 
-    # TODO: Maybe recycle text elements?
-    def finalize
+    def reset
       @fragments.each do |fragment|
         fragment.free
       end
       @fragments.clear
       @sprites.clear
+    end
+
+    def finalize
+      reset
     end
 
     def draw(offset : Coords = Crystal2Day.xy)

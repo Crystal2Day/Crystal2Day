@@ -76,7 +76,7 @@ class CustomScene < CD::Scene
     debug_grid.pin
 
     default_font = CD.rm.load_font(CD::Font.default_font_path, size: 50)
-    some_text = CD::Text.new("FPS: 0", default_font)
+    some_text = CD::Text.new("FPS: 0\nThis e$(sprite:ExampleSprite)ven works multilined!", default_font)
     some_text.z = 4
     some_text.color = CD::Color.white
     some_text.position = CD.xy(0, 0)
@@ -120,7 +120,7 @@ class CustomScene < CD::Scene
   end
 
   def update
-    @uis["FPS"].update_text("Tracker", "FPS: #{CD.get_fps.round.to_i}\nThis e$(sprite:ExampleSprite)ven works multilined!")
+    @uis["FPS"].texts["Tracker"].fragments[0].text = "FPS: #{CD.get_fps.round.to_i}"
   end
 
   def draw
