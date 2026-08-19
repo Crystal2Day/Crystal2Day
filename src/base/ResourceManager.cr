@@ -36,7 +36,7 @@ module Crystal2Day
         if @{{(name + plural).id}}[tag]?
           return @{{(name + plural).id}}[tag]
         else
-          Crystal2Day.error("{{name.id}} with tag #{tag} was not loaded.")
+          Crystal2Day.error("{{name.id}} with tag #{tag} does not exist or was not loaded yet.")
         end
       end
 

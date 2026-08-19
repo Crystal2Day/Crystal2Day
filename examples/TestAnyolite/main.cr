@@ -75,8 +75,8 @@ class CustomScene < CD::Scene
     debug_grid.node_distance = CD.xy(50, 50)
     debug_grid.pin
 
-    default_font = CD.rm.load_font(CD::Font.default_font_path, size: 50)
-    some_text = CD::Text.new("FPS: 0\nThis e$(sprite:ExampleSprite)ven works multilined!", default_font)
+    default_font = CD.rm.load_font(CD::Font.default_font_path, size: 80)
+    some_text = CD::Text.new("FPS: 0 $(sprite:ExampleSprite|animation:Main|placement:0.0)\nThis even works multilined!", default_font)
     some_text.z = 4
     some_text.color = CD::Color.white
     some_text.position = CD.xy(0, 0)
@@ -120,7 +120,8 @@ class CustomScene < CD::Scene
   end
 
   def update
-    @uis["FPS"].texts["Tracker"].fragments[0].text = "FPS: #{CD.get_fps.round.to_i}"
+    @uis["FPS"].texts["Tracker"].fragments[0].text = "FPS: #{CD.get_fps.round.to_i} "
+    @uis["FPS"].texts["Tracker"].sprite_placements[0] += 0.1*(rand - 0.5)
   end
 
   def draw
