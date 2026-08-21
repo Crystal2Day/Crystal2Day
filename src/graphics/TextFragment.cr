@@ -49,7 +49,6 @@ module Crystal2Day
 
     def free
       if @data
-        # TODO: This sometimes still causes memory issues for some reason. Maybe just register each text at the text engine again?
         LibSDL.ttf_destroy_text(data)
         @data = nil
       end
