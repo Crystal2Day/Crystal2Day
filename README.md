@@ -120,6 +120,7 @@ end
 * Music and sounds
 * Textures, sprites, fonts, texts
 * Basic shapes (points, lines, boxes, circles, triangles, ellipses)
+* Drawing of (animated) sprites in texts
 * Z-Ordering
 * Scene system
 * Support for multiple windows
