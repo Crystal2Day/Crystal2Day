@@ -25,9 +25,5 @@ module Crystal2Day
         text.draw(offset)
       end
     end
-
-    def change_text(name : String, new_text : String)
-      @texts[name].text = new_text
-    end
   end
 end

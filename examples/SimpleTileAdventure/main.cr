@@ -139,7 +139,7 @@ class CustomScene < CD::Scene
   end
 
   def update
-    @uis["FPS"].change_text("Tracker", "FPS: #{CD.get_fps.round.to_i}")
+    @uis["FPS"].texts["Tracker"].fragments[0].text = "FPS: #{CD.get_fps.round.to_i}"
   end
 
   def draw
