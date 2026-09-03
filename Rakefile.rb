@@ -16,7 +16,13 @@ end
 task :add_feature_anyolite do
   system("git clone --branch main https://github.com/Anyolite/anyolite lib/anyolite")
   Dir.chdir("lib/anyolite")
-  system("crystal install.cr")
+  if ENV["PROCESSOR_IDENTIFIER"].include?("ARM")
+    # For some reason, the other command fails on ARM64
+    # TODO: Find a better solution
+    system("cmd /C rake build_shard")
+  else
+    system("crystal install.cr")
+  end
   Dir.chdir("../..")
   if File.exist?("lib/anyolite/build/mruby/lib/libmruby.lib") || File.exist?("lib/anyolite/build/mruby/lib/libmruby.a")
     puts "Anyolite was successfully installed."
