@@ -61,8 +61,13 @@ task :install_sdl_libraries do
   sdl_ttf_version = "3.2.2"
 
   if ENV["OS"] == "Windows_NT"
-    # TODO: Autodetect if this is ARM64 or not
-    architecture = "x64"
+    # NOTE: ENV["PROCESSOR_ARCHITECTURE"] lies to us here
+    # TODO: Is there a better solution to do this?
+    if ENV["PROCESSOR_IDENTIFIER"].include?("ARM")
+      architecture = "arm64"
+    else
+      architecture = "x64"
+    end
 
     Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL/releases/download/release-#{sdl_version}/SDL3-devel-#{sdl_version}-VC.zip", "temp/SDL-devel")
     Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL_image/releases/download/release-#{sdl_image_version}/SDL3_image-devel-#{sdl_image_version}-VC.zip", "temp/SDL_image-devel")
