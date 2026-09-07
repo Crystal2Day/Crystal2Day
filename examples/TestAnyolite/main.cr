@@ -122,6 +122,10 @@ class CustomScene < CD::Scene
   def update
     @uis["FPS"].texts["Tracker"].fragments[0].text = "FPS: #{CD.get_fps.round.to_i} "
     @uis["FPS"].texts["Tracker"].sprite_placements[0] += 0.1*(rand - 0.5)
+
+    if rand < 0.001
+      maps["Map1"].layers[1].set_tile(5, 5, CD::TileID.new(6))
+    end
   end
 
   def draw

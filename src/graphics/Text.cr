@@ -12,8 +12,6 @@ module Crystal2Day
     getter color : Crystal2Day::Color
     getter text : String
 
-    getter original_color : Crystal2Day::Color
-
     property position : Crystal2Day::Coords
 
     property z : UInt8 = 0
@@ -36,7 +34,6 @@ module Crystal2Day
       # The UI class will account for this, but if you don't use it around this Text class, you need to call rebuild at the beginning once manually.
       # Otherwise it won't happen before the next update routine, which might desync things. 
       @needs_rebuild = true
-      @original_color = @color
     end
 
     def update
@@ -80,8 +77,6 @@ module Crystal2Day
               @sprite_placements.push(sprite_placement)
               @render_list.last.push(sprite)
               # TODO: Add ways to resize and reposition sprites
-            elsif main_command.starts_with?("color:")
-              # TODO: Implement this by changing color, using a string constructor for Crystal2Day::Color
             else
               raise "Unrecognized text command: #{main_command}"
             end

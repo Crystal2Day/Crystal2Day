@@ -78,6 +78,23 @@ module Crystal2Day
       end
     end
 
+    def set_tile(x : Int32, y : Int32, new_tile : TileID)
+      chunk_x = x // @combo_info.chunk_width
+      chunk_y = y // @combo_info.chunk_height
+      if chunk_x < 0 || chunk_x >= @combo_info.total_width_in_chunks || chunk_y < 0 || chunk_y >= @combo_info.total_height_in_chunks
+        # TODO: Error
+      else
+        chunk = @combo_info.chunks[chunk_y][chunk_x]
+        if chunk == 0
+          # TODO: Error
+        else
+          relative_x = x - @combo_info.map_starting_points[chunk - 1][0] * @combo_info.chunk_width
+          relative_y = y - @combo_info.map_starting_points[chunk - 1][1] * @combo_info.chunk_height
+          return @map_list[chunk - 1].set_tile(relative_x, relative_y, new_tile)
+        end
+      end
+    end
+
     def load_from_tiled_layer!(parsed_layer : Tiled::Layer)
       # TODO: Error as this should not be implemented
     end
@@ -202,6 +219,10 @@ module Crystal2Day
     def get_tile(x : Int32, y : Int32)
       invalid_tile = x < 0 || x.to_u32 >= @width || y < 0 || y.to_u32 >= @height
       invalid_tile ? @background_tile : @tiles[y][x]
+    end
+
+    def set_tile(x : Int32, y : Int32, new_tile : TileID)
+      @tiles[y][x] = new_tile
     end
 
     def load_from_text_file!(filename : String)
@@ -382,6 +403,10 @@ module Crystal2Day
 
     def get_tile(x : Int32, y : Int32)
       @animated_tiles[@content.get_tile(x, y)]
+    end
+
+    def set_tile(x : Int32, y : Int32, new_tile : TileID)
+      @content.set_tile(x, y, new_tile)
     end
 
     def update_animations
