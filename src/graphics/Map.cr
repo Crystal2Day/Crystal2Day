@@ -82,11 +82,11 @@ module Crystal2Day
       chunk_x = x // @combo_info.chunk_width
       chunk_y = y // @combo_info.chunk_height
       if chunk_x < 0 || chunk_x >= @combo_info.total_width_in_chunks || chunk_y < 0 || chunk_y >= @combo_info.total_height_in_chunks
-        # TODO: Error
+        Crystal2Day.error("No tile to be set at coords #{x} #{y}")
       else
         chunk = @combo_info.chunks[chunk_y][chunk_x]
         if chunk == 0
-          # TODO: Error
+          Crystal2Day.error("No tile to be set at coords #{x} #{y}")
         else
           relative_x = x - @combo_info.map_starting_points[chunk - 1][0] * @combo_info.chunk_width
           relative_y = y - @combo_info.map_starting_points[chunk - 1][1] * @combo_info.chunk_height
