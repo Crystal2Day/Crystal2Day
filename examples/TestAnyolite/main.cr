@@ -89,6 +89,9 @@ class CustomScene < CD::Scene
     add_entity_group("PlayerGroup", auto_update: true, auto_physics: true, auto_events: true, auto_draw: true, capacity: 1)
     add_entity_group("FigureGroup", auto_update: true, auto_physics: true, auto_events: true, auto_draw: true, capacity: 5)
 
+    # TODO: Load entities using Tiled's object layer. The group can be determined using the $group attribute.
+    load_entities_from_map("Map1", EntityMapPlacementMethod::BY_MAIN_COMPOUND_SPRITE)
+
     add_entity(group: "PlayerGroup", type: "Player", position: CD.xy(600, -50))
     5.times do |i|
       add_entity(group: "FigureGroup", type: "Figure", position: CD.xy(25 + 100*i, -50), initial_param: i)

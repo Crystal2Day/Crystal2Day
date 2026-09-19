@@ -147,6 +147,7 @@ module Crystal2Day
               @tiles[tile_id].set_flag(prop.name, (prop.value != "0" && prop.value != "false"))
             else
               # Currently unsupported, might receive support in the future
+              Crystal2Day.warning("Unsupported property type for tile: #{prop.type}")
             end
           end
         end

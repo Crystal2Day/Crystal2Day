@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="50" tileheight="50" infinite="0" nextlayerid="3" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="50" tileheight="50" infinite="0" nextlayerid="5" nextobjectid="4">
  <tileset firstgid="1" source="ExampleTileset.tsx"/>
+ <tileset firstgid="9" source="Entities.tsx"/>
  <layer id="1" name="Layer 1" width="30" height="20">
   <data encoding="csv">
 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
@@ -49,4 +50,12 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="3" name="Entities">
+  <object id="3" type="Figure" gid="9" x="1000" y="300" width="50" height="50">
+   <properties>
+    <property name="$group" value="FigureGroup"/>
+    <property name="$initial_param" type="int" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

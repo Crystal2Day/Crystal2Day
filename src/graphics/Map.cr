@@ -78,6 +78,7 @@ module Crystal2Day
       end
     end
 
+    # TODO: Add a universal routine that obtains the respective map list entry, don't write it twice...
     def set_tile(x : Int32, y : Int32, new_tile : TileID)
       chunk_x = x // @combo_info.chunk_width
       chunk_y = y // @combo_info.chunk_height
@@ -252,6 +253,8 @@ module Crystal2Day
 
     property layers = Array(MapLayer).new(initial_capacity: LAYERS_INITIAL_CAPACITY)
     property tileset : Crystal2Day::Tileset = Crystal2Day::Tileset.new
+    property combo_info : Crystal2Day::MapComboInfo = Crystal2Day::MapComboInfo.new
+    property object_layers : Array(Array(MapObjectLayer)) = [] of Array(MapObjectLayer)
 
     def initialize
     end
@@ -278,6 +281,9 @@ module Crystal2Day
       end
     end
 
+    # TODO: Implement Tiled worlds
+
+    # TODO: Maybe rename this
     def stream_from_file!(filename : String, @tileset : Tileset)
       @layers.clear
       
@@ -288,8 +294,7 @@ module Crystal2Day
 
         number_of_layers = parsed_stream["number_of_layers"].as_i.to_u32
 
-        combo_info = MapComboInfo.new
-        combo_info.get_from_parsed_json!(parsed_stream)
+        @combo_info.get_from_parsed_json!(parsed_stream)
         
         map_names = parsed_stream["maps"].as_a.map {|name| name.as_s}
         parsed_maps = map_names.map {|map_name| Tiled.parse_map_from_file(Crystal2Day.convert_to_absolute_path(map_name))}
@@ -298,17 +303,28 @@ module Crystal2Day
           new_layer = MapLayer.new(self)
           new_layer.set_as_stream!
 
-          new_layer.content.as(MapCombo).combo_info = combo_info
-          new_layer.content.as(MapCombo).map_list = Array(MapContent).new(initial_capacity: combo_info.number_of_maps)
+          # TODO: This could technically also be obtained from the parent_map attribute
+          new_layer.content.as(MapCombo).combo_info = @combo_info
+          new_layer.content.as(MapCombo).map_list = Array(MapContent).new(initial_capacity: @combo_info.number_of_maps)
 
           0.upto(map_names.size - 1) do |i|
             map_content = MapContent.new
             map_content.load_from_tiled_layer!(parsed_maps[i].array_layer[layer_id])
-            new_layer.content.as(MapCombo).map_list.push map_content
+            new_layer.content.as(MapCombo).map_list.push(map_content)
           end
 
           add_layer(new_layer)
         end
+
+        # TODO: Is there a more efficient way to handle this?
+        # TODO: Implement this for other routines as well
+        0.upto(map_names.size - 1) do |i|
+          object_groups = parsed_maps[i].array_objectgroup
+          # TODO: Curently all layers are simply read one after another - is there maybe a better way to do this?
+          @object_layers.push(object_groups.map {|object_group| MapObjectLayer.new(object_group)})
+        end
+
+        puts @object_layers.inspect
       end
     end
 
@@ -373,6 +389,7 @@ module Crystal2Day
   end
 
   class MapLayer < Crystal2Day::Drawable
+    # TODO: Maybe deprecate this distinction and just use MapCombo - with the combo always giving the only element in case of size 1
     property content : MapContent | MapCombo = MapContent.new
     property parent_map : Map
 
@@ -490,6 +507,65 @@ module Crystal2Day
       reload_vertex_grid(offset)
       # TODO: Currently there can be two renderers, maybe this should be fixed
       LibSDL.render_geometry(@parent_map.tileset.texture.renderer_data, @parent_map.tileset.texture.data, @vertices, @vertices.size, nil, 0)
+    end
+  end
+
+  class MapObjectLayer
+    MAP_OBJECT_LAYER_INITIAL_CAPACITY = 64
+
+    property objects = Array(MapObject).new(initial_capacity: MAP_OBJECT_LAYER_INITIAL_CAPACITY)
+
+    def initialize(layer : Tiled::ObjectGroup)
+      # TODO: Add more features like drawing order, offsets, parallaxes and more
+      # TODO: Mabye use the "class" attribute of the object group to characterize entity groups?
+      # TODO: Respect sorting scheme by Tiled
+
+      layer.array_object.each do |obj|
+        @objects.push(MapObject.new(obj))
+      end
+    end
+  end
+
+  class MapObject
+    MAP_OBJECT_PARAMETERS_INITIAL_CAPACITY = 16
+
+    property parameters = Hash(String, Crystal2Day::Parameter).new(initial_capacity: MAP_OBJECT_PARAMETERS_INITIAL_CAPACITY)
+    property flip_x : Bool = false
+    property flip_y : Bool = false
+    property coords : Crystal2Day::Coords = Crystal2Day.xy
+    property name : String = ""
+    property class_name : String = ""
+
+    def initialize(obj : Tiled::ObjectGroup::Object)
+      @name = obj.name
+      @class_name = obj.type
+      @coords.x = obj.x
+      @coords.y = obj.y
+      # NOTE: Currently only horizontal and vertical flips are allowed as operations
+      # TODO: Implement rotation and scaling
+      # TODO: Support templates and other things
+      @flip_x = (obj.gid & 0b00000000000000000000000000000001) != 0
+      @flip_y = (obj.gid & 0b00000000000000000000000000000010) != 0
+      if props = obj.properties
+        props.array_property.each do |prop|
+          if prop.type == "bool"
+            new_value = (prop.value == "true" || prop.value == "1")
+          elsif prop.type == "int"
+            new_value = prop.value.to_i32
+          elsif prop.type == "float"
+            new_value = prop.value.to_f32
+          elsif prop.type == "string"
+            new_value = prop.value
+          else
+            Crystal2Day.warning("Unsupported property type for object parameter: #{prop.type}")
+          end
+          {% if CRYSTAL2DAY_CONFIGS_ANYOLITE %}
+            @parameters[prop.name] = Crystal2Day::Interpreter.generate_ref(new_value)
+          {% else %}
+            @parameters[prop.name] = Crystal2Day::Parameter.new(new_value)
+          {% end %}
+        end
+      end
     end
   end
 end
