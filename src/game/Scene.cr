@@ -180,6 +180,7 @@ module Crystal2Day
     end
 
     def exit_routine
+      self.exit
       Crystal2Day.windows.each do |window|
         window.unpin_all
       end
