@@ -75,8 +75,8 @@ class CustomScene < CD::Scene
     debug_grid.node_distance = CD.xy(50, 50)
     debug_grid.pin
 
-    default_font = CD.rm.load_font(CD::Font.default_font_path, size: 50)
-    some_text = CD::Text.new("FPS: 0", default_font)
+    default_font = CD.rm.load_font(CD::Font.default_font_path, size: 80)
+    some_text = CD::Text.new("FPS: 0 $(sprite:ExampleSprite|animation:Main|placement:0.0)\nThis even works multilined!", default_font)
     some_text.z = 4
     some_text.color = CD::Color.white
     some_text.position = CD.xy(0, 0)
@@ -88,6 +88,9 @@ class CustomScene < CD::Scene
 
     add_entity_group("PlayerGroup", auto_update: true, auto_physics: true, auto_events: true, auto_draw: true, capacity: 1)
     add_entity_group("FigureGroup", auto_update: true, auto_physics: true, auto_events: true, auto_draw: true, capacity: 5)
+
+    # TODO: Load entities using Tiled's object layer. The group can be determined using the $group attribute.
+    load_entities_from_map("Map1", EntityMapPlacementMethod::BY_MAIN_COMPOUND_SPRITE)
 
     add_entity(group: "PlayerGroup", type: "Player", position: CD.xy(600, -50))
     5.times do |i|
@@ -120,7 +123,12 @@ class CustomScene < CD::Scene
   end
 
   def update
-    @uis["FPS"].update_text("Tracker", "FPS: #{CD.get_fps.round.to_i}\nThis even works multilined!")
+    @uis["FPS"].texts["Tracker"].fragments[0].text = "FPS: #{CD.get_fps.round.to_i} "
+    @uis["FPS"].texts["Tracker"].sprite_placements[0] += 0.1*(rand - 0.5)
+
+    if rand < 0.001
+      maps["Map1"].layers[1].set_tile(5, 5, CD::TileID.new(6))
+    end
   end
 
   def draw

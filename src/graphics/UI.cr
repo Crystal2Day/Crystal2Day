@@ -11,17 +11,19 @@ module Crystal2Day
       end  
       
       @texts[name] = text
+      @texts[name].rebuild
+    end
+
+    def update
+      @texts.each_value do |text|
+        text.update
+      end
     end
 
     def draw(offset : Coords = Crystal2Day.xy)
       @texts.each_value do |text|
         text.draw(offset)
       end
-      # TODO: Maybe extend this to include pictures in some way?
-    end
-
-    def update_text(name : String, new_text : String)
-      @texts[name].text = new_text
     end
   end
 end

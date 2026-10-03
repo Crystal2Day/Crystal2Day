@@ -13,6 +13,11 @@ module Crystal2Day
     SPRITES_INITIAL_CAPACITY = 256
     TEMP_ANIMATIONS_INITIAL_CAPACITY = 8
 
+    enum EntityMapPlacementMethod
+      AS_IS
+      BY_MAIN_COMPOUND_SPRITE
+    end
+
     property use_own_draw_implementation : Bool = false
 
     getter entity_groups : Hash(String, EntityGroup) = Hash(String, EntityGroup).new(initial_capacity: ENTITY_GROUP_INITIAL_CAPACITY)
@@ -84,6 +89,7 @@ module Crystal2Day
         # TODO: Maybe rearrange the order if necessary
         @maps.each_value {|map| map.update}
         @sprites.each_value {|sprite| sprite.update}
+        @uis.each_value {|member| member.update}
 
         @temp_animations.reject! do |anim|
           anim.update
@@ -174,7 +180,6 @@ module Crystal2Day
     end
 
     def exit_routine
-      exit
       Crystal2Day.windows.each do |window|
         window.unpin_all
       end
@@ -222,6 +227,39 @@ module Crystal2Day
 
     def add_entity(group : String, type : String | EntityType, position : Crystal2Day::Coords = Crystal2Day.xy, initial_param : Crystal2Day::ParamType = nil)
       @entity_groups[group].add_entity(type, position, initial_param)
+    end
+
+    def load_entities_from_map(map_name : String, placement_method : EntityMapPlacementMethod = EntityMapPlacementMethod::AS_IS)
+      if !@maps[map_name]?
+        Crystal2Day.error "Map with name '#{map_name}' does not exist"
+      end
+
+      @maps[map_name].object_layers.each do |map_part|
+        # TODO: Currently this simply loads all objects
+        map_part.each do |object_layer|
+          object_layer.objects.each do |object|
+            # TODO: Maybe implement the group in a different way
+            entity_group = object.parameters["$group"].to_s
+            initial_param = object.parameters["$initial_param"]? ? object.parameters["$initial_param"].to_i32 : nil
+            entity_type = Crystal2Day.database.get_entity_type(object.class_name)
+
+            # TODO: Transform object coordinates properly into map coordinates and use the proper object center to position it correctly
+            transformed_coords = object.coords
+            if placement_method == EntityMapPlacementMethod::BY_MAIN_COMPOUND_SPRITE
+              if compound = entity_type.compound
+                # TODO: Fix this for entity types with based_on attribute
+                # TODO: Test this more than enough
+                reference_sprite = Crystal2Day.rm.get_sprite_template(compound.sprite)
+                # Tiled places the entity sprite with its lower left corner, but we want to adjust this to the upper left corner instead, as in Crystal2Day
+                # TODO: Find a safer way to get the sprite measures
+                transformed_coords -= (reference_sprite.base_offset + Crystal2Day.xy(0, reference_sprite.source_rect.not_nil!.height))
+              end
+            end
+
+            add_entity(group: entity_group, type: entity_type, position: transformed_coords, initial_param: initial_param)
+          end
+        end
+      end
     end
 
     def add_map(name : String, tileset : Tileset? = nil)

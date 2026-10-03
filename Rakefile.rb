@@ -16,7 +16,13 @@ end
 task :add_feature_anyolite do
   system("git clone --branch main https://github.com/Anyolite/anyolite lib/anyolite")
   Dir.chdir("lib/anyolite")
-  system("crystal install.cr")
+  if ENV["PROCESSOR_IDENTIFIER"].include?("ARM")
+    # For some reason, the other command fails on ARM64
+    # TODO: Find a better solution
+    system("cmd /C rake build_shard")
+  else
+    system("crystal install.cr")
+  end
   Dir.chdir("../..")
   if File.exist?("lib/anyolite/build/mruby/lib/libmruby.lib") || File.exist?("lib/anyolite/build/mruby/lib/libmruby.a")
     puts "Anyolite was successfully installed."
@@ -61,8 +67,13 @@ task :install_sdl_libraries do
   sdl_ttf_version = "3.2.2"
 
   if ENV["OS"] == "Windows_NT"
-    # TODO: Autodetect if this is ARM64 or not
-    architecture = "x64"
+    # NOTE: ENV["PROCESSOR_ARCHITECTURE"] lies to us here
+    # TODO: Is there a better solution to do this?
+    if ENV["PROCESSOR_IDENTIFIER"].include?("ARM")
+      architecture = "arm64"
+    else
+      architecture = "x64"
+    end
 
     Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL/releases/download/release-#{sdl_version}/SDL3-devel-#{sdl_version}-VC.zip", "temp/SDL-devel")
     Utils.windows_download_and_extract("https://github.com/libsdl-org/SDL_image/releases/download/release-#{sdl_image_version}/SDL3_image-devel-#{sdl_image_version}-VC.zip", "temp/SDL_image-devel")

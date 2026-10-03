@@ -43,21 +43,21 @@ module Crystal2Day
     EMPTY_NAME = "<empty>"
     DEFAULT_NAME = "<default$>"
 
-    @default_state = {} of String => Crystal2Day::Parameter
-    @coroutine_templates = {} of String => Crystal2Day::CoroutineTemplate
+    getter default_state = {} of String => Crystal2Day::Parameter
+    getter coroutine_templates = {} of String => Crystal2Day::CoroutineTemplate
 
-    @options = Hash(String, Int64).new
+    getter options = Hash(String, Int64).new
 
-    @bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
-    @map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
-    @shapes = Hash(String, Crystal2Day::CollisionShape).new
-    @hitshapes = Hash(String, Crystal2Day::CollisionShape).new
-    @hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
+    getter bounding_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
+    getter map_boxes = Hash(String, Crystal2Day::CollisionShapeBox).new
+    getter shapes = Hash(String, Crystal2Day::CollisionShape).new
+    getter hitshapes = Hash(String, Crystal2Day::CollisionShape).new
+    getter hurtshapes = Hash(String, Crystal2Day::CollisionShape).new
 
-    @compound : Crystal2Day::PartTemplate? = nil
-    @compound_updates = CompoundUpdate.new
+    getter compound : Crystal2Day::PartTemplate? = nil
+    getter compound_updates = CompoundUpdate.new
 
-    @based_on : EntityTypeBase = EntityTypeBase.new
+    getter based_on : EntityTypeBase = EntityTypeBase.new
     
     property name : String = EMPTY_NAME
 
@@ -186,27 +186,27 @@ module Crystal2Day
       @coroutine_templates[name] = template
     end
 
-    def add_collision_box(name : String,collision_box : Crystal2Day::CollisionShapeBox)
+    def add_collision_box(name : String, collision_box : Crystal2Day::CollisionShapeBox)
       @bounding_boxes[name] = collision_box
     end
 
-    def add_collision_box_from_raw_json(name : String,raw_json : String)
+    def add_collision_box_from_raw_json(name : String, raw_json : String)
       @bounding_boxes[name] = Crystal2Day::CollisionShapeBox.from_json(raw_json)
     end
 
-    def add_collision_shape(name : String,collision_shape : Crystal2Day::CollisionShape)
+    def add_collision_shape(name : String, collision_shape : Crystal2Day::CollisionShape)
       @shapes[name] = collision_box
     end
 
-    def add_collision_shape_from_raw_json(name : String,raw_json : String)
+    def add_collision_shape_from_raw_json(name : String, raw_json : String)
       @shapes[name] =  Crystal2Day::CollisionShape.from_json(raw_json)
     end
 
-    def add_map_box(name : String,collision_box : Crystal2Day::CollisionShapeBox)
+    def add_map_box(name : String, collision_box : Crystal2Day::CollisionShapeBox)
       @map_boxes[name] =  collision_box
     end
 
-    def add_map_box_from_raw_json(name : String,raw_json : String)
+    def add_map_box_from_raw_json(name : String, raw_json : String)
       @map_boxes[name] =  Crystal2Day::CollisionShapeBox.from_json(raw_json)
     end
 

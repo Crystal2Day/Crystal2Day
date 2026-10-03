@@ -198,10 +198,10 @@ module Crystal2Day
       end
     {% else %}
       def call_collision_hooks(base_name : String)
-        call_hook(base_name + "_tile", own_ref)
+        call_hook(base_name + "_tile")
         @collision_stack_tiles.clear
 
-        call_hook(base_name + "_entity", own_ref)
+        call_hook(base_name + "_entity")
         @collision_stack_entities.clear
       end
     {% end %}

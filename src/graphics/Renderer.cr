@@ -104,10 +104,7 @@ module Crystal2Day
     end
 
     def free
-      if @text_engine
-        @text_engine.not_nil!.free
-        @text_engine = nil
-      end
+      @text_engine = nil
 
       if @data
         LibSDL.destroy_renderer(data)
