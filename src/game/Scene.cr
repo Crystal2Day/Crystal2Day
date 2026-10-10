@@ -14,6 +14,7 @@ module Crystal2Day
     TEMP_ANIMATIONS_INITIAL_CAPACITY = 8
 
     enum EntityMapPlacementMethod
+      LEFT_UPPER_CORNER
       AS_IS
       BY_MAIN_COMPOUND_SPRITE
     end
@@ -230,7 +231,7 @@ module Crystal2Day
       @entity_groups[group].add_entity(type, position, initial_param)
     end
 
-    def load_entities_from_map(map_name : String, placement_method : EntityMapPlacementMethod = EntityMapPlacementMethod::AS_IS)
+    def load_entities_from_map(map_name : String, placement_method : EntityMapPlacementMethod = EntityMapPlacementMethod::LEFT_CORNER, use_map_parallaxes = false)
       if !@maps[map_name]?
         Crystal2Day.error "Map with name '#{map_name}' does not exist"
       end
@@ -246,7 +247,16 @@ module Crystal2Day
 
             # TODO: Transform object coordinates properly into map coordinates and use the proper object center to position it correctly
             transformed_coords = object.coords
-            if placement_method == EntityMapPlacementMethod::BY_MAIN_COMPOUND_SPRITE
+            if placement_method == EntityMapPlacementMethod::LEFT_UPPER_CORNER
+              # TODO: Test and adjust this
+              if compound = entity_type.compound
+                reference_sprite = Crystal2Day.rm.get_sprite_template(compound.sprite)
+                transformed_coords -= (reference_sprite.base_offset + Crystal2Day.xy(0, object.height))
+              else
+                transformed_coords -= Crystal2Day.xy(0, object.height)
+              end
+            elsif placement_method == EntityMapPlacementMethod::BY_MAIN_COMPOUND_SPRITE
+              # TODO: Eventually deprecate this maybe
               if compound = entity_type.compound
                 # TODO: Fix this for entity types with based_on attribute
                 # TODO: Test this more than enough
@@ -257,7 +267,11 @@ module Crystal2Day
               end
             end
 
-            add_entity(group: entity_group, type: entity_type, position: transformed_coords, initial_param: initial_param)
+            new_entity = add_entity(group: entity_group, type: entity_type, position: transformed_coords, initial_param: initial_param)
+            if use_map_parallaxes
+              # TODO: Do this recursively
+              new_entity.compound.sprite.parallax = object_layer.parallax.dup
+            end
           end
         end
       end

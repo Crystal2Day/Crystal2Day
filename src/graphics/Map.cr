@@ -514,11 +514,19 @@ module Crystal2Day
     MAP_OBJECT_LAYER_INITIAL_CAPACITY = 64
 
     property objects = Array(MapObject).new(initial_capacity: MAP_OBJECT_LAYER_INITIAL_CAPACITY)
+    property parallax : Crystal2Day::Coords = Crystal2Day.xy(1.0, 1.0)
+    property offset : Crystal2Day::Coords = Crystal2Day.xy
 
     def initialize(layer : Tiled::ObjectGroup)
-      # TODO: Add more features like drawing order, offsets, parallaxes and more
+      # TODO: Implement more features like drawing order, offsets, parallaxes and more
       # TODO: Mabye use the "class" attribute of the object group to characterize entity groups?
       # TODO: Respect sorting scheme by Tiled
+
+      @parallax.x = layer.parallaxx
+      @parallax.y = layer.parallaxy
+
+      @offset.x = layer.offsetx
+      @offset.y = layer.offsety
 
       layer.array_object.each do |obj|
         @objects.push(MapObject.new(obj))
@@ -532,6 +540,8 @@ module Crystal2Day
     property parameters = Hash(String, Crystal2Day::Parameter).new(initial_capacity: MAP_OBJECT_PARAMETERS_INITIAL_CAPACITY)
     property flip_x : Bool = false
     property flip_y : Bool = false
+    property width : UInt32 = 0
+    property height : UInt32 = 0
     property coords : Crystal2Day::Coords = Crystal2Day.xy
     property name : String = ""
     property class_name : String = ""
@@ -541,6 +551,8 @@ module Crystal2Day
       @class_name = obj.type
       @coords.x = obj.x
       @coords.y = obj.y
+      @width = obj.width
+      @height = obj.height
       # NOTE: Currently only horizontal and vertical flips are allowed as operations
       # TODO: Implement rotation and scaling
       # TODO: Support templates and other things
