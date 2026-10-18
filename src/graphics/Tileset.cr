@@ -117,29 +117,25 @@ module Crystal2Day
       @animations[tile_id].empty? ? 1 : @animations[tile_id].last.cumulative_duration
     end
 
-    def load_from_tiled_file!(filename : String, given_texture : Texture? = nil)
-      full_filename = Crystal2Day.convert_to_absolute_path(filename)
-
-      parsed_tileset = Tiled.parse_tileset_from_file(full_filename)
-
-      @tile_width = parsed_tileset.tilewidth
-      @tile_height = parsed_tileset.tileheight
+    def load_from_tiled!(raw_tileset : Tiled::Tileset, given_texture : Texture? = nil)
+      @tile_width = raw_tileset.tilewidth
+      @tile_height = raw_tileset.tileheight
 
       if given_texture
         @texture = given_texture
       else
         # Only load image texture if available
-        if image_texture = parsed_tileset.image
+        if image_texture = raw_tileset.image
           @texture = Crystal2Day.rm.load_texture(Crystal2Day.convert_to_absolute_path(image_texture.source.not_nil!))
         end
       end
 
-      parsed_tileset.tilecount.times do |tile_id|
+      raw_tileset.tilecount.times do |tile_id|
         add_tile(Tile.new)
         @animations.push(Array(TileAnimationFrame).new)
       end
 
-      parsed_tileset.array_tile.each do |parsed_tile|
+      raw_tileset.array_tile.each do |parsed_tile|
         tile_id = parsed_tile.id
 
         if properties = parsed_tile.properties
@@ -164,6 +160,14 @@ module Crystal2Day
           end
         end
       end
+    end
+
+    def load_from_tiled_file!(filename : String, given_texture : Texture? = nil)
+      full_filename = Crystal2Day.convert_to_absolute_path(filename)
+
+      parsed_tileset = Tiled.parse_tileset_from_file(full_filename)
+
+      load_from_tiled!(parsed_tileset, given_texture)
     end
   end
 end
