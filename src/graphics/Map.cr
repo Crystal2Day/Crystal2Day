@@ -562,8 +562,8 @@ module Crystal2Day
       # NOTE: Currently only horizontal and vertical flips are allowed as operations
       # TODO: Implement rotation and scaling
       # TODO: Support templates and other things
-      @flip_x = (obj.gid & 0b00000000000000000000000000000001) != 0
-      @flip_y = (obj.gid & 0b00000000000000000000000000000010) != 0
+      @flip_x = (obj.gid & 0b10000000000000000000000000000000) != 0
+      @flip_y = (obj.gid & 0b01000000000000000000000000000000) != 0
       if props = obj.properties
         props.array_property.each do |prop|
           if prop.type == "bool"
