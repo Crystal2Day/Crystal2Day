@@ -6,7 +6,7 @@ module Crystal2Day
     alias Parameter = Anyolite::RbRef
   {% else %}
     class Parameter
-      @content : ParamType
+      getter content : ParamType
 
       def initialize(@content : ParamType)
       end
