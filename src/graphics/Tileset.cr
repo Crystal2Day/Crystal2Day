@@ -128,7 +128,10 @@ module Crystal2Day
       if given_texture
         @texture = given_texture
       else
-        @texture = Crystal2Day.rm.load_texture(Crystal2Day.convert_to_absolute_path(parsed_tileset.image.not_nil!.source.not_nil!))
+        # Only load image texture if available
+        if image_texture = parsed_tileset.image
+          @texture = Crystal2Day.rm.load_texture(Crystal2Day.convert_to_absolute_path(image_texture.source.not_nil!))
+        end
       end
 
       parsed_tileset.tilecount.times do |tile_id|
