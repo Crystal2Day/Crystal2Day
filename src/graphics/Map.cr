@@ -279,6 +279,10 @@ module Crystal2Day
         new_layer.content.load_from_tiled_layer!(parsed_layer)
         add_layer(new_layer)
       end
+      
+      object_groups = parsed_map.array_objectgroup
+      # TODO: Curently all layers are simply read one after another - is there maybe a better way to do this?
+      @object_layers.push(object_groups.map {|object_group| MapObjectLayer.new(object_group)})
     end
 
     # TODO: Implement Tiled worlds
@@ -323,8 +327,6 @@ module Crystal2Day
           # TODO: Curently all layers are simply read one after another - is there maybe a better way to do this?
           @object_layers.push(object_groups.map {|object_group| MapObjectLayer.new(object_group)})
         end
-
-        puts @object_layers.inspect
       end
     end
 
