@@ -86,6 +86,7 @@ module Crystal2Day
     def run_animation(name : String)
       if new_animation = @animation_templates[name]?
         @animation = Animation.new(new_animation)
+        update_source_rect_by_frame(@animation.current_frame)
       else
         Crystal2Day.error("Unknown animation template: #{name}")
       end
