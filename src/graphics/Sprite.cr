@@ -162,6 +162,7 @@ module Crystal2Day
       final_center_point = true_center_point.data
       final_render_rect = determine_final_render_rect(offset)
       LibSDL.set_texture_color_mod(@texture.data, @blend_color.r, @blend_color.g, @blend_color.b)
+      LibSDL.set_texture_alpha_mod(@texture.data, @blend_color.a)
       LibSDL.render_texture_rotated(renderer_data, @texture.data, pointerof(final_source_rect), pointerof(final_render_rect), flipped_angle, pointerof(final_center_point), flip_flag)
     end
   end
